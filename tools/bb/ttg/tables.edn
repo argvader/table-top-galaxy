@@ -1,0 +1,23 @@
+;; Local DynamoDB tables. Keep in sync with the resources in apps/serverless/serverless.yml.
+;; Single-table design: pk/sk for campaign, character, library and roll-log items,
+;; gsi1 for "my characters" / "my campaigns" lookups.
+[{:TableName            "ttg-local"
+  :BillingMode          "PAY_PER_REQUEST"
+  :AttributeDefinitions [{:AttributeName "pk" :AttributeType "S"}
+                         {:AttributeName "sk" :AttributeType "S"}
+                         {:AttributeName "gsi1pk" :AttributeType "S"}
+                         {:AttributeName "gsi1sk" :AttributeType "S"}]
+  :KeySchema            [{:AttributeName "pk" :KeyType "HASH"}
+                         {:AttributeName "sk" :KeyType "RANGE"}]
+  :GlobalSecondaryIndexes
+  [{:IndexName  "gsi1"
+    :KeySchema  [{:AttributeName "gsi1pk" :KeyType "HASH"}
+                 {:AttributeName "gsi1sk" :KeyType "RANGE"}]
+    :Projection {:ProjectionType "ALL"}}]}
+
+ {:TableName            "ttg-local-connections"
+  :BillingMode          "PAY_PER_REQUEST"
+  :AttributeDefinitions [{:AttributeName "pk" :AttributeType "S"}
+                         {:AttributeName "sk" :AttributeType "S"}]
+  :KeySchema            [{:AttributeName "pk" :KeyType "HASH"}
+                         {:AttributeName "sk" :KeyType "RANGE"}]}]

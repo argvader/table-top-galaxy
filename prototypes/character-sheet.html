@@ -1,0 +1,1122 @@
+<title>Genesys Character Sheet</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=Saira+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: same ship-console tokens as the dice roller. Desktop = identity + stat band + vitals across the top,
+   skills column on the left, tabbed detail on the right, roll drawer slides in from the right.
+   Phone = one column, sticky tab strip (Skills first), roll drawer as a bottom sheet. */
+:root {
+  --bg: #e6ecec; --surface: #f6f9f9; --surface-2: #edf2f2; --ink: #12201f; --muted: #586a69; --line: #c6d2d1;
+  --accent: #0d6f78; --accent-ink: #ffffff; --good: #1f7a3a; --warn: #9a6200; --bad: #a32b2b;
+  --wound: #b23a3a; --strain: #2f6fb0;
+  --die-stroke: rgba(0,0,0,.18); --shadow: 0 1px 2px rgba(18,32,31,.08), 0 10px 30px rgba(18,32,31,.16);
+  --f-display: "Saira Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --d-ability: #3f9b46; --d-prof: #f2c230; --d-boost: #8fd0ea; --d-diff: #5b3c8f; --d-chal: #b8262f; --d-set: #1b1b1d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1214; --surface: #141d20; --surface-2: #1a252a; --ink: #e2ebeb; --muted: #8ea1a2; --line: #26363b;
+    --accent: #49bfc8; --accent-ink: #062224; --good: #5fcf7e; --warn: #e3b04b; --bad: #f07a7a;
+    --wound: #f07a7a; --strain: #78b4ef;
+    --die-stroke: rgba(255,255,255,.28); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1214; --surface: #141d20; --surface-2: #1a252a; --ink: #e2ebeb; --muted: #8ea1a2; --line: #26363b;
+  --accent: #49bfc8; --accent-ink: #062224; --good: #5fcf7e; --warn: #e3b04b; --bad: #f07a7a;
+  --wound: #f07a7a; --strain: #78b4ef;
+  --die-stroke: rgba(255,255,255,.28); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.45);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 40px;
+}
+button, input, textarea { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono, .num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.label { font-family: var(--f-display); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; font-weight: 600; color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { max-width: 1320px; margin: 0 auto; }
+.btn { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 11px; cursor: pointer; font-size: 13px; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
+.btn.danger { color: var(--bad); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.tag { display: inline-block; font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; color: var(--muted); white-space: nowrap; }
+.tag.gm { border-style: dashed; }
+.note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
+/* Top bar */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-block: 12px; border-bottom: 1px solid var(--line); }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 20px; }
+.brand small { font-weight: 500; color: var(--muted); font-size: 14px; margin-left: 6px; }
+.proto { font-size: 12px; padding: 2px 8px; border: 1px dashed var(--line); border-radius: 99px; color: var(--muted); }
+.spacer { flex: 1; }
+
+/* Story points (shared group pool) */
+.story { position: relative; display: flex; align-items: center; gap: 8px; }
+.tokens { display: flex; gap: 4px; }
+.tok { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--ink); cursor: pointer; padding: 0; position: relative; }
+.tok.player { background: var(--surface); }
+.tok.player::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--accent); }
+.tok.gm { background: var(--ink); cursor: default; }
+.tok.gm::after { content: ""; position: absolute; inset: 7px; transform: rotate(45deg); background: var(--surface); border-radius: 2px; }
+.tok.flip { animation: flip .5s ease; }
+@keyframes flip { 0% { transform: rotateY(0) } 50% { transform: rotateY(90deg) } 100% { transform: rotateY(0) } }
+@media (prefers-reduced-motion: reduce) { .tok.flip { animation: none; } }
+.sp-count { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.sp-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 20; width: min(300px, calc(100vw - 32px)); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); padding: 12px; display: grid; gap: 8px; }
+.sp-menu p { margin: 0; font-size: 13px; color: var(--muted); }
+.sp-menu .btn { text-align: left; }
+.chip.sp { border-color: var(--accent); }
+.chip.sp .tok-mini { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--ink); background: var(--surface); position: relative; }
+.chip.sp .tok-mini::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--accent); }
+
+/* Identity */
+.ident { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding-block: 16px 12px; }
+.portrait { width: 64px; height: 64px; border-radius: 14px; display: grid; place-items: center; font-family: var(--f-display); font-size: 26px; font-weight: 700;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, var(--surface)), var(--surface-2)); border: 1px solid var(--line); }
+.ident h1 { margin: 0; font-family: var(--f-display); font-size: 34px; line-height: 1; font-weight: 700; text-wrap: balance; }
+.ident .sub { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.xp { text-align: right; }
+.xp b { font-family: var(--f-mono); font-size: 22px; display: block; line-height: 1.1; }
+.xp span { font-size: 12px; color: var(--muted); }
+@media (max-width: 560px) { .ident { grid-template-columns: auto minmax(0, 1fr); } .xp { grid-column: 1 / -1; text-align: left; display: flex; gap: 8px; align-items: baseline; } .xp b { display: inline; } .ident h1 { font-size: 28px; } }
+
+/* Characteristics */
+.stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.stat { border: 1px solid var(--line); background: var(--surface); border-radius: 12px; padding: 8px 4px 6px; text-align: center; cursor: pointer; position: relative; }
+.stat:hover { border-color: var(--accent); }
+.stat b { display: block; font-family: var(--f-display); font-size: 38px; line-height: 1; font-weight: 700; }
+.stat span { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 560px) { .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } .stat b { font-size: 30px; } }
+
+/* Vitals */
+.vitals { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.4fr) repeat(3, minmax(0, .8fr)); gap: 8px; margin-top: 8px; }
+@media (max-width: 1000px) { .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); } .vitals .small { grid-column: span 1; } }
+@media (max-width: 1000px) and (min-width: 561px) { .vitals { grid-template-columns: repeat(6, minmax(0, 1fr)); } .vitals .track { grid-column: span 3; } .vitals .small { grid-column: span 2; } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.track { padding: 10px 12px; }
+.track.over { border-color: var(--bad); box-shadow: inset 0 0 0 1px var(--bad); }
+.track .hd { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.track .val { font-family: var(--f-mono); font-size: 13px; color: var(--muted); }
+.track .val b { font-size: 26px; color: var(--ink); }
+.pips { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: 3px; margin: 8px 0; }
+.pips i { height: 10px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--line); }
+.pips.wound i.on { background: var(--wound); border-color: var(--wound); }
+.pips.strain i.on { background: var(--strain); border-color: var(--strain); }
+.pips i.over { background: var(--bad); border-color: var(--bad); opacity: .55; }
+.track .ctl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.track .ctl .step { width: 34px; height: 30px; padding: 0; font-weight: 700; font-size: 16px; }
+.hit { display: flex; gap: 6px; align-items: center; }
+.hit input { width: 62px; padding: 5px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface-2); }
+.alert { margin-top: 8px; font-size: 13px; color: var(--bad); font-weight: 700; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.small { padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 4px; }
+.small b { font-family: var(--f-display); font-size: 32px; line-height: 1; }
+.small .pair { display: flex; gap: 14px; }
+.small .pair div { display: flex; flex-direction: column; }
+.small .pair small { font-size: 11px; color: var(--muted); }
+.small .why { font-size: 12px; color: var(--muted); }
+.enc-bar { height: 6px; border-radius: 3px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; }
+.enc-bar i { display: block; height: 100%; background: var(--accent); }
+
+/* Main */
+.main { display: grid; gap: 16px; margin-top: 16px; }
+@media (min-width: 1000px) { .main { grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); align-items: start; } }
+.panel > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 12px 14px 8px; }
+.panel h2 { margin: 0; font-family: var(--f-display); font-size: 18px; font-weight: 600; letter-spacing: .03em; }
+.search { margin: 0 14px 8px; display: block; width: calc(100% - 28px); padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
+.group > .label { padding: 8px 14px 4px; display: block; }
+.srow { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 7px 14px; text-align: left; cursor: pointer; border-top: 1px solid color-mix(in srgb, var(--line) 50%, transparent); }
+.srow:hover { background: var(--surface-2); }
+.srow .nm { font-size: 14px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.srow .nm i { font-style: normal; color: var(--muted); font-size: 12px; margin-left: 4px; }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-right: 7px; vertical-align: middle; }
+.dot.off { background: transparent; border: 1px solid var(--line); }
+.ranks { display: inline-flex; gap: 2px; }
+.ranks i { width: 8px; height: 8px; border-radius: 50%; border: 1px solid var(--muted); }
+.ranks i.on { background: var(--ink); border-color: var(--ink); }
+.mini { display: flex; gap: 2px; min-width: 54px; justify-content: flex-end; }
+.mini svg { width: 17px; height: 17px; }
+
+/* Tabs */
+.tabs { display: flex; gap: 2px; overflow-x: auto; padding: 0 8px; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.tabs button { border: 0; background: none; padding: 11px 12px 9px; cursor: pointer; font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; }
+.tabs button[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabs .count { font-family: var(--f-mono); font-size: 11px; margin-left: 4px; color: var(--muted); }
+.tabbody { padding: 14px; }
+@media (max-width: 999px) {
+  .tabs.sticky { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 6; background: var(--surface); border-radius: 12px 12px 0 0; }
+  [data-desk-only] { display: none !important; }
+}
+@media (min-width: 1000px) { [data-phone-only] { display: none !important; } }
+.list { display: grid; gap: 8px; }
+.item { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface); display: grid; gap: 4px; }
+.item .row1 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.item h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.item .meta { font-size: 13px; color: var(--muted); }
+.item p { margin: 0; font-size: 14px; }
+.item .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.weap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.weap .stats-row { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--muted); }
+.weap .stats-row b { color: var(--ink); font-family: var(--f-mono); }
+.pyramid { display: grid; gap: 4px; justify-items: center; margin-bottom: 14px; }
+.pyramid .tier { display: flex; gap: 4px; align-items: center; }
+.pyramid .tier span { font-size: 11px; color: var(--muted); width: 52px; text-align: right; margin-right: 6px; }
+.pyramid .slot { width: 30px; height: 18px; border-radius: 4px; border: 1px dashed var(--line); }
+.pyramid .slot.on { background: var(--accent); border: 1px solid var(--accent); }
+.pyr-ok { font-size: 12px; color: var(--good); text-align: center; }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px; font-size: 14px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; }
+.sect { margin-bottom: 18px; }
+.sect > h3 { margin: 0 0 8px; font-family: var(--f-display); font-size: 16px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.debt-big { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.debt-big b { font-family: var(--f-display); font-size: 44px; line-height: 1; }
+.corp { font-weight: 700; }
+textarea { width: 100%; min-height: 220px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); resize: vertical; line-height: 1.5; }
+.hist { list-style: none; margin: 0; padding: 0; }
+.hist li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 10px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.hist time { color: var(--muted); font-size: 12px; font-family: var(--f-mono); }
+.critroll { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); margin-bottom: 12px; }
+.critroll b { font-family: var(--f-mono); font-size: 20px; }
+
+/* Roll drawer */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 30; }
+.drawer { position: fixed; z-index: 31; background: var(--surface); box-shadow: var(--shadow); flex-direction: column; overflow: hidden; }
+.drawer:not([hidden]) { display: flex; }
+@media (min-width: 760px) { .drawer { top: 0; right: 0; bottom: 0; width: min(440px, 100%); border-left: 1px solid var(--line);
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) 0; } }
+@media (max-width: 759px) { .drawer { left: 0; right: 0; bottom: 0; max-height: 88vh; border-radius: 16px 16px 0 0; border-top: 1px solid var(--line);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); } }
+.drawer .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin: 8px auto 0; }
+@media (min-width: 760px) { .drawer .grab { display: none; } }
+.drawer header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 12px 16px 8px; }
+.drawer h2 { margin: 0; font-family: var(--f-display); font-size: 26px; line-height: 1.05; font-weight: 700; }
+.drawer .meta { font-size: 13px; color: var(--muted); }
+.drawer .body { overflow: auto; padding: 0 16px 16px; display: grid; gap: 12px; }
+.x { border: 0; background: var(--surface-2); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: none; }
+.tray { border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); padding: 12px; min-height: 76px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.tray .vs { font-family: var(--f-display); color: var(--muted); padding: 0 4px; font-size: 13px; letter-spacing: .1em; }
+.die { border: 0; background: none; padding: 0; cursor: pointer; line-height: 0; }
+.die svg { width: 44px; height: 44px; display: block; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 5px 11px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.chip .dp { display: inline-flex; gap: 2px; }
+.chip .dp i { width: 7px; height: 7px; transform: rotate(45deg); background: var(--d-diff); display: inline-block; }
+.chip small { color: var(--muted); }
+.chip[aria-pressed="true"] small { color: inherit; opacity: .75; }
+.chip svg { width: 16px; height: 16px; }
+.rollbtn { width: 100%; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: .08em; text-transform: uppercase; padding: 12px 18px; cursor: pointer; }
+.rollbtn:disabled { opacity: .4; cursor: not-allowed; }
+.verdict h3 { margin: 0; font-family: var(--f-display); font-size: 30px; line-height: 1; font-weight: 700; }
+.verdict h3.ok { color: var(--good); } .verdict h3.no { color: var(--bad); }
+.verdict p { margin: 4px 0 0; color: var(--muted); }
+.net { display: flex; flex-wrap: wrap; gap: 6px; }
+.net .n { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; background: var(--surface-2); font-size: 14px; }
+.net .n svg { width: 18px; height: 18px; }
+.net .n b { font-family: var(--f-mono); }
+.rolled { display: flex; flex-wrap: wrap; gap: 4px; }
+.rolled svg { width: 36px; height: 36px; }
+.rolled.tumble svg { animation: tumble .45s ease-out; }
+@keyframes tumble { 0% { transform: rotate(-200deg) scale(.6); opacity: .2 } 100% { transform: none; opacity: 1 } }
+.dmg { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); }
+.dmg b { font-family: var(--f-mono); font-size: 22px; }
+.dmg .crit { font-weight: 700; color: var(--bad); }
+.opt { display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 10px; cursor: pointer; margin-bottom: 6px; font-size: 14px; }
+.opt:disabled { opacity: .4; cursor: not-allowed; }
+.opt:not(:disabled):hover { border-color: var(--accent); }
+.opt .cost { display: inline-flex; gap: 1px; } .opt .cost svg { width: 14px; height: 14px; }
+.spent { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; }
+.spent span { border: 1px dashed var(--line); border-radius: 99px; padding: 2px 8px; }
+.linkbtn { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 2px 0; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.readonly { border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; color: var(--muted); }
+h4 { margin: 0 0 6px; font-family: var(--f-display); font-size: 16px; font-weight: 600; display: flex; gap: 8px; align-items: center; }
+h4 .left { font-family: var(--f-mono); font-size: 12px; color: var(--muted); font-weight: 400; }
+h4 .left svg { width: 13px; height: 13px; vertical-align: -2px; }
+#dice3d { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; transition: opacity .6s ease; }
+#dice3d.fade { opacity: 0; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--ink); color: var(--surface); padding: 9px 16px; border-radius: 99px; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
+@media (prefers-reduced-motion: reduce) { .rolled.tumble svg { animation: none; } #dice3d { transition: none; } }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sym-s" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1 L14.6 9.4 L23 12 L14.6 14.6 L12 23 L9.4 14.6 L1 12 L9.4 9.4 Z"/></symbol>
+    <symbol id="sym-f" viewBox="0 0 24 24"><path fill="currentColor" d="M4 6.5 L6.5 4 L12 9.5 L17.5 4 L20 6.5 L14.5 12 L20 17.5 L17.5 20 L12 14.5 L6.5 20 L4 17.5 L9.5 12 Z"/></symbol>
+    <symbol id="sym-a" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 L21 10 L18.2 12.6 L12 7.2 L5.8 12.6 L3 10 Z M12 10.5 L21 18.5 L18.2 21.1 L12 15.7 L5.8 21.1 L3 18.5 Z"/></symbol>
+    <symbol id="sym-t" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22 L21 14 L18.2 11.4 L12 16.8 L5.8 11.4 L3 14 Z M12 13.5 L21 5.5 L18.2 2.9 L12 8.3 L5.8 2.9 L3 5.5 Z"/></symbol>
+    <symbol id="sym-r" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.4"/><path fill="currentColor" d="M12 4.5 L13.7 10.3 L19.5 12 L13.7 13.7 L12 19.5 L10.3 13.7 L4.5 12 L10.3 10.3 Z"/></symbol>
+    <symbol id="sym-d" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.4"/><path fill="currentColor" d="M7 8.6 L8.6 7 L12 10.4 L15.4 7 L17 8.6 L13.6 12 L17 15.4 L15.4 17 L12 13.6 L8.6 17 L7 15.4 L10.4 12 Z"/></symbol>
+  </defs>
+</svg>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Table Top Galaxy<small>Manifest Destiny</small></div>
+    <span class="proto">Prototype &middot; sample character</span>
+    <div class="spacer"></div>
+    <div class="story"><span class="label" id="sp-label">Story points</span><div class="tokens" id="tokens" role="group" aria-labelledby="sp-label"></div>
+      <span class="sp-count" id="sp-count"></span><div class="sp-menu" id="sp-menu" hidden></div></div>
+    <button type="button" class="btn" id="shortrest">End encounter: recover strain</button>
+  </header>
+
+  <section class="ident" aria-label="Character">
+    <div class="portrait" aria-hidden="true">PG</div>
+    <div>
+      <h1 id="cname">Prance Galavent</h1>
+      <div class="sub" id="csub"></div>
+    </div>
+    <div class="xp" id="xp"></div>
+  </section>
+
+  <section class="stats" id="stats" aria-label="Characteristics. Tap one to roll it."></section>
+  <section class="vitals" id="vitals" aria-label="Vitals"></section>
+
+  <main class="main">
+    <section class="card panel" data-desk-only aria-labelledby="h-skills">
+      <header><h2 id="h-skills">Skills</h2><span class="label">Tap to roll</span></header>
+      <label class="sr" for="q">Filter skills</label>
+      <input class="search" id="q" type="search" placeholder="Filter skills&hellip;" autocomplete="off">
+      <div id="skills-desk"></div>
+    </section>
+
+    <section class="card">
+      <nav class="tabs sticky" role="tablist" aria-label="Sheet sections" id="tabs"></nav>
+      <div class="tabbody" id="tabbody" role="tabpanel"></div>
+    </section>
+  </main>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-modal="true" role="dialog" aria-labelledby="d-title"></aside>
+<canvas id="dice3d" aria-hidden="true"></canvas>
+<div class="toast" id="toast" hidden role="status"></div>
+<div class="sr" aria-live="polite" id="live"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+<script>
+(() => {
+  // ---------- Genesys dice (face tables) ----------
+  // s success, f failure, a advantage, t threat, r triumph, d despair
+  const DICE = {
+    proficiency: { name: "Proficiency", short: "d12", shape: "d12", color: "var(--d-prof)", hex: "#f2c230", ink: "#1b1b1d", pos: true,
+      faces: ["", "s", "s", "ss", "ss", "a", "sa", "sa", "sa", "aa", "aa", "r"] },
+    ability: { name: "Ability", short: "d8", shape: "d8", color: "var(--d-ability)", hex: "#3f9b46", ink: "#0d1f10", pos: true,
+      faces: ["", "s", "s", "ss", "a", "a", "sa", "aa"] },
+    boost: { name: "Boost", short: "d6", shape: "d6", color: "var(--d-boost)", hex: "#8fd0ea", ink: "#10222b", pos: true,
+      faces: ["", "", "s", "sa", "aa", "a"] },
+    challenge: { name: "Challenge", short: "d12", shape: "d12", color: "var(--d-chal)", hex: "#b8262f", ink: "#ffffff", pos: false,
+      faces: ["", "f", "f", "ff", "ff", "t", "t", "ft", "ft", "tt", "tt", "d"] },
+    difficulty: { name: "Difficulty", short: "d8", shape: "d8", color: "var(--d-diff)", hex: "#5b3c8f", ink: "#ffffff", pos: false,
+      faces: ["", "f", "ff", "t", "t", "t", "tt", "ft"] },
+    setback: { name: "Setback", short: "d6", shape: "d6", color: "var(--d-set)", hex: "#1b1b1d", ink: "#ffffff", pos: false,
+      faces: ["", "", "f", "f", "t", "t"] },
+  };
+  const ORDER = ["proficiency", "ability", "boost", "challenge", "difficulty", "setback"];
+  const SYM_NAME = { s: "Success", f: "Failure", a: "Advantage", t: "Threat", r: "Triumph", d: "Despair" };
+  // Same glyphs as the <symbol> defs, reused to paint the 3D die faces.
+  const GLYPH = {
+    s: { d: "M12 1 L14.6 9.4 L23 12 L14.6 14.6 L12 23 L9.4 14.6 L1 12 L9.4 9.4 Z" },
+    f: { d: "M4 6.5 L6.5 4 L12 9.5 L17.5 4 L20 6.5 L14.5 12 L20 17.5 L17.5 20 L12 14.5 L6.5 20 L4 17.5 L9.5 12 Z" },
+    a: { d: "M12 2 L21 10 L18.2 12.6 L12 7.2 L5.8 12.6 L3 10 Z M12 10.5 L21 18.5 L18.2 21.1 L12 15.7 L5.8 21.1 L3 18.5 Z" },
+    t: { d: "M12 22 L21 14 L18.2 11.4 L12 16.8 L5.8 11.4 L3 14 Z M12 13.5 L21 5.5 L18.2 2.9 L12 8.3 L5.8 2.9 L3 5.5 Z" },
+    r: { ring: true, d: "M12 4.5 L13.7 10.3 L19.5 12 L13.7 13.7 L12 19.5 L10.3 13.7 L4.5 12 L10.3 10.3 Z" },
+    d: { ring: true, d: "M7 8.6 L8.6 7 L12 10.4 L15.4 7 L17 8.6 L13.6 12 L17 15.4 L15.4 17 L12 13.6 L8.6 17 L7 15.4 L10.4 12 Z" },
+  };
+
+  const tally = (face) => {
+    const c = { s: 0, f: 0, a: 0, t: 0, r: 0, d: 0 };
+    for (const ch of face) c[ch]++;
+    return c;
+  };
+  const rand = (n) => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+  const randf = () => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; };
+
+  const poolList = (pool) => ORDER.flatMap((t) => Array(pool[t]).fill(t));
+  function scoreDice(dice) {
+    const t = dice.reduce((acc, d) => { const c = tally(d.face); for (const k in c) acc[k] += c[k]; return acc; },
+      { s: 0, f: 0, a: 0, t: 0, r: 0, d: 0 });
+    const netS = t.s + t.r - t.f - t.d;
+    const netA = t.a - t.t;
+    return { dice, raw: t, netS, netA, triumph: t.r, despair: t.d, success: netS >= 1 };
+  }
+  const instantRoll = (types) => types.map((type) => ({ type, face: DICE[type].faces[rand(DICE[type].faces.length)] }));
+
+  // ---------- 3D dice: three.js render + cannon.js physics, walled in by the viewport ----------
+  const Dice3D = (() => {
+    const PX_PER_UNIT = 34, FOV = 30, GRAVITY = -60;
+    const PHI = (1 + Math.sqrt(5)) / 2;
+    let ok = false, renderer, scene, camera, world, floorMesh, walls = {}, live = [], raf = 0, fadeTimer = 0, bounds = { x: 6, z: 8 };
+    const v3 = (x, y, z) => ({ x, y, z });
+    const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+    const sub = (a, b) => v3(a.x - b.x, a.y - b.y, a.z - b.z);
+    const cross = (a, b) => v3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    const norm = (a) => { const l = Math.hypot(a.x, a.y, a.z); return v3(a.x / l, a.y / l, a.z / l); };
+    const signs = (fn) => { const out = []; for (const i of [1, -1]) for (const j of [1, -1]) for (const k of [1, -1]) out.push(fn(i, j, k)); return out; };
+    const cyc = (a, b) => [v3(0, a, b), v3(a, b, 0), v3(b, 0, a)];
+    const pm = (fn) => [[1, 1], [1, -1], [-1, 1], [-1, -1]].flatMap(([i, j]) => fn(i, j));
+
+    // Vertices + face normals per shape; faces are derived so every die shares one builder.
+    const SOLIDS = {
+      d6: { radius: 1.3, inset: 0.707, verts: signs((i, j, k) => v3(i, j, k)),
+            normals: [v3(1, 0, 0), v3(-1, 0, 0), v3(0, 1, 0), v3(0, -1, 0), v3(0, 0, 1), v3(0, 0, -1)] },
+      d8: { radius: 1.45, inset: 0.5, verts: [v3(1, 0, 0), v3(-1, 0, 0), v3(0, 1, 0), v3(0, -1, 0), v3(0, 0, 1), v3(0, 0, -1)],
+            normals: signs((i, j, k) => v3(i, j, k)) },
+      d12: { radius: 1.45, inset: 0.809,
+             verts: [...signs((i, j, k) => v3(i, j, k)), ...pm((i, j) => cyc(i / PHI, j * PHI))],
+             normals: pm((i, j) => cyc(i * PHI, j)) },
+    };
+
+    function faces(solid) {
+      const verts = solid.verts.map(norm);
+      return solid.normals.map((n0) => {
+        const n = norm(n0);
+        const best = Math.max(...verts.map((v) => dot(v, n)));
+        const idx = verts.map((v, i) => [dot(v, n), i]).filter(([d]) => d > best - 1e-6).map(([, i]) => i);
+        const c = idx.reduce((acc, i) => v3(acc.x + verts[i].x / idx.length, acc.y + verts[i].y / idx.length, acc.z + verts[i].z / idx.length), v3(0, 0, 0));
+        const u = norm(sub(verts[idx[0]], c)), w = cross(n, u);
+        const ang = (i) => { const p = sub(verts[i], c); return Math.atan2(dot(p, w), dot(p, u)); };
+        idx.sort((a, b) => ang(a) - ang(b));
+        const rFace = Math.max(...idx.map((i) => Math.hypot(...Object.values(sub(verts[i], c)))));
+        return { n, idx, c, u, w, rFace };
+      });
+    }
+
+    const texCache = new Map();
+    function faceTexture(type, face, inset) {
+      const key = `${type}|${face}`;
+      if (texCache.has(key)) return texCache.get(key);
+      const size = 256, cv = document.createElement("canvas");
+      cv.width = cv.height = size;
+      const g = cv.getContext("2d");
+      g.fillStyle = DICE[type].hex; g.fillRect(0, 0, size, size);
+      const syms = [...face];
+      const room = size * 0.5 * inset * 0.8;
+      const s = syms.length > 1 ? room * 0.95 : room * 1.35;
+      syms.forEach((ch, i) => {
+        const cx = size / 2 + (syms.length > 1 ? (i === 0 ? -s / 2 : s / 2) : 0);
+        paintGlyph(g, GLYPH[ch], cx, size / 2, s, DICE[type].ink);
+      });
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 4;
+      texCache.set(key, tex);
+      return tex;
+    }
+    function paintGlyph(g, glyph, cx, cy, s, ink) {
+      g.save();
+      g.translate(cx - s / 2, cy - s / 2); g.scale(s / 24, s / 24);
+      g.fillStyle = ink; g.strokeStyle = ink; g.lineWidth = 2.4;
+      if (glyph.ring) { g.beginPath(); g.arc(12, 12, 10, 0, Math.PI * 2); g.stroke(); }
+      g.fill(new Path2D(glyph.d));
+      g.restore();
+    }
+
+    const shapeCache = {};
+    function shape(kind) {
+      if (shapeCache[kind]) return shapeCache[kind];
+      const solid = SOLIDS[kind], fs = faces(solid), r = solid.radius;
+      const verts = solid.verts.map(norm);
+      const pos = [], nrm = [], uv = [], groups = [];
+      fs.forEach((f, fi) => {
+        const start = pos.length / 3;
+        for (let k = 1; k < f.idx.length - 1; k++) {
+          for (const vi of [f.idx[0], f.idx[k], f.idx[k + 1]]) {
+            const v = verts[vi], p = sub(v, f.c);
+            pos.push(v.x * r, v.y * r, v.z * r); nrm.push(f.n.x, f.n.y, f.n.z);
+            uv.push(0.5 + 0.5 * dot(p, f.u) / f.rFace, 0.5 + 0.5 * dot(p, f.w) / f.rFace);
+          }
+        }
+        groups.push([start, pos.length / 3 - start, fi]);
+      });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      geo.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
+      geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+      groups.forEach(([s, c, m]) => geo.addGroup(s, c, m));
+      const body = new CANNON.ConvexPolyhedron(verts.map((v) => new CANNON.Vec3(v.x * r, v.y * r, v.z * r)), fs.map((f) => f.idx.slice()));
+      return (shapeCache[kind] = { geo, body, faces: fs, inset: solid.inset, radius: r });
+    }
+
+    function init() {
+      if (!window.THREE || !window.CANNON) return false;
+      try {
+        const canvas = document.getElementById("dice3d");
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      } catch (e) { return false; }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.shadowMap.enabled = true;
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 1000);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.75));
+      const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+      sun.position.set(-8, 30, 10); sun.castShadow = true;
+      Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40 });
+      sun.shadow.mapSize.set(1024, 1024);
+      sun.shadow.camera.updateProjectionMatrix();
+      scene.add(sun);
+      floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.22 }));
+      floorMesh.rotation.x = -Math.PI / 2; floorMesh.receiveShadow = true;
+      scene.add(floorMesh);
+      buildWorld();
+      resize();
+      window.addEventListener("resize", resize);
+      return (ok = true);
+    }
+
+    function buildWorld() {
+      world = new CANNON.World();
+      world.gravity.set(0, GRAVITY, 0);
+      world.broadphase = new CANNON.NaiveBroadphase();
+      world.solver.iterations = 12;
+      const mat = new CANNON.Material("dice");
+      world.addContactMaterial(new CANNON.ContactMaterial(mat, mat, { friction: 0.35, restitution: 0.35 }));
+      world.defaultContactMaterial.friction = 0.35;
+      world.defaultContactMaterial.restitution = 0.35;
+      const plane = (axis, angle) => {
+        const b = new CANNON.Body({ mass: 0, material: mat });
+        b.addShape(new CANNON.Plane());
+        if (axis) b.quaternion.setFromAxisAngle(axis, angle);
+        world.addBody(b);
+        return b;
+      };
+      const X = new CANNON.Vec3(1, 0, 0), Y = new CANNON.Vec3(0, 1, 0);
+      walls = { floor: plane(X, -Math.PI / 2), ceil: plane(X, Math.PI / 2), left: plane(Y, Math.PI / 2),
+                right: plane(Y, -Math.PI / 2), top: plane(null, 0), bottom: plane(Y, Math.PI) };
+      walls.ceil.position.set(0, 9, 0);
+      Dice3D.mat = mat;
+    }
+
+    // Size the world so one unit is PX_PER_UNIT pixels on any screen, then put the walls at the window edges.
+    function resize() {
+      const w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      const halfZ = h / 2 / PX_PER_UNIT, height = halfZ / Math.tan((FOV / 2) * Math.PI / 180);
+      camera.position.set(0, height, 0); camera.up.set(0, 0, -1); camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+      bounds = { x: halfZ * camera.aspect - 0.4, z: halfZ - 0.4 };
+      walls.left.position.set(-bounds.x, 0, 0); walls.right.position.set(bounds.x, 0, 0);
+      walls.top.position.set(0, 0, -bounds.z); walls.bottom.position.set(0, 0, bounds.z);
+      if (!raf) renderer.render(scene, camera);
+    }
+
+    function clear() {
+      clearTimeout(fadeTimer);
+      for (const d of live) { scene.remove(d.mesh); world.remove(d.body); }
+      live = [];
+      document.getElementById("dice3d").classList.remove("fade");
+      renderer.render(scene, camera);
+    }
+
+    function spawn(type, i, n) {
+      const sh = shape(DICE[type].shape);
+      const mats = sh.faces.map((_, fi) => new THREE.MeshStandardMaterial({ map: faceTexture(type, DICE[type].faces[fi], sh.inset), roughness: 0.42, metalness: 0.05 }));
+      const mesh = new THREE.Mesh(sh.geo, mats);
+      mesh.castShadow = true;
+      const body = new CANNON.Body({ mass: 1, material: Dice3D.mat, linearDamping: 0.12, angularDamping: 0.12 });
+      body.addShape(sh.body);
+      const cols = Math.max(1, Math.floor((bounds.x * 2 - 2) / 3));
+      const col = i % cols, row = Math.floor(i / cols);
+      body.position.set(-bounds.x + 1.5 + (col + 0.5) * ((bounds.x * 2 - 3) / cols), 2.5 + row * 1.5, bounds.z - 1.8 - row * 0.6);
+      body.quaternion.setFromEuler(randf() * 6.28, randf() * 6.28, randf() * 6.28);
+      body.velocity.set((randf() - 0.5) * 10, 2 + randf() * 4, -(22 + randf() * 14));
+      body.angularVelocity.set((randf() - 0.5) * 40, (randf() - 0.5) * 40, (randf() - 0.5) * 40);
+      world.addBody(body); scene.add(mesh);
+      return { type, mesh, body, faces: sh.faces };
+    }
+
+    function upness(d) {
+      let best = -2, at = 0;
+      d.faces.forEach((f, i) => {
+        const n = d.body.quaternion.vmult(new CANNON.Vec3(f.n.x, f.n.y, f.n.z));
+        if (n.y > best) { best = n.y; at = i; }
+      });
+      return { best, at };
+    }
+    const topFace = (d) => DICE[d.type].faces[upness(d).at];
+    // A die resting on an edge or against a wall gets a small hop so it lands flat.
+    function nudgeCocked() {
+      const cocked = live.filter((d) => upness(d).best < 0.9);
+      for (const d of cocked) {
+        d.body.velocity.set((randf() - 0.5) * 4, 6 + randf() * 3, (randf() - 0.5) * 4);
+        d.body.angularVelocity.set((randf() - 0.5) * 12, (randf() - 0.5) * 12, (randf() - 0.5) * 12);
+      }
+      return cocked.length > 0;
+    }
+    const isCalm = (d) => d.body.velocity.length() < 0.12 && d.body.angularVelocity.length() < 0.12;
+
+    function roll(types, onDone) {
+      clear();
+      live = types.map((t, i) => spawn(t, i, types.length));
+      let last = performance.now(), started = last, still = 0, nudges = 0, damped = false;
+      const step = (now) => {
+        world.step(1 / 60, Math.min(0.05, (now - last) / 1000), 4);
+        last = now;
+        for (const d of live) { d.mesh.position.copy(d.body.position); d.mesh.quaternion.copy(d.body.quaternion); }
+        renderer.render(scene, camera);
+        if (!damped && now - started > 2200) {
+          damped = true;
+          for (const d of live) { d.body.linearDamping = 0.4; d.body.angularDamping = 0.4; }
+        }
+        still = live.every(isCalm) ? still + 1 : 0;
+        if (still > 18 && nudges < 3 && nudgeCocked()) { nudges++; still = 0; }
+        if (still > 18 || now - started > 8000) {
+          raf = 0;
+          onDone(live.map((d) => ({ type: d.type, face: topFace(d) })));
+          fadeTimer = setTimeout(() => document.getElementById("dice3d").classList.add("fade"), 4500);
+          return;
+        }
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    return { init, roll, clear, get ok() { return ok; }, get busy() { return raf !== 0; } };
+  })();
+
+
+  // ---------- SVG (2D dice in the tray, steppers and result card) ----------
+  const SHAPES = {
+    d6: '<rect x="4" y="4" width="40" height="40" rx="7"/>',
+    d8: '<polygon points="24,1.5 46.5,24 24,46.5 1.5,24"/>',
+    d12: '<polygon points="24,2 43.5,13 43.5,35 24,46 4.5,35 4.5,13"/>',
+  };
+  function dieSVG(type, face, label) {
+    const d = DICE[type];
+    const syms = face ? [...face] : [];
+    const size = syms.length > 1 ? 15 : 20;
+    const xs = syms.length > 1 ? [24 - size - 0.5, 24 + 0.5] : [24 - size / 2];
+    const glyphs = syms.map((s, i) => `<use href="#sym-${s}" x="${xs[i]}" y="${24 - size / 2}" width="${size}" height="${size}"/>`).join("");
+    const title = label || `${d.name} die${face ? ": " + syms.map((s) => SYM_NAME[s]).join(", ") : face === "" ? ": blank" : ""}`;
+    return `<svg viewBox="0 0 48 48" role="img" aria-label="${title}"><g fill="${d.color}" stroke="var(--die-stroke)" stroke-width="1.5">${SHAPES[d.shape]}</g><g style="color:${d.ink}">${glyphs}</g></svg>`;
+  }
+  const sym = (s, n = 1) => Array.from({ length: n }, () => `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#sym-${s}"/></svg>`).join("");
+
+
+  // ---------- Sample character (stand-in for a saved character + the GM's library) ----------
+  const SKILLS = [
+    ["General", [["Athletics", "Br"], ["Computers (Hacking)", "Int"], ["Computers (Sysops)", "Int"], ["Cool", "Pr"], ["Coordination", "Ag"],
+      ["Discipline", "Will"], ["Driving", "Ag"], ["Mechanics", "Int"], ["Medicine", "Int"], ["Operating", "Int"], ["Perception", "Cun"],
+      ["Piloting", "Ag"], ["Resilience", "Br"], ["Skulduggery", "Cun"], ["Stealth", "Ag"], ["Streetwise", "Cun"], ["Survival", "Cun"], ["Vigilance", "Will"]]],
+    ["Combat", [["Brawl", "Br"], ["Melee", "Br"], ["Ranged (Light)", "Ag"], ["Ranged (Heavy)", "Ag"], ["Gunnery", "Ag"]]],
+    ["Social", [["Charm", "Pr"], ["Coercion", "Will"], ["Deception", "Cun"], ["Leadership", "Pr"], ["Negotiation", "Pr"]]],
+    ["Knowledge", [["Knowledge", "Int"]]],
+  ];
+  const STAT_OF = Object.fromEntries(SKILLS.flatMap(([, l]) => l));
+  const CHAR_NAMES = { Br: "Brawn", Ag: "Agility", Int: "Intellect", Cun: "Cunning", Will: "Willpower", Pr: "Presence" };
+
+  const C = {
+    name: "Prance Galavent", archetype: "Average Human", career: "Pilot", initials: "PG",
+    tagline: "Outrider of the Concord", xp: { total: 140, spent: 125 }, credits: 340,
+    chars: { Br: 2, Ag: 3, Int: 2, Cun: 3, Will: 2, Pr: 2 },
+    ranks: { "Piloting": 2, "Ranged (Light)": 1, "Perception": 1, "Vigilance": 1, "Cool": 1, "Mechanics": 1, "Gunnery": 1, "Coordination": 1, "Streetwise": 1 },
+    career: ["Piloting", "Ranged (Light)", "Perception", "Gunnery", "Coordination", "Mechanics", "Cool", "Operating"],
+    wounds: 4, strain: 3,
+    talents: [
+      { name: "Toughened", tier: 1, rank: 1, ranked: true, act: "Passive", text: "+2 wound threshold per rank.", mod: { wounds: 2 } },
+      { name: "Grit", tier: 1, rank: 1, ranked: true, act: "Passive", text: "+1 strain threshold per rank.", mod: { strain: 1 } },
+      { name: "Quick Draw", tier: 1, rank: 1, ranked: false, act: "Incidental", text: "Once per round, draw or holster an easily accessible weapon or item." },
+      { name: "Rapid Reaction", tier: 1, rank: 1, ranked: true, act: "Incidental", text: "Suffer strain up to your ranks to add that many successes to an initiative check." },
+      { name: "Heightened Awareness", tier: 2, rank: 1, ranked: false, act: "Passive", text: "Allies within short range add a Boost die to Perception and Vigilance checks." },
+    ],
+    weapons: [
+      { name: "Heavy pistol", skill: "Ranged (Light)", dmg: 6, crit: 3, range: "Medium", enc: 1, hp: 2, qualities: [] },
+      { name: "Shock baton", skill: "Melee", dmg: 2, brawn: true, crit: 4, range: "Engaged", enc: 1, hp: 1, qualities: ["Disorient 2", "Stun damage"] },
+    ],
+    armor: [{ name: "Armored flight jacket", soak: 1, def: 1, enc: 1, worn: true }],
+    gear: [
+      { name: "Trauma stim", qty: 2, enc: 0, use: { heal: 4 }, text: "Heals 4 wounds. Sample library entry." },
+      { name: "Comms bead", qty: 1, enc: 0, text: "Encrypted link to the outrider channel." },
+      { name: "Pilot's toolkit", qty: 1, enc: 2, text: "Removes a Setback die from Mechanics checks on small craft." },
+      { name: "Ration bars", qty: 6, enc: 0, text: "Concord galley issue." },
+    ],
+    crits: [{ name: "Minor Nick", sev: 1, roll: 4, text: "Suffer 1 strain.", session: "Session 3" }],
+    debt: { amount: 25, creditor: "Weyland Consortium", bought: "Berth on the Concord, the salvage rig, and the scout ship's fuel",
+      status: "Dormant", log: [{ when: "Session 4", text: "Triggered. Weyland called in a favor: escort a survey drone to the last outpost past Saturn." }] },
+    motivations: [
+      ["Desire", "Freedom", "Own the scout ship outright, no corp name on the hull."],
+      ["Fear", "Confinement", "Being trapped, in a contract or in a sealed hull."],
+      ["Strength", "Steady hands", "Gets calmer as things get worse at the stick."],
+      ["Flaw", "Can't refuse a dare", "Will take the risky run if someone says they can't."],
+    ],
+    session0: { q: "What did you hear on the comms the night the Meridian went through the gate?",
+                a: "A voice they knew, calling their name. They have told no one." },
+    notes: "Owes Rook (Haas-Bioroid dock chief) a favor for the hush job on the fuel log.\nThe bioroid MX-7 keeps asking whether the gate counts as 'outside'.\nNBN camera crew: Jules Okafor. Friendly. Probably not.",
+    history: [
+      { when: "Session 4", text: "+15 XP awarded" },
+      { when: "Session 4", text: "Debt triggered by Weyland Consortium" },
+      { when: "Session 3", text: "Critical injury: Minor Nick" },
+      { when: "Session 3", text: "Bought Heightened Awareness (10 XP)" },
+    ],
+  };
+  // Sample rows of the critical injury table. The full table lives in the GM's library.
+  const CRIT_TABLE = [
+    [1, 5, "Minor Nick", 1, "Suffer 1 strain."], [6, 10, "Slowed Down", 1, "Act only in the last allied initiative slot on your next turn."],
+    [11, 15, "Sudden Jolt", 1, "Drop whatever is in hand."], [16, 20, "Distracted", 1, "Cannot take a free maneuver on your next turn."],
+    [21, 25, "Off-Balance", 1, "Add a Setback die to your next check."], [26, 30, "Discouraging Wound", 1, "Move one player story point to the GM pool."],
+    [31, 35, "Stunned", 1, "Staggered until the end of your next turn."], [36, 40, "Stinger", 1, "Increase the difficulty of your next check by one."],
+  ];
+  const SEV = ["", "Easy", "Average", "Hard", "Daunting"];
+  const LADDER = [
+    { name: "Simple", n: 0, range: "" }, { name: "Easy", n: 1, range: "Short" }, { name: "Average", n: 2, range: "Medium" },
+    { name: "Hard", n: 3, range: "Long" }, { name: "Daunting", n: 4, range: "Extreme" }, { name: "Formidable", n: 5, range: "" },
+  ];
+  const ADV_OPTS = [
+    { cost: 1, label: "Recover 1 strain", effect: { strain: -1 } },
+    { cost: 1, label: "Add a Boost die to an ally's next check" },
+    { cost: 1, label: "Notice a useful detail in the scene" },
+    { cost: 2, label: "Take a free maneuver" },
+    { cost: 2, label: "Add a Setback die to the target's next check" },
+    { cost: 3, label: "Negate the target's defense until the round ends" },
+    { cost: "crit", label: "Inflict a Critical Injury", attackOnly: true },
+    { cost: "r", label: "Upgrade the difficulty of the target's next check" },
+    { cost: "r", label: "Do something vital: blow the door, cut the lights, end the chase" },
+  ];
+
+  // ---------- Derived stats (each one says where its number comes from) ----------
+  const talentMod = (k) => C.talents.reduce((n, t) => n + ((t.mod && t.mod[k]) || 0) * t.rank, 0);
+  const worn = () => C.armor.filter((a) => a.worn);
+  const derived = () => {
+    const tw = talentMod("wounds"), ts = talentMod("strain"), as = worn().reduce((n, a) => n + a.soak, 0), ad = worn().reduce((n, a) => n + a.def, 0);
+    const enc = [...C.weapons, ...C.armor, ...C.gear].reduce((n, g) => n + g.enc * (g.qty || 1), 0);
+    return {
+      wounds: 10 + C.chars.Br + tw, woundsWhy: `10 + Brawn ${C.chars.Br}${tw ? ` + Toughened ${tw}` : ""}`,
+      strain: 10 + C.chars.Will + ts, strainWhy: `10 + Willpower ${C.chars.Will}${ts ? ` + Grit ${ts}` : ""}`,
+      soak: C.chars.Br + as, soakWhy: `Brawn ${C.chars.Br} + armor ${as}`,
+      melee: ad, ranged: ad, defWhy: worn().map((a) => a.name).join(", ") || "No armor",
+      enc, encMax: 5 + C.chars.Br, encWhy: `5 + Brawn ${C.chars.Br}`,
+    };
+  };
+  const skillPool = (skill, stat) => {
+    const ch = C.chars[stat], rk = C.ranks[skill] || 0;
+    return { ...emptyPool(), proficiency: Math.min(ch, rk), ability: Math.max(ch, rk) - Math.min(ch, rk) };
+  };
+  const emptyPool = () => ({ proficiency: 0, ability: 0, boost: 0, challenge: 0, difficulty: 0, setback: 0 });
+
+  // ---------- State ----------
+  const isDesk = () => window.matchMedia("(min-width: 1000px)").matches;
+  // Shared by the whole group; in the app it syncs live with the GM and other players (M6).
+  const STORY = ["player", "player", "gm", "gm", "gm"];
+  const S = { tab: isDesk() ? "combat" : "skills", q: "", hit: "", lastCrit: null, spMenu: false, flipped: -1,
+    d: { open: false, check: null, pool: emptyPool(), ladder: 2, result: null } };
+  const $ = (id) => document.getElementById(id);
+  const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const log = (text) => { C.history.unshift({ when: "Now", text }); if (S.tab === "history") renderTab(); };
+  let toastTimer = 0;
+  const toast = (text) => { const t = $("toast"); t.textContent = text; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => (t.hidden = true), 2600); };
+  try { const saved = localStorage.getItem("ttg-sheet-notes"); if (saved !== null) C.notes = saved; } catch (e) {}
+
+  // ---------- Story points ----------
+  const playerPoints = () => STORY.filter((x) => x === "player").length;
+  const canUpgrade = () => S.d.open && !S.d.result && !Dice3D.busy;
+  function renderStory() {
+    $("tokens").innerHTML = STORY.map((x, i) => {
+      const label = x === "player" ? "Player story point. Tap to spend." : "GM story point";
+      return `<button type="button" class="tok ${x}${i === S.flipped ? " flip" : ""}" data-tok="${i}" aria-label="${label}" title="${label}"${x === "gm" ? ' aria-disabled="true"' : ""}></button>`;
+    }).join("");
+    $("sp-count").textContent = `${playerPoints()} player \u00b7 ${STORY.length - playerPoints()} GM`;
+    const m = $("sp-menu");
+    m.hidden = !S.spMenu;
+    if (S.spMenu) m.innerHTML = `<p>Spend a player story point. It flips to the GM side.</p>
+      <button type="button" class="btn" data-act="sp-detail">Add a story detail (tell the GM what it is)</button>
+      <p>To upgrade a check, open the roll and tap the story point chip in it.</p>
+      <button type="button" class="linkbtn" data-act="sp-cancel">Cancel</button>`;
+    S.flipped = -1;
+  }
+  // Moves one point between sides. Returns false if the side has none.
+  function flipPoint(from, why) {
+    const i = STORY.indexOf(from);
+    if (i < 0) return false;
+    STORY[i] = from === "player" ? "gm" : "player";
+    S.flipped = i;
+    log(why);
+    return true;
+  }
+  function spendUpgrade() {
+    if (!canUpgrade() || !flipPoint("player", `Spent a story point: upgraded ${S.d.check.label}`)) return;
+    const p = S.d.pool;
+    if (p.ability > 0) { p.ability--; p.proficiency++; } else p.ability++;
+    S.spMenu = false;
+    renderStory(); renderDrawer();
+    toast("Upgraded your check. The point goes to the GM.");
+  }
+  function spendDetail() {
+    if (!flipPoint("player", "Spent a story point: added a story detail")) return;
+    S.spMenu = false;
+    renderStory();
+    toast("Story point spent. Tell the GM the detail you're adding.");
+  }
+
+  // ---------- Header, stats, vitals ----------
+  function renderHeader() {
+    $("csub").textContent = `${C.archetype} \u00B7 ${C.career} \u00B7 ${C.tagline}`;
+    $("xp").innerHTML = `<b>${C.xp.total - C.xp.spent} XP</b><span>available of ${C.xp.total} earned</span>
+      <div><button type="button" class="linkbtn" data-act="spendxp">Spend XP</button></div>`;
+    $("stats").innerHTML = Object.entries(C.chars).map(([k, v]) =>
+      `<button type="button" class="stat" data-char="${k}" aria-label="Roll ${CHAR_NAMES[k]} ${v}"><b>${v}</b><span>${CHAR_NAMES[k]}</span></button>`).join("");
+  }
+
+  function pips(cur, max, kind) {
+    const n = Math.max(max, cur);
+    return `<div class="pips ${kind}" style="--n:${n}" aria-hidden="true">${Array.from({ length: n }, (_, i) =>
+      `<i class="${i < cur ? (i >= max ? "over" : "on") : ""}"></i>`).join("")}</div>`;
+  }
+  function trackCard(kind, cur, max, why) {
+    const over = cur > max;
+    const title = kind === "wound" ? "Wounds" : "Strain";
+    const ctl = kind === "wound"
+      ? `<button type="button" class="btn step" data-adj="wounds" data-by="-1" aria-label="Heal 1 wound">&minus;</button>
+         <button type="button" class="btn step" data-adj="wounds" data-by="1" aria-label="Take 1 wound">+</button>
+         <span class="hit"><label class="sr" for="hit">Incoming damage</label><input id="hit" type="number" inputmode="numeric" min="0" placeholder="Dmg" value="${esc(S.hit)}">
+         <button type="button" class="btn" data-act="hit">Take hit</button></span>`
+      : `<button type="button" class="btn step" data-adj="strain" data-by="-1" aria-label="Recover 1 strain">&minus;</button>
+         <button type="button" class="btn step" data-adj="strain" data-by="1" aria-label="Suffer 1 strain">+</button>`;
+    const alert = over ? `<div class="alert">Incapacitated: ${title.toLowerCase()} exceed threshold${kind === "wound" ? ' <button type="button" class="btn danger" data-act="crit">Roll critical injury</button>' : ""}</div>` : "";
+    return `<div class="card track${over ? " over" : ""}"><div class="hd"><span class="label">${title}</span><span class="val"><b>${cur}</b> / ${max}</span></div>
+      ${pips(cur, max, kind)}<div class="ctl">${ctl}</div>${alert}<div class="note">Threshold ${why}</div></div>`;
+  }
+  function renderVitals() {
+    const d = derived();
+    $("vitals").innerHTML = trackCard("wound", C.wounds, d.wounds, d.woundsWhy) + trackCard("strain", C.strain, d.strain, d.strainWhy) +
+      `<div class="card small"><span class="label">Soak</span><b>${d.soak}</b><span class="why">${d.soakWhy}</span></div>
+       <div class="card small"><span class="label">Defense</span><div class="pair"><div><b>${d.melee}</b><small>Melee</small></div><div><b>${d.ranged}</b><small>Ranged</small></div></div><span class="why">${esc(d.defWhy)}</span></div>
+       <div class="card small"><span class="label">Encumbrance</span><b>${d.enc}<span style="font-size:18px;color:var(--muted)"> / ${d.encMax}</span></b>
+         <div class="enc-bar"><i style="width:${Math.min(100, (d.enc / d.encMax) * 100)}%"></i></div><span class="why">${d.encWhy}</span></div>`;
+  }
+
+  // ---------- Skills ----------
+  const miniPool = (sp) => ["proficiency", "ability"].map((t) => Array.from({ length: sp[t] }, () => dieSVG(t, null, DICE[t].name)).join("")).join("");
+  function skillsHTML() {
+    const q = S.q.trim().toLowerCase();
+    let html = "";
+    for (const [group, list] of SKILLS) {
+      const rows = list.filter(([n]) => !q || n.toLowerCase().includes(q));
+      if (!rows.length) continue;
+      html += `<div class="group"><span class="label">${group}</span>` + rows.map(([n, stat]) => {
+        const rk = C.ranks[n] || 0, career = C.career.includes(n);
+        return `<button type="button" class="srow" data-skill="${n}" aria-label="Roll ${n}, ${CHAR_NAMES[stat]} ${C.chars[stat]}, rank ${rk}${career ? ", career skill" : ""}">
+          <span class="nm"><span class="dot${career ? "" : " off"}" title="${career ? "Career skill" : "Non-career skill"}"></span>${n}<i>${stat}</i></span>
+          <span class="ranks" aria-hidden="true">${Array.from({ length: 5 }, (_, i) => `<i class="${i < rk ? "on" : ""}"></i>`).join("")}</span>
+          <span class="mini">${miniPool(skillPool(n, stat))}</span></button>`;
+      }).join("") + `</div>`;
+    }
+    return html || `<p class="note" style="padding:0 14px 12px">No skill matches \u201C${esc(S.q)}\u201D.</p>`;
+  }
+  function renderSkillsDesk() { $("skills-desk").innerHTML = skillsHTML(); }
+
+  // ---------- Tabs ----------
+  const TABS = [
+    ["skills", "Skills", true], ["combat", "Combat"], ["talents", "Talents"], ["gear", "Gear"],
+    ["crits", "Crits"], ["story", "Debt & story"], ["notes", "Notes"], ["history", "History"],
+  ];
+  function renderTabs() {
+    if (isDesk() && S.tab === "skills") S.tab = "combat";
+    const count = { talents: C.talents.length, crits: C.crits.length, gear: C.weapons.length + C.armor.length + C.gear.length };
+    $("tabs").innerHTML = TABS.filter(([, , phone]) => !(phone && isDesk())).map(([id, label]) =>
+      `<button type="button" role="tab" data-tab="${id}" aria-selected="${S.tab === id}">${label}${count[id] ? `<span class="count">${count[id]}</span>` : ""}</button>`).join("");
+    renderTab();
+  }
+  function renderTab() {
+    const fn = { skills: tabSkills, combat: tabCombat, talents: tabTalents, gear: tabGear, crits: tabCrits, story: tabStory, notes: tabNotes, history: tabHistory }[S.tab];
+    $("tabbody").innerHTML = fn();
+    $("tabbody").style.padding = S.tab === "skills" ? "8px 0" : "";
+  }
+  const tabSkills = () => `<label class="sr" for="q2">Filter skills</label><input class="search" id="q2" type="search" placeholder="Filter skills\u2026" value="${esc(S.q)}" autocomplete="off"><div id="skills-phone">${skillsHTML()}</div>`;
+
+  function weaponCard(w) {
+    const dmg = w.brawn ? C.chars.Br + w.dmg : w.dmg;
+    return `<div class="item weap"><div><div class="row1"><h3>${w.name}</h3><span class="meta">${w.skill}</span></div>
+      <div class="stats-row"><span>Dmg <b>${dmg}</b>${w.brawn ? " (Br+" + w.dmg + ")" : ""}</span><span>Crit <b>${w.crit}</b></span><span>Range <b>${w.range}</b></span>${w.qualities.map((q) => `<span class="tag">${q}</span>`).join("")}</div></div>
+      <span><button type="button" class="btn primary" data-weapon="${w.name}">Attack</button> <span class="mini" style="display:inline-flex">${miniPool(skillPool(w.skill, STAT_OF[w.skill]))}</span></span></div>`;
+  }
+  function tabCombat() {
+    const d = derived();
+    return `<div class="sect"><h3>Attacks</h3><div class="list">${C.weapons.map(weaponCard).join("")}</div></div>
+      <div class="sect"><h3>Initiative</h3><div class="list"><div class="item"><p>Roll Cool if you saw it coming, Vigilance if you didn't.</p>
+        <div class="acts"><button type="button" class="btn" data-skill="Cool">Cool ${miniPool(skillPool("Cool", "Pr"))}</button>
+        <button type="button" class="btn" data-skill="Vigilance">Vigilance ${miniPool(skillPool("Vigilance", "Will"))}</button></div>
+        <p class="note">Rapid Reaction: you may suffer up to ${C.talents.find((t) => t.name === "Rapid Reaction").rank} strain to add that many successes.</p></div></div></div>
+      <div class="sect"><h3>Defenses</h3><dl class="kv"><dt>Soak</dt><dd>${d.soak} (${d.soakWhy})</dd><dt>Defense</dt><dd>Melee ${d.melee}, ranged ${d.ranged}</dd>
+        <dt>Active crits</dt><dd>${C.crits.length} (+${C.crits.length * 10} to the next critical roll)</dd></dl></div>`;
+  }
+  function pyramidHTML() {
+    const counts = [1, 2, 3, 4, 5].map((t) => C.talents.filter((x) => x.tier === t).length);
+    const ok = counts.every((c, i) => i === 0 || c === 0 || c < counts[i - 1]);
+    const rows = [5, 4, 3, 2, 1].map((t) => {
+      const have = counts[t - 1], slots = Math.max(have, 6 - t);
+      return `<div class="tier"><span>Tier ${t}</span>${Array.from({ length: slots }, (_, i) => `<i class="slot${i < have ? " on" : ""}"></i>`).join("")}</div>`;
+    }).join("");
+    return `<div class="pyramid" aria-label="Talent pyramid: ${counts.map((c, i) => `tier ${i + 1}: ${c}`).join(", ")}">${rows}</div>
+      <p class="pyr-ok" style="${ok ? "" : "color:var(--bad)"}">${ok ? "Pyramid is valid. Each tier has more talents than the tier above it." : "Pyramid broken: a tier needs more talents than the tier above it."}</p>`;
+  }
+  function tabTalents() {
+    const items = [...C.talents].sort((a, b) => a.tier - b.tier || a.name.localeCompare(b.name)).map((t) =>
+      `<div class="item"><div class="row1"><h3>${t.name}${t.ranked ? ` <span class="mono" style="font-weight:400">${t.rank}</span>` : ""}</h3>
+        <span class="tag">Tier ${t.tier}</span><span class="tag">${t.act}</span>${t.ranked ? '<span class="tag">Ranked</span>' : ""}${t.mod ? '<span class="tag">Applied to sheet</span>' : ""}</div><p>${t.text}</p></div>`).join("");
+    return pyramidHTML() + `<div class="list">${items}</div><p class="note">Talent text is a short sample. In the app it comes from your content library.</p>`;
+  }
+  function tabGear() {
+    const d = derived();
+    const armor = C.armor.map((a) => `<div class="item"><div class="row1"><h3>${a.name}</h3>${a.worn ? '<span class="tag">Worn</span>' : ""}</div>
+      <div class="meta">Soak +${a.soak} \u00B7 Defense ${a.def} \u00B7 Encumbrance ${a.enc}</div></div>`).join("");
+    const gear = C.gear.map((g, i) => `<div class="item"><div class="row1"><h3>${g.name}</h3><span class="meta">\u00D7${g.qty} \u00B7 Enc ${g.enc}</span></div><p>${g.text}</p>
+      ${g.use ? `<div class="acts"><button type="button" class="btn" data-use="${i}" ${g.qty ? "" : "disabled"}>Use (${g.qty} left)</button></div>` : ""}</div>`).join("");
+    const weapons = C.weapons.map((w) => `<div class="item"><div class="row1"><h3>${w.name}</h3><span class="meta">Enc ${w.enc} \u00B7 HP ${w.hp}</span></div>
+      <div class="meta">${w.skill} \u00B7 Dmg ${w.brawn ? "+" + w.dmg : w.dmg} \u00B7 Crit ${w.crit} \u00B7 ${w.range}${w.qualities.length ? " \u00B7 " + w.qualities.join(", ") : ""}</div></div>`).join("");
+    return `<div class="sect"><dl class="kv"><dt>Credits</dt><dd class="mono">${C.credits}</dd><dt>Encumbrance</dt><dd>${d.enc} of ${d.encMax}</dd></dl></div>
+      <div class="sect"><h3>Weapons</h3><div class="list">${weapons}</div></div>
+      <div class="sect"><h3>Armor</h3><div class="list">${armor}</div></div>
+      <div class="sect"><h3>Gear</h3><div class="list">${gear}</div></div>`;
+  }
+  function tabCrits() {
+    const bonus = C.crits.length * 10;
+    const last = S.lastCrit ? `<span>Rolled <b>${S.lastCrit.raw}</b> + ${S.lastCrit.bonus} = <b>${S.lastCrit.total}</b>: ${S.lastCrit.name ? `<strong>${S.lastCrit.name}</strong>` : "beyond the sample table"}</span>` : "";
+    const list = C.crits.length ? C.crits.map((c, i) => `<div class="item"><div class="row1"><h3>${c.name}</h3><span class="tag">${SEV[c.sev]} to heal</span><span class="meta">rolled ${c.roll} \u00B7 ${c.session}</span></div>
+      <p>${c.text}</p><div class="acts"><button type="button" class="btn" data-heal="${i}">Mark healed</button></div></div>`).join("") : `<p class="note">No active critical injuries.</p>`;
+    return `<div class="critroll"><button type="button" class="btn danger" data-act="crit">Roll critical injury</button><span class="meta">d100 + ${bonus} for ${C.crits.length} active</span>${last}</div>
+      <div class="list">${list}</div><p class="note">The prototype has the first eight rows of the table as samples. Your library holds the full d100 table.</p>`;
+  }
+  function tabStory() {
+    const dt = C.debt;
+    return `<div class="sect"><h3>Debt</h3><div class="item"><div class="debt-big"><b>${dt.amount}</b><span>owed to <span class="corp">${dt.creditor}</span></span><span class="tag">${dt.status}</span></div>
+        <p>For: ${dt.bought}.</p>${dt.log.map((l) => `<p class="meta">${l.when}: ${l.text}</p>`).join("")}</div></div>
+      <div class="sect"><h3>Motivations</h3><div class="list">${C.motivations.map(([k, v, t]) => `<div class="item"><div class="row1"><span class="label">${k}</span><h3>${v}</h3></div><p>${t}</p></div>`).join("")}</div></div>
+      <div class="sect"><h3>Session 0</h3><div class="item"><p class="meta">${C.session0.q}</p><p>${C.session0.a}</p>
+        <p class="note"><span class="tag gm">GM</span> Your GM has tied this answer to a later act.</p></div></div>`;
+  }
+  const tabNotes = () => `<label class="label" for="notes">Notes only you and the GM can see</label><textarea id="notes">${esc(C.notes)}</textarea><p class="note">Saves as you type.</p>`;
+  const tabHistory = () => `<ul class="hist">${C.history.map((h) => `<li><time>${h.when}</time><span>${esc(h.text)}</span></li>`).join("")}</ul>`;
+
+  // ---------- Roll drawer ----------
+  function openRoll(check, pool) {
+    S.d = { open: true, check, pool, ladder: check.ladder ?? 2, result: null };
+    applyLadder(S.d.ladder);
+    renderDrawer();
+    $("scrim").hidden = false; $("drawer").hidden = false;
+    $("drawer").querySelector(".rollbtn").focus();
+  }
+  function closeRoll() { S.d.open = false; $("scrim").hidden = true; $("drawer").hidden = true; }
+  function applyLadder(i) { S.d.ladder = i; S.d.pool.difficulty = LADDER[i].n; S.d.pool.challenge = 0; }
+  const dTotal = () => ORDER.reduce((n, t) => n + S.d.pool[t], 0);
+
+  function drawerPoolHTML() {
+    const p = S.d.pool, chk = S.d.check;
+    const pos = ORDER.filter((t) => DICE[t].pos).flatMap((t) => Array(p[t]).fill(t));
+    const neg = ORDER.filter((t) => !DICE[t].pos).flatMap((t) => Array(p[t]).fill(t));
+    const btn = (t) => `<button type="button" class="die" data-remove="${t}" title="Remove a ${DICE[t].name} die">${dieSVG(t, null, "Remove " + DICE[t].name + " die")}</button>`;
+    const attack = chk.weapon && chk.weapon.range !== "Engaged";
+    return `<div class="tray" aria-label="Pool. Tap a die to remove it.">${dTotal() ? pos.map(btn).join("") + (pos.length && neg.length ? '<span class="vs">VS</span>' : "") + neg.map(btn).join("") : '<span class="meta">Empty pool</span>'}</div>
+      <div><span class="label">${attack ? "Difficulty \u00B7 range to target" : "Difficulty"}</span><div class="chips">${LADDER.map((l, i) =>
+        `<button type="button" class="chip" data-ladder="${i}" aria-pressed="${S.d.ladder === i && p.difficulty + p.challenge === l.n}">${l.name}<span class="dp">${"<i></i>".repeat(l.n)}</span>${attack && l.range ? `<small>${l.range}</small>` : ""}</button>`).join("")}</div></div>
+      <div class="chips">
+        <button type="button" class="chip" data-add="boost">${dieSVG("boost", null, "Boost")} + Boost</button>
+        <button type="button" class="chip" data-add="setback">${dieSVG("setback", null, "Setback")} + Setback</button>
+        <button type="button" class="chip sp" data-act="sp-upgrade" ${playerPoints() ? "" : "disabled"}><span class="tok-mini" aria-hidden="true"></span>Story point: upgrade (${playerPoints()} left)</button>
+        <button type="button" class="chip" data-up="ability">Upgrade ability</button>
+        <button type="button" class="chip" data-up="difficulty">Upgrade difficulty</button></div>
+      <button type="button" class="rollbtn" data-act="roll" ${dTotal() && !Dice3D.busy ? "" : "disabled"}>Roll</button>`;
+  }
+  function renderDrawer() {
+    const chk = S.d.check;
+    $("drawer").innerHTML = `<div class="grab" aria-hidden="true"></div><header><div><h2 id="d-title">${chk.label}</h2><div class="meta">${chk.meta}</div></div>
+      <button type="button" class="x" data-act="close" aria-label="Close roll">\u00D7</button></header>
+      <div class="body">${S.d.result ? resultHTML() : drawerPoolHTML()}</div>`;
+  }
+
+  function verdictText(r) {
+    const a = r.netA > 0 ? (r.success ? ", with Advantage" : ", but with Advantage") : r.netA < 0 ? (r.success ? ", but with Threat" : ", with Threat") : "";
+    return (r.success ? "Success" : "Failure") + a;
+  }
+  function flavor(r) {
+    if (r.success && r.netA > 0) return "You do it, and something extra goes your way.";
+    if (r.success && r.netA < 0) return "You do it, but it costs you.";
+    if (!r.success && r.netA > 0) return "It doesn't work, but you get something out of it.";
+    if (!r.success && r.netA < 0) return "It doesn't work, and things get worse.";
+    return r.success ? "You do it, cleanly." : "It doesn't work.";
+  }
+  const remaining = (r) => r.spent.reduce((acc, s) => ({ adv: acc.adv - s.paidA, tri: acc.tri - s.paidR }), { adv: Math.max(0, r.netA), tri: r.triumph });
+  function payment(opt, haveA, haveR, crit) {
+    if (opt.cost === "r") return haveR >= 1 ? { paidA: 0, paidR: 1 } : null;
+    const need = opt.cost === "crit" ? crit : opt.cost;
+    if (haveA >= need) return { paidA: need, paidR: 0 };
+    return haveR >= 1 ? { paidA: 0, paidR: 1 } : null;
+  }
+  function spendHTML(r) {
+    const w = S.d.check.weapon, crit = w ? w.crit : 0, rem = remaining(r);
+    let html = "";
+    if (r.netA > 0 || r.triumph > 0) {
+      html += `<div><h4>Spend Advantage &amp; Triumph <span class="left">${rem.adv} ${sym("a")} ${rem.tri} ${sym("r")} left</span></h4>` +
+        ADV_OPTS.map((o, i) => ({ o, i })).filter(({ o }) => !o.attackOnly || w).map(({ o, i }) =>
+          `<button type="button" class="opt" data-spend="${i}" ${payment(o, rem.adv, rem.tri, crit) ? "" : "disabled"}><span class="cost">${o.cost === "r" ? sym("r") : sym("a", o.cost === "crit" ? crit : o.cost)}</span><span>${o.label}${o.cost === "crit" ? ` (Crit ${crit})` : ""}</span></button>`).join("") +
+        (r.spent.length ? `<div class="spent">${r.spent.map((s) => `<span>${s.label}</span>`).join("")}<button type="button" class="linkbtn" data-act="undo">Undo last</button></div>` : "") + `</div>`;
+    }
+    if (r.netA < 0 || r.despair > 0) html += `<div class="readonly">The GM spends ${Math.max(0, -r.netA)} Threat${r.despair ? ` and ${r.despair} Despair` : ""} on their screen. What they pick shows up here and in your history.</div>`;
+    return html;
+  }
+  function resultHTML() {
+    const r = S.d.result, w = S.d.check.weapon;
+    const n = (s, count, name) => count ? `<span class="n">${sym(s)}<b>${count}</b> ${name}${count > 1 && name !== "Despair" ? (name.endsWith("s") ? "es" : "s") : ""}</span>` : "";
+    let html = `<div class="verdict"><h3 class="${r.success ? "ok" : "no"}">${verdictText(r)}</h3><p>${flavor(r)}</p></div>
+      <div class="net">${r.netS > 0 ? n("s", r.netS, "Success") : n("f", -r.netS, "Failure")}${r.netA > 0 ? n("a", r.netA, "Advantage") : n("t", -r.netA, "Threat")}${n("r", r.triumph, "Triumph")}${n("d", r.despair, "Despair")}
+        ${r.netS === 0 && r.netA === 0 && !r.triumph && !r.despair ? '<span class="n">Everything cancelled</span>' : ""}</div>
+      <div class="rolled${r.tumble ? " tumble" : ""}" aria-label="Dice rolled">${r.dice.map((d) => dieSVG(d.type, d.face)).join("")}</div>`;
+    if (w && r.success) {
+      const base = w.brawn ? C.chars.Br + w.dmg : w.dmg, rem = remaining(r);
+      html += `<div class="dmg"><span class="label">Damage</span><b>${base + r.netS}</b><span>${base} base + ${r.netS} net success</span>${rem.adv >= w.crit || rem.tri > 0 ? `<span class="crit">Critical available (Crit ${w.crit})</span>` : ""}</div>`;
+    }
+    if (S.d.check.kind === "recover" && r.netS > 0) html += `<button type="button" class="btn primary" data-act="recover">Recover ${r.netS} strain</button>`;
+    return html + spendHTML(r) + `<button type="button" class="btn" data-act="again">Roll again</button>`;
+  }
+
+  function doRoll() {
+    if (!dTotal() || Dice3D.busy) return;
+    const types = poolList(S.d.pool);
+    const done = (dice, tumble) => {
+      S.d.result = { ...scoreDice(dice), spent: [], tumble };
+      log(`Rolled ${S.d.check.label}: ${verdictText(S.d.result)}`);
+      $("live").textContent = verdictText(S.d.result);
+      if (S.d.open) renderDrawer();
+    };
+    if (Dice3D.ok && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      $("drawer").querySelector(".rollbtn").disabled = true;
+      Dice3D.roll(types, (dice) => done(dice, false));
+    } else done(instantRoll(types), true);
+  }
+  function spend(i) {
+    const r = S.d.result, o = ADV_OPTS[i], w = S.d.check.weapon, rem = remaining(r);
+    const pay = payment(o, rem.adv, rem.tri, w ? w.crit : 0);
+    if (!pay) return;
+    r.spent.push({ label: o.label, ...pay, effect: o.effect });
+    if (o.effect && o.effect.strain) C.strain = Math.max(0, C.strain + o.effect.strain);
+    log(`Spent: ${o.label}`);
+    renderDrawer(); renderVitals();
+  }
+  function undoSpend() {
+    const s = S.d.result.spent.pop();
+    if (s && s.effect && s.effect.strain) C.strain -= s.effect.strain;
+    log(`Undid: ${s.label}`);
+    renderDrawer(); renderVitals();
+  }
+
+  // ---------- Sheet actions ----------
+  function adjust(key, by) {
+    C[key] = Math.max(0, C[key] + by);
+    log(`${by > 0 ? (key === "wounds" ? "Took" : "Suffered") : (key === "wounds" ? "Healed" : "Recovered")} ${Math.abs(by)} ${key === "wounds" ? "wound" : "strain"}${Math.abs(by) > 1 ? "s" : ""}`);
+    renderVitals();
+  }
+  function takeHit() {
+    const raw = parseInt(S.hit, 10);
+    if (!(raw >= 0)) { toast("Enter the damage first"); return; }
+    const d = derived(), dealt = Math.max(0, raw - d.soak);
+    C.wounds += dealt; S.hit = "";
+    log(`Hit for ${raw}, soaked ${raw - dealt}, took ${dealt} wound${dealt === 1 ? "" : "s"}`);
+    toast(dealt ? `${raw} damage \u2212 ${d.soak} soak = ${dealt} wound${dealt === 1 ? "" : "s"}` : `Soak absorbed all ${raw} damage`);
+    renderVitals();
+  }
+  function rollCrit() {
+    const raw = rand(100) + 1, bonus = C.crits.length * 10, total = raw + bonus;
+    const row = CRIT_TABLE.find(([lo, hi]) => total >= lo && total <= hi);
+    S.lastCrit = { raw, bonus, total, name: row && row[2] };
+    if (row) {
+      C.crits.push({ name: row[2], sev: row[3], roll: total, text: row[4], session: "Now" });
+      log(`Critical injury: ${row[2]} (rolled ${total})`);
+      if (row[2] === "Discouraging Wound") { flipPoint("player", "Discouraging Wound: a player story point moved to the GM"); renderStory(); }
+    }
+    else log(`Critical injury roll ${total}: look up in the full table`);
+    S.tab = "crits"; renderTabs(); renderVitals();
+  }
+  function useGear(i) {
+    const g = C.gear[i];
+    if (!g.qty) return;
+    g.qty--; const healed = Math.min(C.wounds, g.use.heal); C.wounds -= healed;
+    log(`Used ${g.name}: healed ${healed} wound${healed === 1 ? "" : "s"}`);
+    toast(`${g.name}: healed ${healed}`);
+    renderVitals(); renderTab();
+  }
+  function bestRecoveryCheck() {
+    const opts = [["Cool", "Pr"], ["Discipline", "Will"]].map(([s, st]) => ({ s, st, p: skillPool(s, st) }));
+    const score = (o) => o.p.proficiency * 2 + o.p.ability;
+    return opts.sort((a, b) => score(b) - score(a))[0];
+  }
+
+  function renderAll() { renderStory(); renderHeader(); renderVitals(); renderSkillsDesk(); renderTabs(); }
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t) {
+      if (S.spMenu && !e.target.closest("#sp-menu")) { S.spMenu = false; renderStory(); }
+      if (e.target.id === "scrim") closeRoll();
+      return;
+    }
+    const d = t.dataset;
+    if (d.tok !== undefined) { if (STORY[Number(d.tok)] === "player") { S.spMenu = !S.spMenu; renderStory(); } return; }
+    if (d.act === "sp-upgrade") { spendUpgrade(); return; }
+    if (d.act === "sp-detail") { spendDetail(); return; }
+    if (d.act === "sp-cancel") { S.spMenu = false; renderStory(); return; }
+    if (S.spMenu && !t.closest("#sp-menu")) { S.spMenu = false; renderStory(); }
+    if (d.tab) { S.tab = d.tab; renderTabs(); return; }
+    if (d.skill) { const st = STAT_OF[d.skill], rk = C.ranks[d.skill] || 0; openRoll({ label: d.skill, meta: `${CHAR_NAMES[st]} ${C.chars[st]} \u00B7 Rank ${rk}` }, skillPool(d.skill, st)); return; }
+    if (d.char) { openRoll({ label: `${CHAR_NAMES[d.char]} check`, meta: `${CHAR_NAMES[d.char]} ${C.chars[d.char]}, no skill` }, { ...emptyPool(), ability: C.chars[d.char] }); return; }
+    if (d.weapon) {
+      const w = C.weapons.find((x) => x.name === d.weapon), st = STAT_OF[w.skill];
+      openRoll({ label: `${w.name} attack`, meta: `${w.skill} \u00B7 ${CHAR_NAMES[st]} ${C.chars[st]} \u00B7 Rank ${C.ranks[w.skill] || 0}`, weapon: w }, skillPool(w.skill, st)); return;
+    }
+    if (d.adj) { adjust(d.adj, Number(d.by)); return; }
+    if (d.use !== undefined) { useGear(Number(d.use)); return; }
+    if (d.heal !== undefined) { const c = C.crits.splice(Number(d.heal), 1)[0]; log(`Healed critical injury: ${c.name}`); renderTabs(); return; }
+    if (d.remove) { S.d.pool[d.remove]--; renderDrawer(); return; }
+    if (d.add) { S.d.pool[d.add]++; renderDrawer(); return; }
+    if (d.ladder !== undefined) { applyLadder(Number(d.ladder)); renderDrawer(); return; }
+    if (d.up) {
+      const [lo, hi] = d.up === "ability" ? ["ability", "proficiency"] : ["difficulty", "challenge"];
+      if (S.d.pool[lo] > 0) { S.d.pool[lo]--; S.d.pool[hi]++; } else S.d.pool[lo]++;
+      renderDrawer(); return;
+    }
+    if (d.spend !== undefined) { spend(Number(d.spend)); return; }
+    const act = d.act;
+    if (act === "roll") doRoll();
+    else if (act === "close") closeRoll();
+    else if (act === "undo") undoSpend();
+    else if (act === "again") { S.d.result = null; S.d.pool = { ...S.d.pool, boost: 0, setback: 0 }; applyLadder(S.d.check.ladder ?? 2); renderDrawer(); }
+    else if (act === "hit") takeHit();
+    else if (act === "crit") rollCrit();
+    else if (act === "recover") { const n = S.d.result.netS; C.strain = Math.max(0, C.strain - n); log(`End of encounter: recovered ${n} strain`); closeRoll(); renderVitals(); toast(`Recovered ${n} strain`); }
+    else if (act === "spendxp") toast("Spending XP opens the character builder, the next prototype.");
+    else if (t.id === "shortrest") { const b = bestRecoveryCheck(); openRoll({ label: `Recover strain: ${b.s}`, meta: `End of encounter \u00B7 Simple check, 1 strain back per success`, kind: "recover", ladder: 0 }, b.p); }
+  });
+  document.addEventListener("input", (e) => {
+    if (e.target.id === "q" || e.target.id === "q2") {
+      S.q = e.target.value;
+      renderSkillsDesk();
+      if (e.target.id === "q2") $("skills-phone").innerHTML = skillsHTML();
+    }
+    if (e.target.id === "hit") S.hit = e.target.value;
+    if (e.target.id === "notes") { C.notes = e.target.value; try { localStorage.setItem("ttg-sheet-notes", C.notes); } catch (err) {} }
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && S.spMenu) { S.spMenu = false; renderStory(); return; }
+    if (e.key === "Escape" && S.d.open) closeRoll();
+    if (e.key === "Enter" && e.target.id === "hit") takeHit();
+    if (e.key.toLowerCase() === "r" && S.d.open && !S.d.result && !/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) { e.preventDefault(); doRoll(); }
+  });
+  let wasDesk = isDesk();
+  window.addEventListener("resize", () => { if (isDesk() !== wasDesk) { wasDesk = isDesk(); renderTabs(); } });
+
+  Dice3D.init();
+  renderAll();
+})();
+
+</script>

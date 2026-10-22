@@ -1,0 +1,991 @@
+<title>Genesys Dice Roller</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=Saira+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Layout: ship-console workbench. Phone = one panel at a time with a bottom tab bar;
+   tablet = skills | roll+feed; desktop = skills | roll | feed. */
+:root {
+  --bg: #e6ecec;
+  --surface: #f6f9f9;
+  --surface-2: #edf2f2;
+  --ink: #12201f;
+  --muted: #586a69;
+  --line: #c6d2d1;
+  --accent: #0d6f78;
+  --accent-ink: #ffffff;
+  --good: #1f7a3a;
+  --bad: #a32b2b;
+  --die-stroke: rgba(0,0,0,.18);
+  --shadow: 0 1px 2px rgba(18,32,31,.08), 0 4px 14px rgba(18,32,31,.06);
+  --f-display: "Saira Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  /* Dice keep their physical colors in both themes */
+  --d-ability: #3f9b46; --d-prof: #f2c230; --d-boost: #8fd0ea;
+  --d-diff: #5b3c8f; --d-chal: #b8262f; --d-set: #1b1b1d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1214; --surface: #141d20; --surface-2: #1a252a; --ink: #e2ebeb; --muted: #8ea1a2;
+    --line: #26363b; --accent: #49bfc8; --accent-ink: #062224; --good: #5fcf7e; --bad: #f07a7a;
+    --die-stroke: rgba(255,255,255,.28); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1214; --surface: #141d20; --surface-2: #1a252a; --ink: #e2ebeb; --muted: #8ea1a2;
+  --line: #26363b; --accent: #49bfc8; --accent-ink: #062224; --good: #5fcf7e; --bad: #f07a7a;
+  --die-stroke: rgba(255,255,255,.28); --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 96px;
+}
+button { font: inherit; color: inherit; }
+button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.label { font-family: var(--f-display); text-transform: uppercase; letter-spacing: .08em; font-size: 12px; font-weight: 600; color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 12px; border-bottom: 1px solid var(--line); }
+.brand { font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: .02em; }
+.brand small { font-weight: 500; color: var(--muted); font-size: 14px; margin-left: 6px; letter-spacing: .04em; }
+.proto { font-size: 12px; padding: 2px 8px; border: 1px dashed var(--line); border-radius: 99px; color: var(--muted); }
+.spacer { flex: 1; }
+.who { display: flex; gap: 6px; }
+.who button { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 10px; cursor: pointer; text-align: left; line-height: 1.15; }
+.who button[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+.who b { display: block; font-size: 14px; }
+.who span { font-size: 12px; color: var(--muted); }
+.story { display: flex; align-items: center; gap: 8px; }
+.tokens { display: flex; gap: 4px; }
+.tok { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--ink); cursor: pointer; padding: 0; position: relative; }
+.tok.player { background: var(--surface); }
+.tok.gm { background: var(--ink); }
+.tok.player::after { content: ""; position: absolute; inset: 6px; border-radius: 50%; background: var(--accent); }
+.tok.gm::after { content: ""; position: absolute; inset: 7px; transform: rotate(45deg); background: var(--surface); border-radius: 2px; }
+
+/* Grid */
+.app { display: grid; gap: 16px; padding-top: 16px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.panel > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding: 12px 14px 8px; }
+.panel h2 { margin: 0; font-family: var(--f-display); font-size: 17px; font-weight: 600; letter-spacing: .03em; }
+[data-panel] { display: none; }
+body[data-tab="skills"] [data-panel="skills"], body[data-tab="roll"] [data-panel="roll"], body[data-tab="feed"] [data-panel="feed"] { display: block; }
+@media (min-width: 760px) {
+  .app { grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); grid-template-areas: "skills roll" "skills feed"; align-items: start; }
+  [data-panel] { display: block !important; }
+  [data-panel="skills"] { grid-area: skills; position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow: auto; }
+  [data-panel="roll"] { grid-area: roll; } [data-panel="feed"] { grid-area: feed; }
+  .tabbar { display: none !important; }
+  body { padding-bottom: 24px; }
+}
+@media (min-width: 1180px) {
+  .app { grid-template-columns: 290px minmax(0, 1fr) 320px; grid-template-areas: "skills roll feed"; }
+  [data-panel="feed"] { position: sticky; top: 76px; max-height: calc(100vh - 92px); overflow: auto; }
+}
+
+/* Skills */
+.search { margin: 0 14px 8px; display: block; width: calc(100% - 28px); padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); color: var(--ink); font: inherit; }
+.charline { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; padding: 0 14px 10px; }
+.charline div { text-align: center; border: 1px solid var(--line); border-radius: 8px; padding: 4px 0 2px; background: var(--surface-2); }
+.charline b { display: block; font-family: var(--f-display); font-size: 20px; line-height: 1.1; }
+.charline span { font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.group { padding: 6px 0 4px; }
+.group > .label { padding: 4px 14px; display: block; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; width: 100%; border: 0; background: none; padding: 7px 14px; text-align: left; cursor: pointer; border-left: 3px solid transparent; }
+.row:hover { background: var(--surface-2); }
+.row[aria-current="true"] { background: var(--surface-2); border-left-color: var(--accent); }
+.row .nm { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.row .nm i { font-style: normal; color: var(--muted); font-size: 12px; margin-left: 4px; }
+.row .nm .career { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 6px; vertical-align: middle; }
+.row .nm .career.off { background: transparent; border: 1px solid var(--line); }
+.row .sub { display: block; font-size: 12px; color: var(--muted); }
+.mini { display: flex; gap: 2px; }
+.mini svg { width: 16px; height: 16px; }
+
+/* Roll panel */
+.check { padding: 0 14px 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.check h3 { margin: 0; font-family: var(--f-display); font-size: 26px; font-weight: 700; line-height: 1.05; text-wrap: balance; }
+.check .meta { color: var(--muted); font-size: 13px; }
+.linkbtn { border: 0; background: none; color: var(--accent); cursor: pointer; padding: 4px 0; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.tray { margin: 0 14px; border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); padding: 14px; min-height: 92px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.tray .vs { font-family: var(--f-display); color: var(--muted); padding: 0 6px; font-size: 14px; letter-spacing: .1em; }
+.tray .empty { color: var(--muted); font-size: 14px; }
+.die { border: 0; background: none; padding: 0; cursor: pointer; line-height: 0; border-radius: 8px; }
+.die svg { width: 52px; height: 52px; display: block; }
+.die:hover svg { transform: translateY(-2px); transition: transform .12s; }
+.steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 12px 14px 0; }
+.step { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; background: var(--surface); }
+.step svg { width: 30px; height: 30px; }
+.step .nm { font-size: 13px; line-height: 1.1; min-width: 0; }
+.step .nm small { display: block; color: var(--muted); font-size: 11px; }
+.step .ctl { display: flex; align-items: center; gap: 4px; }
+.step .ctl button { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line); background: var(--surface-2); cursor: pointer; font-weight: 700; line-height: 1; }
+.step .ctl output { min-width: 16px; text-align: center; }
+@media (max-width: 520px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ladder { padding: 12px 14px 0; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 5px 11px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.chip .pips { display: inline-flex; gap: 2px; }
+.chip .pips i { width: 7px; height: 7px; transform: rotate(45deg); background: var(--d-diff); display: inline-block; }
+.chip[aria-pressed="true"] .pips i { outline: 1px solid var(--surface); }
+.chip small { color: var(--muted); }
+.chip[aria-pressed="true"] small { color: inherit; opacity: .75; }
+.upg { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px 0; }
+.role { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.role button { border: 0; background: var(--surface); padding: 7px 12px; cursor: pointer; font-size: 13px; font-weight: 700; }
+.role button[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.who-label { font-size: 12px; color: var(--muted); align-self: center; }
+.readonly { border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: 14px; color: var(--muted); }
+.readonly ul { margin: 6px 0 0; padding-left: 18px; color: var(--ink); }
+.reset-note { font-size: 12px; color: var(--muted); padding: 8px 14px 0; }
+#dice3d { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; transition: opacity .6s ease; }
+#dice3d.fade { opacity: 0; }
+.feed .spentline { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.feed .secret { font-style: italic; color: var(--muted); }
+.go { position: sticky; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 10px; align-items: center; padding: 14px; background: linear-gradient(to top, var(--surface) 70%, transparent); border-radius: 0 0 12px 12px; z-index: 2; }
+@media (min-width: 760px) { .go { position: static; background: none; } }
+.rollbtn { flex: 1; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-family: var(--f-display); font-weight: 700; font-size: 20px; letter-spacing: .08em; text-transform: uppercase; padding: 12px 18px; cursor: pointer; }
+.rollbtn:disabled { opacity: .4; cursor: not-allowed; }
+.rollbtn kbd { font-family: var(--f-mono); font-size: 12px; opacity: .7; margin-left: 8px; border: 1px solid currentColor; border-radius: 4px; padding: 0 4px; letter-spacing: 0; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); cursor: pointer; white-space: nowrap; }
+
+/* Result */
+.result { margin: 0 14px 14px; border-top: 1px solid var(--line); padding-top: 14px; }
+.verdict { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.verdict h3 { margin: 0; font-family: var(--f-display); font-size: 34px; line-height: 1; font-weight: 700; }
+.verdict h3.ok { color: var(--good); } .verdict h3.no { color: var(--bad); }
+.verdict p { margin: 0; color: var(--muted); }
+.net { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+.net .n { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; background: var(--surface-2); font-size: 14px; }
+.net .n svg { width: 20px; height: 20px; }
+.net .n b { font-family: var(--f-mono); font-size: 16px; }
+.rolled { display: flex; flex-wrap: wrap; gap: 6px; }
+.rolled svg { width: 44px; height: 44px; }
+.rolled.tumble svg { animation: tumble .45s ease-out; }
+@keyframes tumble { 0% { transform: rotate(-200deg) scale(.6); opacity: .2 } 100% { transform: none; opacity: 1 } }
+@media (prefers-reduced-motion: reduce) { .rolled.tumble svg { animation: none; } .die:hover svg { transform: none; } }
+.dmg { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-2); }
+.dmg b { font-family: var(--f-mono); font-size: 22px; }
+.dmg .crit { font-weight: 700; color: var(--bad); }
+.spend { margin-top: 14px; display: grid; gap: 14px; }
+@media (min-width: 980px) { .spend.two { grid-template-columns: 1fr 1fr; } }
+.spend h4 { margin: 0 0 6px; font-family: var(--f-display); font-size: 16px; font-weight: 600; letter-spacing: .03em; display: flex; align-items: center; gap: 8px; }
+.spend h4 .left { font-family: var(--f-mono); font-size: 13px; color: var(--muted); font-weight: 400; }
+.opt { display: grid; grid-template-columns: 54px minmax(0, 1fr); align-items: center; gap: 8px; width: 100%; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 7px 10px; cursor: pointer; margin-bottom: 6px; font-size: 14px; }
+.opt:disabled { opacity: .4; cursor: not-allowed; }
+.opt:not(:disabled):hover { border-color: var(--accent); }
+.opt .cost { display: inline-flex; gap: 1px; align-items: center; }
+.opt .cost svg { width: 15px; height: 15px; }
+.spent { font-size: 13px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.spent span { border: 1px dashed var(--line); border-radius: 99px; padding: 2px 8px; }
+.note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+
+/* Feed */
+.feed { list-style: none; margin: 0; padding: 0 0 8px; }
+.feed li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.feed li.new { animation: flash 1.2s ease-out; }
+@keyframes flash { from { background: color-mix(in srgb, var(--accent) 18%, transparent); } to { background: transparent; } }
+@media (prefers-reduced-motion: reduce) { .feed li.new { animation: none; } }
+.av { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-display); font-weight: 700; background: var(--surface-2); border: 1px solid var(--line); font-size: 14px; }
+.feed .t { font-size: 14px; } .feed .t b { font-weight: 700; }
+.feed .t time { color: var(--muted); font-size: 12px; margin-left: 4px; }
+.feed .r { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; font-size: 13px; color: var(--muted); margin-top: 2px; }
+.feed .r .sym { display: inline-flex; gap: 2px; align-items: center; color: var(--ink); }
+.feed .r svg { width: 15px; height: 15px; }
+.feed .ok { color: var(--good); font-weight: 700; } .feed .no { color: var(--bad); font-weight: 700; }
+.lock { font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); }
+
+/* Phone tab bar */
+.tabbar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; display: grid; grid-template-columns: repeat(3, 1fr);
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding: 6px max(16px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.tabbar button { border: 0; background: none; padding: 8px 4px; border-radius: 8px; font-family: var(--f-display); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: 14px; cursor: pointer; color: var(--muted); }
+.tabbar button[aria-selected="true"] { color: var(--ink); background: var(--surface-2); }
+.tabbar .badge { display: inline-block; min-width: 18px; padding: 0 5px; border-radius: 9px; background: var(--accent); color: var(--accent-ink); font-family: var(--f-mono); font-size: 11px; margin-left: 4px; }
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="sym-s" viewBox="0 0 24 24"><path fill="currentColor" d="M12 1 L14.6 9.4 L23 12 L14.6 14.6 L12 23 L9.4 14.6 L1 12 L9.4 9.4 Z"/></symbol>
+    <symbol id="sym-f" viewBox="0 0 24 24"><path fill="currentColor" d="M4 6.5 L6.5 4 L12 9.5 L17.5 4 L20 6.5 L14.5 12 L20 17.5 L17.5 20 L12 14.5 L6.5 20 L4 17.5 L9.5 12 Z"/></symbol>
+    <symbol id="sym-a" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2 L21 10 L18.2 12.6 L12 7.2 L5.8 12.6 L3 10 Z M12 10.5 L21 18.5 L18.2 21.1 L12 15.7 L5.8 21.1 L3 18.5 Z"/></symbol>
+    <symbol id="sym-t" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22 L21 14 L18.2 11.4 L12 16.8 L5.8 11.4 L3 14 Z M12 13.5 L21 5.5 L18.2 2.9 L12 8.3 L5.8 2.9 L3 5.5 Z"/></symbol>
+    <symbol id="sym-r" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.4"/><path fill="currentColor" d="M12 4.5 L13.7 10.3 L19.5 12 L13.7 13.7 L12 19.5 L10.3 13.7 L4.5 12 L10.3 10.3 Z"/></symbol>
+    <symbol id="sym-d" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2.4"/><path fill="currentColor" d="M7 8.6 L8.6 7 L12 10.4 L15.4 7 L17 8.6 L13.6 12 L17 15.4 L15.4 17 L12 13.6 L8.6 17 L7 15.4 L10.4 12 Z"/></symbol>
+  </defs>
+</svg>
+
+<header class="top">
+  <div class="brand">Table Top Galaxy<small>Manifest Destiny</small></div>
+  <span class="proto">Prototype &#xB7; sample characters</span>
+  <div class="spacer"></div>
+  <div class="role" role="group" aria-label="View as" id="role">
+    <button type="button" data-role="player" aria-pressed="true">Player view</button>
+    <button type="button" data-role="gm" aria-pressed="false">GM view</button>
+  </div>
+  <span class="who-label" id="who-label">Playing</span>
+  <div class="who" id="who" role="group" aria-label="Character"></div>
+  <div class="story">
+    <span class="label">Story points</span>
+    <div class="tokens" id="tokens"></div>
+  </div>
+</header>
+
+<main class="app">
+  <section class="panel" data-panel="skills" aria-labelledby="h-skills">
+    <header><h2 id="h-skills">Skills &amp; attacks</h2><span class="label">Tap to build pool</span></header>
+    <div class="charline" id="charline"></div>
+    <label class="sr" for="q">Filter skills</label>
+    <input class="search" id="q" type="search" placeholder="Filter skills&#x2026;" autocomplete="off">
+    <div id="skills"></div>
+  </section>
+
+  <section class="panel" data-panel="roll" aria-labelledby="h-roll">
+    <header><h2 id="h-roll">Dice pool</h2><button class="linkbtn" id="clear" type="button">Clear pool</button></header>
+    <div class="check" id="check"></div>
+    <div class="tray" id="tray" aria-label="Current pool. Tap a die to remove it."></div>
+    <div class="steps" id="steps"></div>
+    <div class="ladder">
+      <span class="label" id="ladder-label">Difficulty</span>
+      <div class="chips" id="ladder" role="group" aria-labelledby="ladder-label"></div>
+    </div>
+    <div class="upg" id="upg"></div>
+    <div class="reset-note" id="reset-note" hidden>Difficulty reset to Average for your next check.</div>
+    <div class="go">
+      <button class="rollbtn" id="roll" type="button">Roll<kbd>R</kbd></button>
+      <label class="toggle" id="secret-wrap" hidden><input type="checkbox" id="secret" checked> Secret check</label>
+    </div>
+    <div class="result" id="result" hidden></div>
+    <div class="sr" aria-live="polite" id="live"></div>
+  </section>
+
+  <section class="panel" data-panel="feed" aria-labelledby="h-feed">
+    <header><h2 id="h-feed">Table feed</h2><span class="label">Live &#xB7; 4 at table</span></header>
+    <ul class="feed" id="feed"></ul>
+  </section>
+</main>
+
+<canvas id="dice3d" aria-hidden="true"></canvas>
+
+<nav class="tabbar" role="tablist" aria-label="Sections">
+  <button role="tab" data-tab="skills" type="button">Skills</button>
+  <button role="tab" data-tab="roll" type="button">Roll</button>
+  <button role="tab" data-tab="feed" type="button">Feed<span class="badge" id="badge" hidden></span></button>
+</nav>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
+<script>
+(() => {
+  // ---------- Genesys dice (face tables) ----------
+  // s success, f failure, a advantage, t threat, r triumph, d despair
+  const DICE = {
+    proficiency: { name: "Proficiency", short: "d12", shape: "d12", color: "var(--d-prof)", hex: "#f2c230", ink: "#1b1b1d", pos: true,
+      faces: ["", "s", "s", "ss", "ss", "a", "sa", "sa", "sa", "aa", "aa", "r"] },
+    ability: { name: "Ability", short: "d8", shape: "d8", color: "var(--d-ability)", hex: "#3f9b46", ink: "#0d1f10", pos: true,
+      faces: ["", "s", "s", "ss", "a", "a", "sa", "aa"] },
+    boost: { name: "Boost", short: "d6", shape: "d6", color: "var(--d-boost)", hex: "#8fd0ea", ink: "#10222b", pos: true,
+      faces: ["", "", "s", "sa", "aa", "a"] },
+    challenge: { name: "Challenge", short: "d12", shape: "d12", color: "var(--d-chal)", hex: "#b8262f", ink: "#ffffff", pos: false,
+      faces: ["", "f", "f", "ff", "ff", "t", "t", "ft", "ft", "tt", "tt", "d"] },
+    difficulty: { name: "Difficulty", short: "d8", shape: "d8", color: "var(--d-diff)", hex: "#5b3c8f", ink: "#ffffff", pos: false,
+      faces: ["", "f", "ff", "t", "t", "t", "tt", "ft"] },
+    setback: { name: "Setback", short: "d6", shape: "d6", color: "var(--d-set)", hex: "#1b1b1d", ink: "#ffffff", pos: false,
+      faces: ["", "", "f", "f", "t", "t"] },
+  };
+  const ORDER = ["proficiency", "ability", "boost", "challenge", "difficulty", "setback"];
+  const SYM_NAME = { s: "Success", f: "Failure", a: "Advantage", t: "Threat", r: "Triumph", d: "Despair" };
+  // Same glyphs as the <symbol> defs, reused to paint the 3D die faces.
+  const GLYPH = {
+    s: { d: "M12 1 L14.6 9.4 L23 12 L14.6 14.6 L12 23 L9.4 14.6 L1 12 L9.4 9.4 Z" },
+    f: { d: "M4 6.5 L6.5 4 L12 9.5 L17.5 4 L20 6.5 L14.5 12 L20 17.5 L17.5 20 L12 14.5 L6.5 20 L4 17.5 L9.5 12 Z" },
+    a: { d: "M12 2 L21 10 L18.2 12.6 L12 7.2 L5.8 12.6 L3 10 Z M12 10.5 L21 18.5 L18.2 21.1 L12 15.7 L5.8 21.1 L3 18.5 Z" },
+    t: { d: "M12 22 L21 14 L18.2 11.4 L12 16.8 L5.8 11.4 L3 14 Z M12 13.5 L21 5.5 L18.2 2.9 L12 8.3 L5.8 2.9 L3 5.5 Z" },
+    r: { ring: true, d: "M12 4.5 L13.7 10.3 L19.5 12 L13.7 13.7 L12 19.5 L10.3 13.7 L4.5 12 L10.3 10.3 Z" },
+    d: { ring: true, d: "M7 8.6 L8.6 7 L12 10.4 L15.4 7 L17 8.6 L13.6 12 L17 15.4 L15.4 17 L12 13.6 L8.6 17 L7 15.4 L10.4 12 Z" },
+  };
+
+  const tally = (face) => {
+    const c = { s: 0, f: 0, a: 0, t: 0, r: 0, d: 0 };
+    for (const ch of face) c[ch]++;
+    return c;
+  };
+  const rand = (n) => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] % n; };
+  const randf = () => { const a = new Uint32Array(1); crypto.getRandomValues(a); return a[0] / 4294967296; };
+
+  const poolList = (pool) => ORDER.flatMap((t) => Array(pool[t]).fill(t));
+  function scoreDice(dice) {
+    const t = dice.reduce((acc, d) => { const c = tally(d.face); for (const k in c) acc[k] += c[k]; return acc; },
+      { s: 0, f: 0, a: 0, t: 0, r: 0, d: 0 });
+    const netS = t.s + t.r - t.f - t.d;
+    const netA = t.a - t.t;
+    return { dice, raw: t, netS, netA, triumph: t.r, despair: t.d, success: netS >= 1 };
+  }
+  const instantRoll = (types) => types.map((type) => ({ type, face: DICE[type].faces[rand(DICE[type].faces.length)] }));
+
+  // ---------- 3D dice: three.js render + cannon.js physics, walled in by the viewport ----------
+  const Dice3D = (() => {
+    const PX_PER_UNIT = 34, FOV = 30, GRAVITY = -60;
+    const PHI = (1 + Math.sqrt(5)) / 2;
+    let ok = false, renderer, scene, camera, world, floorMesh, walls = {}, live = [], raf = 0, fadeTimer = 0, bounds = { x: 6, z: 8 };
+    const v3 = (x, y, z) => ({ x, y, z });
+    const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+    const sub = (a, b) => v3(a.x - b.x, a.y - b.y, a.z - b.z);
+    const cross = (a, b) => v3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x);
+    const norm = (a) => { const l = Math.hypot(a.x, a.y, a.z); return v3(a.x / l, a.y / l, a.z / l); };
+    const signs = (fn) => { const out = []; for (const i of [1, -1]) for (const j of [1, -1]) for (const k of [1, -1]) out.push(fn(i, j, k)); return out; };
+    const cyc = (a, b) => [v3(0, a, b), v3(a, b, 0), v3(b, 0, a)];
+    const pm = (fn) => [[1, 1], [1, -1], [-1, 1], [-1, -1]].flatMap(([i, j]) => fn(i, j));
+
+    // Vertices + face normals per shape; faces are derived so every die shares one builder.
+    const SOLIDS = {
+      d6: { radius: 1.3, inset: 0.707, verts: signs((i, j, k) => v3(i, j, k)),
+            normals: [v3(1, 0, 0), v3(-1, 0, 0), v3(0, 1, 0), v3(0, -1, 0), v3(0, 0, 1), v3(0, 0, -1)] },
+      d8: { radius: 1.45, inset: 0.5, verts: [v3(1, 0, 0), v3(-1, 0, 0), v3(0, 1, 0), v3(0, -1, 0), v3(0, 0, 1), v3(0, 0, -1)],
+            normals: signs((i, j, k) => v3(i, j, k)) },
+      d12: { radius: 1.45, inset: 0.809,
+             verts: [...signs((i, j, k) => v3(i, j, k)), ...pm((i, j) => cyc(i / PHI, j * PHI))],
+             normals: pm((i, j) => cyc(i * PHI, j)) },
+    };
+
+    function faces(solid) {
+      const verts = solid.verts.map(norm);
+      return solid.normals.map((n0) => {
+        const n = norm(n0);
+        const best = Math.max(...verts.map((v) => dot(v, n)));
+        const idx = verts.map((v, i) => [dot(v, n), i]).filter(([d]) => d > best - 1e-6).map(([, i]) => i);
+        const c = idx.reduce((acc, i) => v3(acc.x + verts[i].x / idx.length, acc.y + verts[i].y / idx.length, acc.z + verts[i].z / idx.length), v3(0, 0, 0));
+        const u = norm(sub(verts[idx[0]], c)), w = cross(n, u);
+        const ang = (i) => { const p = sub(verts[i], c); return Math.atan2(dot(p, w), dot(p, u)); };
+        idx.sort((a, b) => ang(a) - ang(b));
+        const rFace = Math.max(...idx.map((i) => Math.hypot(...Object.values(sub(verts[i], c)))));
+        return { n, idx, c, u, w, rFace };
+      });
+    }
+
+    const texCache = new Map();
+    function faceTexture(type, face, inset) {
+      const key = `${type}|${face}`;
+      if (texCache.has(key)) return texCache.get(key);
+      const size = 256, cv = document.createElement("canvas");
+      cv.width = cv.height = size;
+      const g = cv.getContext("2d");
+      g.fillStyle = DICE[type].hex; g.fillRect(0, 0, size, size);
+      const syms = [...face];
+      const room = size * 0.5 * inset * 0.8;
+      const s = syms.length > 1 ? room * 0.95 : room * 1.35;
+      syms.forEach((ch, i) => {
+        const cx = size / 2 + (syms.length > 1 ? (i === 0 ? -s / 2 : s / 2) : 0);
+        paintGlyph(g, GLYPH[ch], cx, size / 2, s, DICE[type].ink);
+      });
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 4;
+      texCache.set(key, tex);
+      return tex;
+    }
+    function paintGlyph(g, glyph, cx, cy, s, ink) {
+      g.save();
+      g.translate(cx - s / 2, cy - s / 2); g.scale(s / 24, s / 24);
+      g.fillStyle = ink; g.strokeStyle = ink; g.lineWidth = 2.4;
+      if (glyph.ring) { g.beginPath(); g.arc(12, 12, 10, 0, Math.PI * 2); g.stroke(); }
+      g.fill(new Path2D(glyph.d));
+      g.restore();
+    }
+
+    const shapeCache = {};
+    function shape(kind) {
+      if (shapeCache[kind]) return shapeCache[kind];
+      const solid = SOLIDS[kind], fs = faces(solid), r = solid.radius;
+      const verts = solid.verts.map(norm);
+      const pos = [], nrm = [], uv = [], groups = [];
+      fs.forEach((f, fi) => {
+        const start = pos.length / 3;
+        for (let k = 1; k < f.idx.length - 1; k++) {
+          for (const vi of [f.idx[0], f.idx[k], f.idx[k + 1]]) {
+            const v = verts[vi], p = sub(v, f.c);
+            pos.push(v.x * r, v.y * r, v.z * r); nrm.push(f.n.x, f.n.y, f.n.z);
+            uv.push(0.5 + 0.5 * dot(p, f.u) / f.rFace, 0.5 + 0.5 * dot(p, f.w) / f.rFace);
+          }
+        }
+        groups.push([start, pos.length / 3 - start, fi]);
+      });
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      geo.setAttribute("normal", new THREE.Float32BufferAttribute(nrm, 3));
+      geo.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+      groups.forEach(([s, c, m]) => geo.addGroup(s, c, m));
+      const body = new CANNON.ConvexPolyhedron(verts.map((v) => new CANNON.Vec3(v.x * r, v.y * r, v.z * r)), fs.map((f) => f.idx.slice()));
+      return (shapeCache[kind] = { geo, body, faces: fs, inset: solid.inset, radius: r });
+    }
+
+    function init() {
+      if (!window.THREE || !window.CANNON) return false;
+      try {
+        const canvas = document.getElementById("dice3d");
+        renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+      } catch (e) { return false; }
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.shadowMap.enabled = true;
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 1000);
+      scene.add(new THREE.HemisphereLight(0xffffff, 0x445566, 0.75));
+      const sun = new THREE.DirectionalLight(0xffffff, 0.75);
+      sun.position.set(-8, 30, 10); sun.castShadow = true;
+      Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40 });
+      sun.shadow.mapSize.set(1024, 1024);
+      sun.shadow.camera.updateProjectionMatrix();
+      scene.add(sun);
+      floorMesh = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.ShadowMaterial({ opacity: 0.22 }));
+      floorMesh.rotation.x = -Math.PI / 2; floorMesh.receiveShadow = true;
+      scene.add(floorMesh);
+      buildWorld();
+      resize();
+      window.addEventListener("resize", resize);
+      return (ok = true);
+    }
+
+    function buildWorld() {
+      world = new CANNON.World();
+      world.gravity.set(0, GRAVITY, 0);
+      world.broadphase = new CANNON.NaiveBroadphase();
+      world.solver.iterations = 12;
+      const mat = new CANNON.Material("dice");
+      world.addContactMaterial(new CANNON.ContactMaterial(mat, mat, { friction: 0.35, restitution: 0.35 }));
+      world.defaultContactMaterial.friction = 0.35;
+      world.defaultContactMaterial.restitution = 0.35;
+      const plane = (axis, angle) => {
+        const b = new CANNON.Body({ mass: 0, material: mat });
+        b.addShape(new CANNON.Plane());
+        if (axis) b.quaternion.setFromAxisAngle(axis, angle);
+        world.addBody(b);
+        return b;
+      };
+      const X = new CANNON.Vec3(1, 0, 0), Y = new CANNON.Vec3(0, 1, 0);
+      walls = { floor: plane(X, -Math.PI / 2), ceil: plane(X, Math.PI / 2), left: plane(Y, Math.PI / 2),
+                right: plane(Y, -Math.PI / 2), top: plane(null, 0), bottom: plane(Y, Math.PI) };
+      walls.ceil.position.set(0, 9, 0);
+      Dice3D.mat = mat;
+    }
+
+    // Size the world so one unit is PX_PER_UNIT pixels on any screen, then put the walls at the window edges.
+    function resize() {
+      const w = window.innerWidth, h = window.innerHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      const halfZ = h / 2 / PX_PER_UNIT, height = halfZ / Math.tan((FOV / 2) * Math.PI / 180);
+      camera.position.set(0, height, 0); camera.up.set(0, 0, -1); camera.lookAt(0, 0, 0);
+      camera.updateProjectionMatrix();
+      bounds = { x: halfZ * camera.aspect - 0.4, z: halfZ - 0.4 };
+      walls.left.position.set(-bounds.x, 0, 0); walls.right.position.set(bounds.x, 0, 0);
+      walls.top.position.set(0, 0, -bounds.z); walls.bottom.position.set(0, 0, bounds.z);
+      if (!raf) renderer.render(scene, camera);
+    }
+
+    function clear() {
+      clearTimeout(fadeTimer);
+      for (const d of live) { scene.remove(d.mesh); world.remove(d.body); }
+      live = [];
+      document.getElementById("dice3d").classList.remove("fade");
+      renderer.render(scene, camera);
+    }
+
+    function spawn(type, i, n) {
+      const sh = shape(DICE[type].shape);
+      const mats = sh.faces.map((_, fi) => new THREE.MeshStandardMaterial({ map: faceTexture(type, DICE[type].faces[fi], sh.inset), roughness: 0.42, metalness: 0.05 }));
+      const mesh = new THREE.Mesh(sh.geo, mats);
+      mesh.castShadow = true;
+      const body = new CANNON.Body({ mass: 1, material: Dice3D.mat, linearDamping: 0.12, angularDamping: 0.12 });
+      body.addShape(sh.body);
+      const cols = Math.max(1, Math.floor((bounds.x * 2 - 2) / 3));
+      const col = i % cols, row = Math.floor(i / cols);
+      body.position.set(-bounds.x + 1.5 + (col + 0.5) * ((bounds.x * 2 - 3) / cols), 2.5 + row * 1.5, bounds.z - 1.8 - row * 0.6);
+      body.quaternion.setFromEuler(randf() * 6.28, randf() * 6.28, randf() * 6.28);
+      body.velocity.set((randf() - 0.5) * 10, 2 + randf() * 4, -(22 + randf() * 14));
+      body.angularVelocity.set((randf() - 0.5) * 40, (randf() - 0.5) * 40, (randf() - 0.5) * 40);
+      world.addBody(body); scene.add(mesh);
+      return { type, mesh, body, faces: sh.faces };
+    }
+
+    function upness(d) {
+      let best = -2, at = 0;
+      d.faces.forEach((f, i) => {
+        const n = d.body.quaternion.vmult(new CANNON.Vec3(f.n.x, f.n.y, f.n.z));
+        if (n.y > best) { best = n.y; at = i; }
+      });
+      return { best, at };
+    }
+    const topFace = (d) => DICE[d.type].faces[upness(d).at];
+    // A die resting on an edge or against a wall gets a small hop so it lands flat.
+    function nudgeCocked() {
+      const cocked = live.filter((d) => upness(d).best < 0.9);
+      for (const d of cocked) {
+        d.body.velocity.set((randf() - 0.5) * 4, 6 + randf() * 3, (randf() - 0.5) * 4);
+        d.body.angularVelocity.set((randf() - 0.5) * 12, (randf() - 0.5) * 12, (randf() - 0.5) * 12);
+      }
+      return cocked.length > 0;
+    }
+    const isCalm = (d) => d.body.velocity.length() < 0.12 && d.body.angularVelocity.length() < 0.12;
+
+    function roll(types, onDone) {
+      clear();
+      live = types.map((t, i) => spawn(t, i, types.length));
+      let last = performance.now(), started = last, still = 0, nudges = 0, damped = false;
+      const step = (now) => {
+        world.step(1 / 60, Math.min(0.05, (now - last) / 1000), 4);
+        last = now;
+        for (const d of live) { d.mesh.position.copy(d.body.position); d.mesh.quaternion.copy(d.body.quaternion); }
+        renderer.render(scene, camera);
+        if (!damped && now - started > 2200) {
+          damped = true;
+          for (const d of live) { d.body.linearDamping = 0.4; d.body.angularDamping = 0.4; }
+        }
+        still = live.every(isCalm) ? still + 1 : 0;
+        if (still > 18 && nudges < 3 && nudgeCocked()) { nudges++; still = 0; }
+        if (still > 18 || now - started > 8000) {
+          raf = 0;
+          onDone(live.map((d) => ({ type: d.type, face: topFace(d) })));
+          fadeTimer = setTimeout(() => document.getElementById("dice3d").classList.add("fade"), 4500);
+          return;
+        }
+        raf = requestAnimationFrame(step);
+      };
+      raf = requestAnimationFrame(step);
+    }
+
+    return { init, roll, clear, get ok() { return ok; }, get busy() { return raf !== 0; } };
+  })();
+
+  // ---------- Sample content (stand-ins for the GM's library) ----------
+  const SKILLS = [
+    ["General", [["Athletics", "Br"], ["Computers (Hacking)", "Int"], ["Computers (Sysops)", "Int"], ["Cool", "Pr"], ["Coordination", "Ag"],
+      ["Discipline", "Will"], ["Driving", "Ag"], ["Mechanics", "Int"], ["Medicine", "Int"], ["Operating", "Int"], ["Perception", "Cun"],
+      ["Piloting", "Ag"], ["Resilience", "Br"], ["Skulduggery", "Cun"], ["Stealth", "Ag"], ["Streetwise", "Cun"], ["Survival", "Cun"], ["Vigilance", "Will"]]],
+    ["Combat", [["Brawl", "Br"], ["Melee", "Br"], ["Ranged (Light)", "Ag"], ["Ranged (Heavy)", "Ag"], ["Gunnery", "Ag"]]],
+    ["Social", [["Charm", "Pr"], ["Coercion", "Will"], ["Deception", "Cun"], ["Leadership", "Pr"], ["Negotiation", "Pr"]]],
+    ["Knowledge", [["Knowledge", "Int"]]],
+  ];
+  const CHAR_NAMES = { Br: "Brawn", Ag: "Agility", Int: "Intellect", Cun: "Cunning", Will: "Willpower", Pr: "Presence" };
+  const CHARACTERS = [
+    { id: "prance", name: "Prance Galavent", role: "Outrider pilot", initials: "PG",
+      chars: { Br: 2, Ag: 3, Int: 2, Cun: 3, Will: 2, Pr: 2 },
+      ranks: { "Piloting": 2, "Ranged (Light)": 1, "Perception": 1, "Vigilance": 1, "Cool": 1, "Mechanics": 1, "Gunnery": 1, "Coordination": 1, "Streetwise": 1 },
+      career: ["Piloting", "Ranged (Light)", "Perception", "Gunnery", "Coordination", "Mechanics", "Cool", "Operating"],
+      weapons: [{ name: "Heavy pistol", skill: "Ranged (Light)", dmg: 6, crit: 3, range: "Medium" },
+                { name: "Shock baton", skill: "Melee", dmg: 2, brawn: true, crit: 4, range: "Engaged", note: "Disorient 2" }] },
+    { id: "krum", name: "Krum", role: "Outrider netrunner", initials: "KR",
+      chars: { Br: 1, Ag: 2, Int: 4, Cun: 3, Will: 2, Pr: 2 },
+      ranks: { "Computers (Hacking)": 2, "Computers (Sysops)": 1, "Deception": 1, "Skulduggery": 1, "Knowledge": 1, "Perception": 1, "Stealth": 1 },
+      career: ["Computers (Hacking)", "Computers (Sysops)", "Deception", "Skulduggery", "Knowledge", "Stealth", "Streetwise", "Vigilance"],
+      weapons: [{ name: "Holdout pistol", skill: "Ranged (Light)", dmg: 5, crit: 4, range: "Short" }] },
+  ];
+  const LADDER = [
+    { name: "Simple", n: 0, range: "" }, { name: "Easy", n: 1, range: "Short" }, { name: "Average", n: 2, range: "Medium" },
+    { name: "Hard", n: 3, range: "Long" }, { name: "Daunting", n: 4, range: "Extreme" }, { name: "Formidable", n: 5, range: "" },
+  ];
+  const DEFAULT_LADDER = 2;
+  // Short paraphrased spend options. In the real app these come from the GM's library.
+  const ADV_OPTS = [
+    { cost: 1, label: "Recover 1 strain" },
+    { cost: 1, label: "Add a Boost die to an ally's next check" },
+    { cost: 1, label: "Notice a useful detail in the scene" },
+    { cost: 2, label: "Take a free maneuver" },
+    { cost: 2, label: "Add a Setback die to the target's next check" },
+    { cost: 3, label: "Negate the target's defense until the round ends" },
+    { cost: 3, label: "Ignore cover or difficult terrain until your next turn" },
+    { cost: "crit", label: "Inflict a Critical Injury", attackOnly: true },
+    { cost: "r", label: "Upgrade the difficulty of the target's next check" },
+    { cost: "r", label: "Do something vital: blow the door, cut the lights, end the chase" },
+  ];
+  const THREAT_OPTS = [
+    { cost: 1, label: "Suffer 1 strain" },
+    { cost: 1, label: "Lose the benefit of a prior maneuver" },
+    { cost: 2, label: "An opponent takes a free maneuver" },
+    { cost: 2, label: "Add a Boost die to the target's next check" },
+    { cost: 3, label: "Fall prone or drop what you're holding" },
+    { cost: "d", label: "Weapon runs dry or jams until repaired" },
+    { cost: "d", label: "Upgrade the difficulty of your next check" },
+  ];
+
+  // ---------- State ----------
+  const empty = () => ({ proficiency: 0, ability: 0, boost: 0, challenge: 0, difficulty: 0, setback: 0 });
+  const now = Date.now();
+  const S = {
+    role: "player", charId: "prance", pool: empty(), check: null, ladder: DEFAULT_LADDER, result: null,
+    story: ["player", "player", "gm", "gm", "gm"], tab: "roll", q: "", unread: 0, freshId: null, resetShown: false,
+    feed: [
+      { id: 1, who: "GM", initials: "GM", check: "Vigilance for Prance (sabotage alarm)", netS: 1, netA: -2, triumph: 0, despair: 0, secret: true, spent: [], spentT: [], at: now - 6 * 60e3, sample: true },
+      { id: 2, who: "Krum", initials: "KR", check: "Computers (Hacking) vs. nav ICE", netS: 2, netA: 1, triumph: 1, despair: 0, secret: false,
+        spent: ["Do something vital: blow the door, cut the lights, end the chase", "Recover 1 strain"], spentT: [], at: now - 4 * 60e3, sample: true },
+      { id: 3, who: "Behnsun Payne", initials: "BP", check: "Medicine (cryo pod 14)", netS: -1, netA: 2, triumph: 0, despair: 0, secret: false,
+        spent: ["Notice a useful detail in the scene"], spentT: [], at: now - 2 * 60e3, sample: true },
+    ],
+  };
+  const char = () => CHARACTERS.find((c) => c.id === S.charId);
+  const total = () => ORDER.reduce((n, t) => n + S.pool[t], 0);
+  const isGM = () => S.role === "gm";
+  const entry = (id) => S.feed.find((e) => e.id === id);
+
+  function skillPool(c, skill, stat) {
+    const ch = c.chars[stat], rk = c.ranks[skill] || 0;
+    return { proficiency: Math.min(ch, rk), ability: Math.max(ch, rk) - Math.min(ch, rk) };
+  }
+
+  // ---------- SVG (2D dice in the tray, steppers and result card) ----------
+  const SHAPES = {
+    d6: '<rect x="4" y="4" width="40" height="40" rx="7"/>',
+    d8: '<polygon points="24,1.5 46.5,24 24,46.5 1.5,24"/>',
+    d12: '<polygon points="24,2 43.5,13 43.5,35 24,46 4.5,35 4.5,13"/>',
+  };
+  function dieSVG(type, face, label) {
+    const d = DICE[type];
+    const syms = face ? [...face] : [];
+    const size = syms.length > 1 ? 15 : 20;
+    const xs = syms.length > 1 ? [24 - size - 0.5, 24 + 0.5] : [24 - size / 2];
+    const glyphs = syms.map((s, i) => `<use href="#sym-${s}" x="${xs[i]}" y="${24 - size / 2}" width="${size}" height="${size}"/>`).join("");
+    const title = label || `${d.name} die${face ? ": " + syms.map((s) => SYM_NAME[s]).join(", ") : face === "" ? ": blank" : ""}`;
+    return `<svg viewBox="0 0 48 48" role="img" aria-label="${title}"><g fill="${d.color}" stroke="var(--die-stroke)" stroke-width="1.5">${SHAPES[d.shape]}</g><g style="color:${d.ink}">${glyphs}</g></svg>`;
+  }
+  const sym = (s, n = 1) => Array.from({ length: n }, () => `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="#sym-${s}"/></svg>`).join("");
+
+  // ---------- Render ----------
+  const $ = (id) => document.getElementById(id);
+
+  function renderTop() {
+    document.querySelectorAll("#role button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.role === S.role));
+    $("who-label").textContent = isGM() ? "Rolling for" : "Playing";
+    $("who").innerHTML = CHARACTERS.map((c) =>
+      `<button type="button" data-char="${c.id}" aria-pressed="${c.id === S.charId}"><b>${c.name}</b><span>${c.role}</span></button>`).join("");
+    const mine = isGM() ? "gm" : "player";
+    $("tokens").innerHTML = S.story.map((x, i) => {
+      const usable = x === mine;
+      const tip = x === "player" ? (usable ? "Spend: upgrade your ability. It flips to the GM." : "Player story point")
+                                 : (usable ? "Spend: upgrade the difficulty. It flips to the players." : "GM story point");
+      return `<button type="button" class="tok ${x}" data-tok="${i}" title="${tip}" aria-label="${tip}"${usable ? "" : ' aria-disabled="true"'}></button>`;
+    }).join("") + `<span class="sr">${S.story.filter((x) => x === "player").length} player, ${S.story.filter((x) => x === "gm").length} GM</span>`;
+    $("secret-wrap").hidden = !isGM();
+  }
+
+  function renderSkills() {
+    const c = char();
+    $("charline").innerHTML = Object.entries(c.chars).map(([k, v]) => `<div><b>${v}</b><span>${k}</span></div>`).join("");
+    const q = S.q.trim().toLowerCase();
+    const curKey = S.check && S.check.key;
+    let html = "";
+    if (!q || c.weapons.some((w) => w.name.toLowerCase().includes(q))) {
+      html += `<div class="group"><span class="label">Attacks</span>` + c.weapons.filter((w) => !q || w.name.toLowerCase().includes(q)).map((w) => {
+        const stat = SKILLS[1][1].find(([n]) => n === w.skill)[1];
+        const dmg = w.brawn ? c.chars.Br + w.dmg : w.dmg;
+        return `<button type="button" class="row" data-weapon="${w.name}" aria-current="${curKey === "w:" + w.name}">
+          <span class="nm">${w.name}<span class="sub">${w.skill} \u00B7 Dmg ${dmg} \u00B7 Crit ${w.crit} \u00B7 ${w.range}${w.note ? " \u00B7 " + w.note : ""}</span></span>
+          <span class="mini">${miniPool(skillPool(c, w.skill, stat))}</span></button>`;
+      }).join("") + `</div>`;
+    }
+    for (const [group, list] of SKILLS) {
+      const rows = list.filter(([n]) => !q || n.toLowerCase().includes(q));
+      if (!rows.length) continue;
+      html += `<div class="group"><span class="label">${group}</span>` + rows.map(([n, stat]) => {
+        const rk = c.ranks[n] || 0;
+        const isCareer = c.career.includes(n);
+        return `<button type="button" class="row" data-skill="${n}" data-stat="${stat}" aria-current="${curKey === "s:" + n}">
+          <span class="nm"><span class="career${isCareer ? "" : " off"}" title="${isCareer ? "Career skill" : "Non-career skill"}"></span>${n}<i>${stat}</i><span class="sub">Rank ${rk}${isCareer ? " \u00B7 career" : ""}</span></span>
+          <span class="mini">${miniPool(skillPool(c, n, stat))}</span></button>`;
+      }).join("") + `</div>`;
+    }
+    $("skills").innerHTML = html || `<p class="note" style="padding:0 14px">No skill matches \u201C${S.q}\u201D.</p>`;
+  }
+  const miniPool = (sp) => ["proficiency", "ability"].map((t) => Array.from({ length: sp[t] }, () => dieSVG(t, null, DICE[t].name)).join("")).join("");
+
+  function renderPool() {
+    $("check").innerHTML = S.check
+      ? `<h3>${S.check.label}</h3><span class="meta">${S.check.meta}</span>`
+      : `<h3>Custom pool</h3><span class="meta">Pick a skill or attack, or add dice by hand.</span>`;
+    const pos = ORDER.filter((t) => DICE[t].pos).flatMap((t) => Array(S.pool[t]).fill(t));
+    const neg = ORDER.filter((t) => !DICE[t].pos).flatMap((t) => Array(S.pool[t]).fill(t));
+    const btn = (t) => `<button type="button" class="die" data-remove="${t}" title="Remove a ${DICE[t].name} die">${dieSVG(t, null, "Remove " + DICE[t].name + " die")}</button>`;
+    $("tray").innerHTML = total() === 0
+      ? `<span class="empty">Your pool is empty. Tap a skill, or use the dice below.</span>`
+      : `${pos.map(btn).join("")}${pos.length && neg.length ? '<span class="vs">VS</span>' : ""}${neg.map(btn).join("")}`;
+    $("steps").innerHTML = ORDER.map((t) => `<div class="step">${dieSVG(t, null, DICE[t].name)}
+      <span class="nm">${DICE[t].name}<small>${DICE[t].short}</small></span>
+      <span class="ctl"><button type="button" data-dec="${t}" aria-label="Remove ${DICE[t].name}">\u2212</button><output class="mono" aria-label="${DICE[t].name} count">${S.pool[t]}</output><button type="button" data-inc="${t}" aria-label="Add ${DICE[t].name}">+</button></span></div>`).join("");
+    const attack = S.check && S.check.weapon && S.check.weapon.range !== "Engaged";
+    $("ladder-label").textContent = attack ? "Difficulty \u00B7 range to target" : "Difficulty";
+    $("ladder").innerHTML = LADDER.map((l, i) => `<button type="button" class="chip" data-ladder="${i}" aria-pressed="${S.ladder === i && S.pool.difficulty + S.pool.challenge === l.n}">
+      ${l.name}<span class="pips">${"<i></i>".repeat(l.n)}</span>${attack && l.range ? `<small>${l.range}</small>` : ""}</button>`).join("");
+    $("upg").innerHTML = `
+      <button type="button" class="chip" data-up="ability">Upgrade ability</button>
+      <button type="button" class="chip" data-up="difficulty">Upgrade difficulty</button>
+      <button type="button" class="chip" data-down="ability">Downgrade ability</button>
+      <button type="button" class="chip" data-down="difficulty">Downgrade difficulty</button>`;
+    $("reset-note").hidden = !S.resetShown;
+    $("roll").disabled = total() === 0 || Dice3D.busy;
+  }
+
+  function verdictText(r) {
+    const a = r.netA > 0 ? (r.success ? ", with Advantage" : ", but with Advantage") : r.netA < 0 ? (r.success ? ", but with Threat" : ", with Threat") : "";
+    return (r.success ? "Success" : "Failure") + a;
+  }
+  function flavor(r) {
+    if (r.success && r.netA > 0) return "You do it, and something extra goes your way.";
+    if (r.success && r.netA < 0) return "You do it, but it costs you.";
+    if (!r.success && r.netA > 0) return "It doesn't work, but you get something out of it.";
+    if (!r.success && r.netA < 0) return "It doesn't work, and things get worse.";
+    return r.success ? "You do it, cleanly." : "It doesn't work.";
+  }
+
+  function remaining() {
+    const r = S.result;
+    let adv = Math.max(0, r.netA), tri = r.triumph, thr = Math.max(0, -r.netA), des = r.despair;
+    for (const s of r.spent) { adv -= s.paidA; tri -= s.paidR; }
+    for (const s of r.spentT) { thr -= s.paidA; des -= s.paidR; }
+    return { adv, tri, thr, des };
+  }
+  // Pay with Advantage first; a Triumph can cover any Advantage option.
+  function payment(opt, haveA, haveR, crit) {
+    if (opt.cost === "r" || opt.cost === "d") return haveR >= 1 ? { paidA: 0, paidR: 1 } : null;
+    const need = opt.cost === "crit" ? crit : opt.cost;
+    if (haveA >= need) return { paidA: need, paidR: 0 };
+    if (haveR >= 1) return { paidA: 0, paidR: 1 };
+    return null;
+  }
+  const costHTML = (opt, crit, pos) => {
+    if (opt.cost === "r") return sym("r");
+    if (opt.cost === "d") return sym("d");
+    return sym(pos ? "a" : "t", opt.cost === "crit" ? crit : opt.cost);
+  };
+
+  // Who spends what: the roller spends Advantage; the GM spends Threat on their own screen.
+  // On a GM secret check the GM spends both.
+  const canSpendAdv = (r) => isGM() ? r.secret : !r.secret;
+  const canSpendThreat = () => isGM();
+
+  function spendBlock({ title, left, opts, spent, active, kind, crit, pos, waiting }) {
+    if (!active) {
+      return `<div><h4>${title} <span class="left">${left}</span></h4><div class="readonly">${waiting}${spent.length ? `<ul>${spent.map((s) => `<li>${s.label}</li>`).join("")}</ul>` : ""}</div></div>`;
+    }
+    const rem = remaining();
+    const haveA = pos ? rem.adv : rem.thr, haveR = pos ? rem.tri : rem.des;
+    return `<div><h4>${title} <span class="left">${left}</span></h4>` +
+      opts.map(({ o, i }) => `<button type="button" class="opt" data-${kind}="${i}" ${payment(o, haveA, haveR, crit) ? "" : "disabled"}><span class="cost">${costHTML(o, crit, pos)}</span><span>${o.label}${o.cost === "crit" ? ` (Crit ${crit})` : ""}</span></button>`).join("") +
+      (spent.length ? `<div class="spent">${spent.map((s) => `<span>${s.label}</span>`).join("")}<button type="button" class="linkbtn" data-undo="${kind}">Undo last</button></div>` : "") + `</div>`;
+  }
+
+  function renderSpends(r, w) {
+    const showA = r.netA > 0 || r.triumph > 0, showT = r.netA < 0 || r.despair > 0;
+    if (!showA && !showT) return "";
+    const rem = remaining(), crit = w ? w.crit : 0;
+    let html = `<div class="spend${showA && showT ? " two" : ""}">`;
+    if (showA) html += spendBlock({ title: "Spend Advantage &amp; Triumph", left: `${rem.adv} ${sym("a")} ${rem.tri} ${sym("r")} left`, kind: "spend", pos: true, crit,
+      opts: ADV_OPTS.map((o, i) => ({ o, i })).filter(({ o }) => !o.attackOnly || w), spent: r.spent, active: canSpendAdv(r),
+      waiting: isGM() ? "The player spends Advantage on their screen." : "" });
+    if (showT) html += spendBlock({ title: "Threat &amp; Despair", left: `${rem.thr} ${sym("t")} ${rem.des} ${sym("d")} left`, kind: "spendt", pos: false, crit: 0,
+      opts: THREAT_OPTS.map((o, i) => ({ o, i })), spent: r.spentT, active: canSpendThreat(),
+      waiting: r.spentT.length ? "The GM spent:" : "The GM spends Threat on their screen. Switch to GM view to try it." });
+    return html + `</div><p class="note">Spends are logged to the table feed. Options are short samples; in the app they come from your content library.</p>`;
+  }
+
+  function renderResult(tumble) {
+    const el = $("result");
+    const r = S.result;
+    if (!r) { el.hidden = true; return; }
+    el.hidden = false;
+    if (r.secret && !isGM()) {
+      el.innerHTML = `<div class="verdict"><h3>Secret check</h3><p>The GM rolled this one. Only the GM sees the result.</p></div>`;
+      return;
+    }
+    const w = r.weapon, c = char(), rem = remaining(), crit = w ? w.crit : 0;
+    const n = (s, count, name) => count ? `<span class="n">${sym(s)}<b>${count}</b> ${name}${count > 1 && name !== "Despair" ? (name.endsWith("s") ? "es" : "s") : ""}</span>` : "";
+    let html = `<div class="verdict"><h3 class="${r.success ? "ok" : "no"}">${verdictText(r)}</h3><p>${flavor(r)}</p>${r.secret ? '<span class="lock">Secret \u00B7 GM only</span>' : ""}</div>
+      <div class="net" aria-label="Net result">
+        ${r.netS > 0 ? n("s", r.netS, "Success") : n("f", -r.netS, "Failure")}
+        ${r.netA > 0 ? n("a", r.netA, "Advantage") : n("t", -r.netA, "Threat")}
+        ${n("r", r.triumph, "Triumph")}${n("d", r.despair, "Despair")}
+        ${r.netS === 0 && r.netA === 0 && !r.triumph && !r.despair ? '<span class="n">Everything cancelled</span>' : ""}
+      </div>
+      <div class="rolled${tumble ? " tumble" : ""}" aria-label="Dice rolled">${r.dice.map((d) => dieSVG(d.type, d.face)).join("")}</div>
+      <p class="note">${r.label}: ${r.raw.s + r.raw.r} success symbols vs ${r.raw.f + r.raw.d} failure, ${r.raw.a} advantage vs ${r.raw.t} threat. Triumph counts as a success; Despair counts as a failure.</p>`;
+    if (w && r.success) {
+      const base = w.brawn ? c.chars.Br + w.dmg : w.dmg;
+      html += `<div class="dmg"><span class="label">Damage</span><b>${base + r.netS}</b><span>${base} base + ${r.netS} net success</span>
+        ${rem.adv >= crit || rem.tri > 0 ? `<span class="crit">Critical available (Crit ${crit})</span>` : ""}</div>`;
+    }
+    el.innerHTML = html + renderSpends(r, w);
+  }
+
+  function ago(t) {
+    const m = Math.round((Date.now() - t) / 60e3);
+    return m < 1 ? "just now" : `${m} min ago`;
+  }
+  function feedSymbols(e) {
+    const parts = [];
+    if (e.netS) parts.push(`<span class="sym">${sym(e.netS > 0 ? "s" : "f", Math.min(Math.abs(e.netS), 6))}</span>`);
+    if (e.netA) parts.push(`<span class="sym">${sym(e.netA > 0 ? "a" : "t", Math.min(Math.abs(e.netA), 6))}</span>`);
+    if (e.triumph) parts.push(`<span class="sym">${sym("r", e.triumph)}</span>`);
+    if (e.despair) parts.push(`<span class="sym">${sym("d", e.despair)}</span>`);
+    return parts.join("");
+  }
+  function feedItem(e) {
+    const tags = `${e.secret && isGM() ? '<span class="lock">Secret</span>' : ""}${e.sample ? ' <span class="lock">sample</span>' : ""}`;
+    if (e.secret && !isGM()) {
+      return `<span class="av" aria-hidden="true">GM</span><div><div class="t"><b>GM</b> made a secret check<time>${ago(e.at)}</time>${tags}</div>
+        <div class="r secret">Only the GM sees this result.</div></div>`;
+    }
+    const spent = [...e.spent.map((s) => "Spent: " + s), ...e.spentT.map((s) => "GM spent: " + s)];
+    return `<span class="av" aria-hidden="true">${e.initials}</span><div>
+      <div class="t"><b>${e.who}</b> rolled ${e.check}<time>${ago(e.at)}</time> ${tags}</div>
+      <div class="r"><span class="${e.netS >= 1 ? "ok" : "no"}">${verdictText({ success: e.netS >= 1, netA: e.netA })}</span>${feedSymbols(e)}</div>
+      ${spent.map((s) => `<div class="spentline">${s}</div>`).join("")}</div>`;
+  }
+  function renderFeed() {
+    $("feed").innerHTML = S.feed.map((e) => `<li class="${e.id === S.freshId ? "new" : ""}">${feedItem(e)}</li>`).join("");
+    $("badge").hidden = !S.unread; $("badge").textContent = S.unread;
+  }
+
+  function renderTabs() {
+    document.body.dataset.tab = S.tab;
+    document.querySelectorAll(".tabbar button").forEach((b) => b.setAttribute("aria-selected", b.dataset.tab === S.tab));
+  }
+
+  function renderAll() { renderTop(); renderSkills(); renderPool(); renderResult(false); renderFeed(); renderTabs(); }
+
+  // ---------- Actions ----------
+  function applyLadder(i) { S.ladder = i; S.pool.difficulty = LADDER[i].n; S.pool.challenge = 0; }
+  // After a roll the next check starts fresh: Average difficulty, no situational Boost or Setback.
+  function resetDifficulty() {
+    S.pool.boost = 0; S.pool.setback = 0;
+    applyLadder(DEFAULT_LADDER);
+    S.resetShown = true;
+  }
+  function loadCheck(check, sp) {
+    S.pool = empty();
+    S.pool.proficiency = sp.proficiency; S.pool.ability = sp.ability;
+    applyLadder(DEFAULT_LADDER);
+    S.check = check; S.result = null; S.resetShown = false;
+    if (window.matchMedia("(max-width: 759px)").matches) S.tab = "roll";
+  }
+  function upgrade(side) {
+    const [lo, hi] = side === "ability" ? ["ability", "proficiency"] : ["difficulty", "challenge"];
+    if (S.pool[lo] > 0) { S.pool[lo]--; S.pool[hi]++; } else S.pool[lo]++;
+  }
+  function downgrade(side) {
+    const [lo, hi] = side === "ability" ? ["ability", "proficiency"] : ["difficulty", "challenge"];
+    if (S.pool[hi] > 0) { S.pool[hi]--; S.pool[lo]++; }
+  }
+  const edited = () => { S.result = null; S.resetShown = false; renderPool(); renderResult(); };
+
+  function finishRoll(dice, meta) {
+    const c = char();
+    const id = Date.now();
+    S.result = { ...scoreDice(dice), ...meta, feedId: id, spent: [], spentT: [] };
+    S.feed.unshift({ id, who: meta.secret ? "GM" : c.name, initials: meta.secret ? "GM" : c.initials,
+      check: meta.secret ? `${meta.label} for ${c.name.split(" ")[0]}` : meta.label,
+      netS: S.result.netS, netA: S.result.netA, triumph: S.result.triumph, despair: S.result.despair,
+      secret: meta.secret, spent: [], spentT: [], at: Date.now() });
+    S.freshId = id;
+    if (S.tab !== "feed" && window.matchMedia("(max-width: 759px)").matches) S.unread++;
+    $("live").textContent = `${verdictText(S.result)}. ${S.result.triumph ? S.result.triumph + " Triumph. " : ""}${S.result.despair ? S.result.despair + " Despair." : ""}`;
+    resetDifficulty();
+    renderPool(); renderResult(!Dice3D.ok); renderFeed();
+    $("result").scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }
+
+  function doRoll() {
+    if (!total() || Dice3D.busy) return;
+    const meta = { label: S.check ? S.check.label : "a custom pool", weapon: S.check && S.check.weapon, secret: isGM() && $("secret").checked };
+    const types = poolList(S.pool);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (Dice3D.ok && !reduced) {
+      $("roll").disabled = true;
+      Dice3D.roll(types, (dice) => finishRoll(dice, meta));
+    } else {
+      finishRoll(instantRoll(types), meta);
+    }
+  }
+
+  function spend(kind, i) {
+    const r = S.result, rem = remaining();
+    const isAdv = kind === "spend";
+    const o = (isAdv ? ADV_OPTS : THREAT_OPTS)[i];
+    const pay = isAdv ? payment(o, rem.adv, rem.tri, r.weapon ? r.weapon.crit : 0) : payment(o, rem.thr, rem.des, 0);
+    if (!pay) return;
+    (isAdv ? r.spent : r.spentT).push({ label: o.label, ...pay });
+    const e = entry(r.feedId);
+    if (e) (isAdv ? e.spent : e.spentT).push(o.label);
+    renderResult(); renderFeed();
+  }
+  function undo(kind) {
+    const r = S.result, isAdv = kind === "spend";
+    (isAdv ? r.spent : r.spentT).pop();
+    const e = entry(r.feedId);
+    if (e) (isAdv ? e.spent : e.spentT).pop();
+    renderResult(); renderFeed();
+  }
+
+  function useToken(i) {
+    const mine = isGM() ? "gm" : "player";
+    if (S.story[i] !== mine) return;
+    S.story[i] = isGM() ? "player" : "gm";
+    upgrade(isGM() ? "difficulty" : "ability");
+    S.result = null; S.resetShown = false;
+    renderTop(); renderPool(); renderResult();
+  }
+
+  document.addEventListener("click", (e) => {
+    const t = e.target.closest("button");
+    if (!t) return;
+    const d = t.dataset;
+    if (d.role) { S.role = d.role; renderTop(); renderResult(); renderFeed(); return; }
+    if (d.char) { S.charId = d.char; S.check = null; S.pool = empty(); applyLadder(DEFAULT_LADDER); S.result = null; renderAll(); return; }
+    if (d.tab) { S.tab = d.tab; if (d.tab === "feed") S.unread = 0; renderTabs(); renderFeed(); return; }
+    if (d.tok !== undefined) { useToken(Number(d.tok)); return; }
+    if (d.skill) {
+      const c = char();
+      loadCheck({ key: "s:" + d.skill, label: d.skill, meta: `${CHAR_NAMES[d.stat]} ${c.chars[d.stat]} \u00B7 Rank ${c.ranks[d.skill] || 0}` }, skillPool(c, d.skill, d.stat));
+      renderAll(); return;
+    }
+    if (d.weapon) {
+      const c = char(), w = c.weapons.find((x) => x.name === d.weapon);
+      const stat = SKILLS[1][1].find(([n]) => n === w.skill)[1];
+      loadCheck({ key: "w:" + w.name, label: `${w.name} attack`, meta: `${w.skill} \u00B7 ${CHAR_NAMES[stat]} ${c.chars[stat]} \u00B7 Rank ${c.ranks[w.skill] || 0}`, weapon: w }, skillPool(c, w.skill, stat));
+      renderAll(); return;
+    }
+    if (d.remove) { S.pool[d.remove]--; edited(); return; }
+    if (d.inc) { if (S.pool[d.inc] < 9) S.pool[d.inc]++; edited(); return; }
+    if (d.dec) { if (S.pool[d.dec] > 0) S.pool[d.dec]--; edited(); return; }
+    if (d.ladder !== undefined) { applyLadder(Number(d.ladder)); edited(); return; }
+    if (d.up) { upgrade(d.up); edited(); return; }
+    if (d.down) { downgrade(d.down); edited(); return; }
+    if (d.spend !== undefined) { spend("spend", Number(d.spend)); return; }
+    if (d.spendt !== undefined) { spend("spendt", Number(d.spendt)); return; }
+    if (d.undo) { undo(d.undo); return; }
+    if (t.id === "roll") { doRoll(); return; }
+    if (t.id === "clear") { S.pool = empty(); S.check = null; applyLadder(DEFAULT_LADDER); S.result = null; S.resetShown = false; if (Dice3D.ok && !Dice3D.busy) Dice3D.clear(); renderAll(); return; }
+  });
+  $("q").addEventListener("input", (e) => { S.q = e.target.value; renderSkills(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key.toLowerCase() !== "r" || e.metaKey || e.ctrlKey || e.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName)) return;
+    e.preventDefault(); doRoll();
+  });
+  setInterval(renderFeed, 30e3);
+
+  Dice3D.init();
+  // Open in a realistic working state: Prance lining up a pistol shot at medium range.
+  const c0 = char(), w0 = c0.weapons[0];
+  loadCheck({ key: "w:" + w0.name, label: `${w0.name} attack`, meta: `${w0.skill} \u00B7 Agility ${c0.chars.Ag} \u00B7 Rank ${c0.ranks[w0.skill]}`, weapon: w0 }, skillPool(c0, w0.skill, "Ag"));
+  S.tab = "roll";
+  renderAll();
+})();
+</script>

@@ -1,0 +1,27 @@
+{:paths ["tools/bb"]
+
+ :tasks
+ {:requires ([ttg.local :as local]
+             [ttg.check :as check]
+             [ttg.proto :as proto])
+
+  setup  {:doc  "Check required tools (java, node, clojure, aws, sls)"
+          :task (check/report!)}
+
+  up     {:doc  "Start local services: DynamoDB Local on :8000 with the ttg tables"
+          :task (local/up!)}
+
+  down   {:doc  "Stop local services started by bb up"
+          :task (local/down!)}
+
+  status {:doc  "Show which local services are running"
+          :task (local/status!)}
+
+  reset  {:doc  "Stop local services and delete local DynamoDB data"
+          :task (local/reset-data!)}
+
+  proto  {:doc  "Serve the UX prototypes on http://localhost:8090"
+          :task (local/serve-prototypes!)}
+
+  proto-build {:doc  "Assemble prototypes/src pages with the shared dice code"
+               :task (proto/build!)}}}
