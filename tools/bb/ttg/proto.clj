@@ -14,21 +14,33 @@
 
 (defn- read-src [& parts] (slurp (str (apply fs/path src parts))))
 
-;; What the builder and sheet read. The rest of the library (factions, Network, adversaries, vehicles, tones) waits
-;; for the pages that use it, which keeps these pages small.
-(def ^:private page-types
+;; What each page reads; pages not listed get the builder and sheet set. The rest of the library (Network, vehicles,
+;; tones) waits for the pages that use it, which keeps the pages small.
+(def ^:private sheet-types
   [:archetypes :careers :skills :talents :weapons :armor :gear :motivations :obligation-types :crits :spend-results :item-qualities])
+
+(def ^:private page-types
+  {"gm-dashboard" [:archetypes :careers :skills :adversaries :factions :obligation-types :crits :spend-results]})
+
+;; Fields a page never shows: factions keep their name, adversaries drop settings outside the Android table.
+(def ^:private android-adversary-settings #{"general" "modern" "science-fiction" "space-opera"})
+
+(defn- slim-type [type entries]
+  (case type
+    :factions (mapv #(select-keys % [:id :name :source]) entries)
+    :adversaries (filterv #(android-adversary-settings (:setting %)) entries)
+    entries))
 
 (defn- content-js
   "The Android library as a JS constant. :sources chains are dropped; :source (book + page) stays for citations."
-  []
-  (let [content (select-keys (:content (ingest/setting-library "android")) page-types)
-        slim (update-vals content (fn [es] (mapv #(dissoc % :sources) es)))]
+  [page]
+  (let [content (select-keys (:content (ingest/setting-library "android")) (get page-types page sheet-types))
+        slim (into {} (map (fn [[t es]] [t (slim-type t (mapv #(dissoc % :sources) es))])) content)]
     (str "const CONTENT = " (json/generate-string slim) ";")))
 
 (defn- page-js [page]
   (-> (read-src (str page ".js"))
-      (str/replace "/*CONTENT*/" (if (str/includes? (read-src (str page ".js")) "/*CONTENT*/") (content-js) ""))
+      (str/replace "/*CONTENT*/" (if (str/includes? (read-src (str page ".js")) "/*CONTENT*/") (content-js page) ""))
       (str/replace "/*DICE_CORE*/" (read-src "shared" "dice-core.js"))
       (str/replace "/*DICE_SVG*/" (read-src "shared" "dice-svg.js"))
       (ascii-escape "\\u%04X")))

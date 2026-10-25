@@ -11,7 +11,7 @@
 
 (def secrets-file "secrets.edn")
 (def template "infra/web.yml")
-(def site-pages ["character-builder.html" "character-sheet.html" "dice-roller.html"])
+(def site-pages ["character-builder.html" "character-sheet.html" "dice-roller.html" "gm-dashboard.html"])
 ;; The real app (apps/web release build) goes under roller/. CloudFront has no directory index there, so links say roller/index.html.
 (def web-public "apps/web/public")
 (def web-files ["index.html" "css/app.css" "js/main.js" "js/dice3d.js"])
