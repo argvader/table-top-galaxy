@@ -1,0 +1,186 @@
+[{:id :agonizing-wound,
+  :name "Agonizing Wound",
+  :roll [56 60],
+  :severity 2,
+  :text
+  "The target increases the difficulty of all Brawn and Agility checks by one until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :at-the-brink,
+  :name "At the Brink",
+  :roll [91 95],
+  :severity 3,
+  :text "The target suffers 2 strain each time they perform an action until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :bleeding-out,
+  :name "Bleeding Out",
+  :roll [131 140],
+  :severity 4,
+  :text
+  "Until this Critical Injury is healed, every round, the target suffers 1 wound and 1 strain at the beginning of their turn. For every 5 wounds they suffer beyond their wound threshold, they suffer one additional Critical Injury. Roll on the chart, suffering the injury (if they suffer this result a second time due to this, roll again).",
+  :source {:book "crb", :page 115}}
+ {:id :blinded,
+  :name "Blinded",
+  :roll [116 120],
+  :severity 3,
+  :text
+  "The target can no longer see. Upgrade the difficulty of all checks twice, and upgrade the difficulty of Perception and Vigilance checks three times, until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :bowled-over,
+  :name "Bowled Over",
+  :roll [41 45],
+  :severity 2,
+  :text "The target is knocked prone and suffers 1 strain.",
+  :source {:book "crb", :page 115}}
+ {:id :compromised,
+  :name "Compromised",
+  :roll [86 90],
+  :severity 2,
+  :text "Increase difficulty of all skill checks by one until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :crippled,
+  :name "Crippled",
+  :roll [96 100],
+  :severity 3,
+  :text
+  "One of the target’s limbs (selected by the GM) is impaired until this Critical Injury is healed. Increase difficulty of all checks that require use of that limb by one.",
+  :source {:book "crb", :page 115}}
+ {:id :dead,
+  :name "Dead",
+  :roll [151 nil],
+  :severity 0,
+  :text "Complete, obliterated death.",
+  :source {:book "crb", :page 115}}
+ {:id :discouraging-wound,
+  :name "Discouraging Wound",
+  :roll [26 30],
+  :severity 1,
+  :text "Move one player pool Story Point to the Game Master pool (reverse if NPC).",
+  :source {:book "crb", :page 115}}
+ {:id :distracted,
+  :name "Distracted",
+  :roll [16 20],
+  :severity 1,
+  :text "The target cannot perform a free maneuver during their next turn.",
+  :source {:book "crb", :page 115}}
+ {:id :fearsome-wound,
+  :name "Fearsome Wound",
+  :roll [51 55],
+  :severity 2,
+  :text
+  "The target increases the difficulty of all Presence and Willpower checks by one until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :gruesome-injury,
+  :name "Gruesome Injury",
+  :roll [126 130],
+  :severity 4,
+  :text
+  "Roll 1d10 to determine which of the target’s characteristics is affected: 1–3 for Brawn, 4–6 for Agility, 7 for Intellect, 8 for Cunning, 9 for Presence, 10 for Willpower. That characteristic is permanently reduced by one, to a minimum of 1.",
+  :source {:book "crb", :page 115}}
+ {:id :hamstrung,
+  :name "Hamstrung",
+  :roll [71 75],
+  :severity 2,
+  :text "The target loses their free maneuver until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :head-ringer,
+  :name "Head Ringer",
+  :roll [46 50],
+  :severity 2,
+  :text
+  "The target increases the difficulty of all Intellect and Cunning checks by one until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :horrific-injury,
+  :name "Horrific Injury",
+  :roll [106 110],
+  :severity 3,
+  :text
+  "Roll 1d10 to determine which of the target’s characteristics is affected: 1–3 for Brawn, 4–6 for Agility, 7 for Intellect, 8 for Cunning, 9 for Presence, 10 for Willpower. Until this Critical Injury is healed, treat that characteristic as one point lower.",
+  :source {:book "crb", :page 115}}
+ {:id :knocked-senseless,
+  :name "Knocked Senseless",
+  :roll [121 125],
+  :severity 3,
+  :text "The target is staggered until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :maimed,
+  :name "Maimed",
+  :roll [101 105],
+  :severity 3,
+  :text
+  "One of the target’s limbs (selected by the GM) is permanently lost. Unless the target has a cybernetic or prosthetic replacement, the target cannot perform actions that would require the use of that limb. All other actions gain [setback] until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :minor-nick,
+  :name "Minor Nick",
+  :roll [1 5],
+  :severity 1,
+  :text "The target suffers 1 strain.",
+  :source {:book "crb", :page 115}}
+ {:id :off-balance,
+  :name "Off-Balance",
+  :roll [21 25],
+  :severity 1,
+  :text "Add [setback] to the target’s next skill check.",
+  :source {:book "crb", :page 115}}
+ {:id :overpowered,
+  :name "Overpowered",
+  :roll [76 80],
+  :severity 2,
+  :text
+  "The target leaves themself open, and the attacker may immediately attempt another attack against them as an incidental, using the exact same pool as the original attack.",
+  :source {:book "crb", :page 115}}
+ {:id :scattered-senses,
+  :name "Scattered Senses",
+  :roll [66 70],
+  :severity 2,
+  :text "The target removes all [boost] from skill checks until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :slightly-dazed,
+  :name "Slightly Dazed",
+  :roll [61 65],
+  :severity 2,
+  :text "The target is disoriented until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :slowed-down,
+  :name "Slowed Down",
+  :roll [6 10],
+  :severity 1,
+  :text "The target can only act during the last allied Initiative slot on their next turn.",
+  :source {:book "crb", :page 115}}
+ {:id :stinger,
+  :name "Stinger",
+  :roll [36 40],
+  :severity 1,
+  :text "Increase the difficulty of the target’s next check by one.",
+  :source {:book "crb", :page 115}}
+ {:id :stunned,
+  :name "Stunned",
+  :roll [31 35],
+  :severity 1,
+  :text "The target is staggered until the end of their next turn.",
+  :source {:book "crb", :page 115}}
+ {:id :sudden-jolt,
+  :name "Sudden Jolt",
+  :roll [11 15],
+  :severity 1,
+  :text "The target drops whatever is in hand.",
+  :source {:book "crb", :page 115}}
+ {:id :temporarily-disabled,
+  :name "Temporarily Disabled",
+  :roll [111 115],
+  :severity 3,
+  :text "The target is immobilized until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :the-end-is-nigh,
+  :name "The End Is Nigh",
+  :roll [141 150],
+  :severity 4,
+  :text
+  "The target dies after the last Initiative slot during the next round unless this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}
+ {:id :winded,
+  :name "Winded",
+  :roll [81 85],
+  :severity 2,
+  :text
+  "The target cannot voluntarily suffer strain to activate any abilities or gain additional maneuvers until this Critical Injury is healed.",
+  :source {:book "crb", :page 115}}]

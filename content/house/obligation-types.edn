@@ -1,0 +1,61 @@
+;; House rule (docs/house-rules.md#secrets-and-obligations): pick or roll one at character creation.
+[{:id :blackmail,
+  :name "Blackmail",
+  :kind :secret,
+  :roll [1 10],
+  :text "Someone has proof of what you did and wants something for it.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :debt,
+  :name "Debt",
+  :kind :obligation,
+  :roll [11 20],
+  :text "You owe a corp or a person, and they will collect.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :family-duty,
+  :name "Family Duty",
+  :kind :obligation,
+  :roll [21 30],
+  :text "Kin depend on you, or expect you to take a role you never chose.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :forbidden-knowledge,
+  :name "Forbidden Knowledge",
+  :kind :secret,
+  :roll [31 40],
+  :text "You know something a corp would kill to keep buried.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :bounty,
+  :name "Bounty",
+  :kind :obligation,
+  :roll [41 50],
+  :text "There's a price on you, legal or otherwise.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :oath,
+  :name "Oath",
+  :kind :obligation,
+  :roll [51 60],
+  :text "You swore to see something through.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :addiction,
+  :name "Addiction",
+  :kind :secret,
+  :roll [61 70],
+  :text "A habit you hide, and a supplier who knows it.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :betrayal,
+  :name "Betrayal",
+  :kind :secret,
+  :roll [71 80],
+  :text "You sold someone out, and they may be alive.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :criminal-record,
+  :name "Criminal Record",
+  :kind :secret,
+  :roll [81 90],
+  :text "A name, a face, a record you've buried.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}
+ {:id :corporate-contract,
+  :name "Corporate Contract",
+  :kind :obligation,
+  :roll [91 100],
+  :text "Your body, skills or future belong to a corp on paper.",
+  :source {:book "house", :doc "docs/house-rules.md#secrets-and-obligations"}}]

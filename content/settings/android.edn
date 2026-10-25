@@ -1,0 +1,25 @@
+;; The Android setting (Shadow of the Beanstalk) as Manifest Destiny plays it.
+;; Each type says how to narrow the merged library; see ttg.content/pick.
+{:id :android
+ :name "Android"
+ :starting-credits 500
+ :types {:archetypes {:books ["sotb"]}
+         :careers {:books ["sotb"]}
+         :skills {:list :skill-list}             ; Table 1-1, SotB p.42
+         :talents {:list :talent-list}           ; Table 1-2, SotB p.46-47
+         :weapons {:settings #{"android" "general"}}
+         :armor {:settings #{"android" "general"}}
+         :gear {:settings #{"android" "general"}}
+         :attachments {:settings #{"android"}}
+         :item-qualities :all
+         :motivations :all
+         :crits :all
+         :spend-results :all
+         :network :all                           ; SotB ch.3: actions, ice, icebreakers
+         :network-results :all
+         :factions :all                          ; SotB p.56-77, Favors sections dropped
+         :adversaries :all                       ; CRB setting chapters + EPG samples; the GM picks
+         :vehicles :all                          ; SotB hoppers and ships + EPG samples (each has a settings note)
+         :tones :all                             ; EPG Heist and Noir
+         :obligation-types :all}                 ; house rule: replaces Debt and Favors
+ :house-rules [:obligation-rules]}

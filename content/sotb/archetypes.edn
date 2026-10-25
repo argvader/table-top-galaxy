@@ -1,0 +1,91 @@
+[{:id :bioroid,
+  :name "Bioroid",
+  :characteristics {:brawn 3, :agility 1, :intellect 1, :cunning 1, :willpower 1, :presence 1},
+  :wounds 11,
+  :strain 8,
+  :xp 170,
+  :abilities
+  [{:name "Special Abilities",
+    :text
+    "Bioroids do not need to eat, sleep, or breathe, and they are unaffected by toxins and poisons. They do not reduce their strain threshold when they receive cybernetics (cybernetics represent upgraded mechanical components instead of true cybernetics)."}
+   {:name "Inorganic",
+    :text
+    "Since bioroids are inorganic, they do not gain the benefits of healing wounds with slap patches (painkillers) or a Medicine check. Bioroids can heal wounds and strain naturally by resting, as their systems attempt self-repairs. Bioroids can also be “healed” by using the Mechanics skill instead of the Medicine skill, but otherwise following the rules in the Medical Care section on page 116 of the Genesys Core Rulebook."}],
+  :source {:book "sotb", :page 26}}
+ {:free-skills {:ranks 2, :choose 2},
+  :name "Clone",
+  :starting-skills
+  "A clone starts with two ranks in each of two different skills at character creation. They obtain these ranks before spending experience points, and these skills may not be increased higher than rank 2 during character creation.",
+  :source {:book "sotb", :page 27},
+  :abilities
+  [{:name "Underestimated", :text "When making an opposed check, clones add [advantage] to the results."}],
+  :wounds 9,
+  :id :clone,
+  :characteristics {:brawn 2, :agility 2, :intellect 2, :cunning 2, :willpower 2, :presence 2},
+  :strain 9,
+  :xp 85}
+ {:free-skills {:ranks 1, :skills ["Mechanics"]},
+  :free-item {:group "Cybernetics", :max-price 1000},
+  :name "Cyborg",
+  :starting-skills
+  "A cyborg starts with one rank in Mechanics. They obtain this rank before spending experience points, and this skill may not be increased higher than rank 2 during character creation.",
+  :source {:book "sotb", :page 28},
+  :abilities
+  [{:name "Adjusted to Cybernetics",
+    :text
+    "Once per session as an out-of-turn incidental, you may spend a Story Point to have your character heal strain equal to their number of cybernetics."}
+   {:name "Cyborg",
+    :text
+    "Your character begins play with one cybernetic (see page 104) that costs a total of 1,000 credits or less. They do not need to make any check to install this cybernetic, and they do not decrease their strain threshold because of this cybernetic (but will decrease their strain threshold as normal if they get any future cybernetics)."}],
+  :wounds 11,
+  :id :cyborg,
+  :characteristics {:brawn 3, :agility 2, :intellect 2, :cunning 2, :willpower 2, :presence 1},
+  :strain 8,
+  :xp 100}
+ {:free-skills {:ranks 1, :skills ["Resilience"]},
+  :free-item {:group "G-Mods", :max-price 1000},
+  :name "G-Mod",
+  :starting-skills
+  "A g-mod starts with one rank in Resilience. They obtain this rank before spending experience points, and this skill may not be increased higher than rank 2 during character creation.",
+  :source {:book "sotb", :page 29},
+  :abilities
+  [{:name "Enhanced Genetic Modifications",
+    :text
+    "Once per session when your character uses one of their g-mods to modify a check, you may spend a Story Point to add [success] equal to your character’s ranks in Resilience to the results (in addition to any other affects the g-mod has)."}
+   {:name "G-Mod",
+    :text
+    "Your character begins play with one g-mod (see page 106) that costs a total of 1,000 credits or less. They do not need to make any check to assimilate this g-mod."}],
+  :wounds 11,
+  :id :g-mod,
+  :characteristics {:brawn 2, :agility 2, :intellect 3, :cunning 2, :willpower 1, :presence 2},
+  :strain 11,
+  :xp 90}
+ {:free-skills {:ranks 1, :skills ["Coordination"]},
+  :name "Loonie",
+  :starting-skills
+  "A Loonie starts with one rank in Coordination. They obtain this rank before spending experience points, and this skill may not be increased higher than rank 2 during character creation.",
+  :source {:book "sotb", :page 30},
+  :abilities
+  [{:name "Zero-G Adept", :text "A Loonie does not count zero-gravity environments as difficult terrain."}
+   {:name "Resourceful",
+    :text
+    "Once per session after making a skill check, you may spend a Story Point to have your character reroll up to two dice in the pool."}],
+  :wounds 9,
+  :id :loonie,
+  :characteristics {:brawn 1, :agility 3, :intellect 2, :cunning 2, :willpower 2, :presence 2},
+  :strain 11,
+  :xp 100}
+ {:free-skills {:ranks 1, :choose 2, :non-career true},
+  :name "Natural",
+  :starting-skills
+  "A natural starts with one rank in each of two different non-career skills at character creation. They obtain this rank before spending experience points, and these skills may not be increased higher than rank 2 during character creation.",
+  :source {:book "sotb", :page 25},
+  :abilities
+  [{:name "Ready for Anything",
+    :text
+    "Once per session as an out-of-turn incidental, you may move one Story Point from the Game Master’s pool to the players' pool."}],
+  :wounds 10,
+  :id :natural,
+  :characteristics {:brawn 2, :agility 2, :intellect 2, :cunning 2, :willpower 2, :presence 2},
+  :strain 10,
+  :xp 120}]

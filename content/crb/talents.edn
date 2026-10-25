@@ -1,0 +1,638 @@
+[{:id :animal-companion,
+  :name "Animal Companion",
+  :tier 3,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "Your character creates a bond with a single animal approved by your GM. This animal must be silhouette 0 (no larger than a mid-sized dog). The bond persists as long as your character chooses, although at your GM’s discretion, the bond may also be broken due to abusive treatment or other extenuating circumstances. As long as the bond persists, the animal follows your character, and you dictate the animal’s overall behavior (although, since the animal is only bonded with the character, not dominated, it may still perform inconvenient actions such as scratching furniture, consuming rations, and marking territory). Once per round in structured encounters, your character may spend one maneuver to direct their animal in performing one action and one maneuver during your character’s turn. The animal must be within hearing and visual range of your character (generally medium range) to do this. Otherwise, the animal does not contribute to the encounter. The specifics of its behavior are up to you and your GM. For every additional rank of Animal Companion your character has, increase the allowed silhouette of the companion by one (this may mean your character gets a new companion, or their companion grows in size). This talent can also change in flavor depending on the nature of your game setting. While an animal companion may make sense in many settings, in a futuristic setting it may make more sense for the “animal” to be a robot or drone, for example.",
+  :source {:book "crb", :page 77},
+  :settings "You should use this talent in all settings."}
+ {:id :barrel-roll,
+  :name "Barrel Roll",
+  :tier 3,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "Your character can only use this talent while piloting a starfighter or airplane of Silhouette 3 or less. When your vehicle suffers a hit from a ranged combat check, after damage is calculated but before armor is applied, your character may have their vehicle suffer 3 system strain to use this talent. Then, reduce the damage suffered by a number equal to their ranks in Piloting.",
+  :source {:book "crb", :page 77},
+  :settings
+  "You should use this talent in the steampunk, weird war, modern, hard science fiction, and space opera settings."}
+ {:id :basic-military-training,
+  :name "Basic Military Training",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text "Athletics, Ranged (Heavy), and Resilience are now career skills for your character.",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in the weird war setting."}
+ {:id :berserk,
+  :name "Berserk",
+  :tier 2,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "Once per encounter, your character may use this talent. Until the end of the encounter or until they are incapacitated, your character adds [success] [advantage] [advantage] to all melee combat checks they make. However, opponents add [success] to all combat checks targeting your character. While berserk, your character cannot make ranged combat checks. At the end of the encounter (or when they are incapacitated), your character suffers 6 strain.",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in the fantasy and weird war settings."}
+ {:id :bought-info,
+  :name "Bought Info",
+  :tier 1,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "When making any knowledge skill check, your character can instead use this talent to spend an amount of currency equal to fifty times the difficulty of the check and automatically succeed on the knowledge check with one uncanceled [success] (instead of rolling). At your GM’s discretion, your character may not be able to use Bought Info if the information is particularly sensitive or difficult to find, or buying it doesn’t make narrative sense.",
+  :source {:book "crb", :page 72},
+  :settings "You should use this talent in all settings."}
+ {:id :cant-we-talk-about-this,
+  :name "Can’t We Talk About This?",
+  :tier 4,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Your character can use this talent to make an opposed Charm or Deception versus Discipline check targeting a single non-nemesis adversary within medium range. If the check succeeds, the target cannot attack your character (or perform hostile actions against your character) until the end of their next turn. You may spend [advantage] [advantage] to increase the length of the effect by one additional turn, and spend [triumph] to extend the benefits to all of their identified allies within short range. The effect ends immediately if your character or a known ally attacks the target. In addition, your GM may rule that some targets are immune to this ability. An automated sentry turret, for example, has no interest in resolving a conflict through talking, nor would someone consumed by rage and the desire for revenge against your character.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :clever-retort,
+  :name "Clever Retort",
+  :tier 1,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "Once per encounter, your character may use this talent to add automatic [threat] [threat] to another character’s social skill check.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :coordinated-assault,
+  :name "Coordinated Assault",
+  :tier 2,
+  :activation "Active (Maneuver)",
+  :ranked true,
+  :text
+  "Once per turn, your character may use this talent to have a number of allies engaged with your character equal to your ranks in Leadership add [advantage] to all combat checks they make until the end of your character’s next turn. The range of this talent increases by one band per rank of Coordinated Assault beyond the first.",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in all settings."}
+ {:id :counteroffer,
+  :name "Counteroffer",
+  :tier 2,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to choose one non-nemesis adversary within medium range and make an opposed Negotiation versus Discipline check. If successful, the target becomes staggered until the end of their next turn. At your GM’s discretion, you may spend [triumph] on this check to have the adversary become an ally until the end of the encounter. However, the duration of this may be shortened or extended depending on whether your GM feels your offer is appealing to the adversary and whether your character follows through on their offer!",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in all settings."}
+ {:id :daring-aviator,
+  :name "Daring Aviator",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Before your character makes a Driving or Piloting check, they may add a number of [threat] to the results to use this talent to add an equal number of [success]. The number may not exceed your character’s ranks in Daring Aviator.",
+  :source {:book "crb", :page 75},
+  :settings
+  "You should use this talent in the steampunk, weird war, modern day, science fiction, and space opera settings."}
+ {:id :deadeye,
+  :name "Deadeye",
+  :tier 4,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "After your character inflicts a Critical Injury with a ranged weapon and rolls the result, your character may suffer 2 strain to use this talent. Then, you may select any Critical Injury of the same severity to apply to the target instead.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :dedication,
+  :name "Dedication",
+  :tier 5,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "Each rank of Dedication increases one of your character’s characteristics by one. This talent cannot increase a characteristic above 5. You cannot increase the same characteristic with Dedication twice.",
+  :source {:book "crb", :page 81},
+  :settings "You should use this talent in all settings."}
+ {:id :defensive,
+  :name "Defensive",
+  :tier 4,
+  :activation "Passive",
+  :ranked true,
+  :text "Each rank of Defensive increases your character’s melee defense and ranged defense by one.",
+  :source {:book "crb", :page 80},
+  :settings "You should use this talent in all settings."}
+ {:id :defensive-driving,
+  :name "Defensive Driving",
+  :tier 4,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "Increase the defense of any vehicle your character pilots by one per rank of Defensive Driving. The specifics of this talent require the optional vehicle rules, on page 220. If your game does not use these rules, this talent adds [setback] per rank to combat checks targeting your character’s vehicle or your character while piloting it.",
+  :source {:book "crb", :page 80},
+  :settings
+  "You should use this talent in the steampunk, weird war, modern day, science fiction, and space opera settings."}
+ {:id :defensive-stance,
+  :name "Defensive Stance",
+  :tier 2,
+  :activation "Active (Maneuver)",
+  :ranked true,
+  :text
+  "Once per round, your character may suffer a number of strain no greater than their ranks in Defensive Stance to use this talent. Then, until the end of your character’s next turn, upgrade the difficulty of all melee combat checks targeting your character a number of times equal to the strain suffered.",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in all settings."}
+ {:id :defensive-sysops,
+  :name "Defensive Sysops",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When attempting to defend a computer system against intrusion (or when someone attempts to hack a computer owned or programmed by your character) your character adds [setback] [setback] to their opponent’s checks. If your character has access to the computer system when the intrusion takes place, they are automatically aware of the intrusion.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in the modern day, science fiction, and space opera settings."}
+ {:id :defensive-sysops-improved,
+  :name "Defensive Sysops (Improved)",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Your character must have purchased the Defensive Sysops talent to benefit from this talent. Before adding [setback] [setback] from Defensive Sysops to a check, use this talent to add [failure] [threat] to the results of the check instead.",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in the modern day, science fiction, and space opera settings."}
+ {:id :desperate-recovery,
+  :name "Desperate Recovery",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Before your character heals strain at the end of an encounter, if their strain is more than half of their strain threshold, they heal two additional strain.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :distinctive-style,
+  :name "Distinctive Style",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When making a Computers check to hack a system or break into a secured network, before rolling, your character may use this talent to add [success] [success] [threat] [threat] to the results. If you are using the optional hacking rules on page 232 and your check generates [threat] [threat], your GM should spend it on the I Know You! option in Table I.2-22 on page 234.",
+  :source {:book "crb", :page 78},
+  :settings "You should use this talent in the modern day, science fiction, and space opera settings."}
+ {:id :dodge,
+  :name "Dodge",
+  :tier 3,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked true,
+  :text
+  "When your character is targeted by a combat check (ranged or melee), they may suffer a number of strain no greater than their ranks in Dodge to use this talent. Then, upgrade the difficulty of the combat check targeting your character a number of times equal to the strain suffered.",
+  :source {:book "crb", :page 78},
+  :settings "You should use this talent in all settings."}
+ {:id :dual-wielder,
+  :name "Dual Wielder",
+  :tier 2,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "Your character may use this talent to decrease the difficulty of the next combined combat check (see TwoWeapon Combat, on page 108) they make during the same turn by one.",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in all settings."}
+ {:id :duelist,
+  :name "Duelist",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character adds [boost] to their melee combat checks while engaged with a single opponent. Your character adds [setback] to their melee combat checks while engaged with three or more opponents.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :durable,
+  :name "Durable",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "Your character reduces any Critical Injury result they suffer by 10 per rank of Durable, to a minimum of 01.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :eagle-eyes,
+  :name "Eagle Eyes",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per encounter before making a ranged combat check, you may use this talent to increase your weapon’s range by one range band (to a maximum of extreme range). This lasts for the duration of the combat check.",
+  :source {:book "crb", :page 78},
+  :settings "You should use this talent in all settings."}
+ {:id :enduring,
+  :name "Enduring",
+  :tier 4,
+  :activation "Passive",
+  :ranked true,
+  :text "Each rank of Enduring increases your character’s soak value by one.",
+  :source {:book "crb", :page 80},
+  :settings "You should use this talent in all settings."}
+ {:id :fan-the-hammer,
+  :name "Fan the Hammer",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per encounter before making a combat check with a pistol (your GM has the final say on whether a weapon is a pistol or not), your character may use this talent to add the Auto-fire quality to the pistol when resolving the check. If your character does, the weapon runs out of ammo exactly as with an Out of Ammo result (see page 104).",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in the steampunk, weird war, and modern day settings."}
+ {:id :field-commander,
+  :name "Field Commander",
+  :tier 3,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Your character may use this talent to make an Average ([difficulty] [difficulty]) Leadership check. If successful, a number of allies equal to your character’s Presence may immediately suffer 1 strain to perform one maneuver (out of turn). If there are any questions as to which allies take their maneuvers first, your character is the final arbiter.",
+  :source {:book "crb", :page 78},
+  :settings "You should use this talent in all settings."}
+ {:id :field-commander-improved,
+  :name "Field Commander (Improved)",
+  :tier 4,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character must have purchased the Field Commander talent to benefit from this talent. When your character uses the Field Commander talent, your character affects a number of allies equal to twice the character’s Presence. In addition, you may spend [triumph] to allow one ally to suffer 1 strain to perform an action, instead of a maneuver.",
+  :source {:book "crb", :page 80},
+  :settings "You should use this talent in all settings."}
+ {:id :forager,
+  :name "Forager",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character removes up to [setback] [setback] from any skill checks they make to find food, water, or shelter. Checks to forage or search the area that your character makes take half the time they would normally.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :forgot-to-count,
+  :name "Forgot to Count?",
+  :tier 3,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "When an opponent makes a ranged combat check, you can spend [threat] [threat] from that check to use this talent to cause their weapon to run out of ammo (see page 104), as long as the weapon can normally run out of ammunition.",
+  :source {:book "crb", :page 78},
+  :settings
+  "You should use this talent in the steampunk, weird war, modern day, science fiction, and space opera settings."}
+ {:id :full-throttle,
+  :name "Full Throttle",
+  :tier 3,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "While driving or flying, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Piloting or Driving check. If successful, the top speed of the vehicle increases by one (to a maximum of 5) for a number of rounds equal to your character’s Cunning. The specifics of this talent require the optional vehicle rules, on page 220. If your game does not use these rules, this talent simply makes the vehicle go much faster than normal, with the specifics up to your GM.",
+  :source {:book "crb", :page 78},
+  :settings
+  "You should use this talent in the steampunk, weird war, modern day, science fiction, and space opera settings."}
+ {:id :grenadier,
+  :name "Grenadier",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "When your character makes a ranged combat check with a weapon that has the Blast item quality, you may spend one Story Point to use this talent to trigger the weapon’s Blast quality, instead of spending [advantage] (even if the attack misses). In addition, your character treats grenades as having a range of medium.",
+  :source {:book "crb", :page 78},
+  :settings
+  "You should use this talent in the steampunk, weird war, modern day, science fiction, and space opera settings."}
+ {:id :grit,
+  :name "Grit",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text "Each rank of Grit increases your character’s strain threshold by one.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :hamstring-shot,
+  :name "Hamstring Shot",
+  :tier 1,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per round, your character may use this talent to perform a ranged combat check against one non-vehicle target within range of the weapon used. If the check is successful, halve the damage inflicted by the attack (before reducing damage by the target’s soak). The target is immobilized until the end of its next turn.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :heightened-awareness,
+  :name "Heightened Awareness",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Allies within short range of your character add [boost] to their Perception and Vigilance checks. Allies engaged with your character add [boost] [boost] instead.",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in all settings."}
+ {:id :heroic-will,
+  :name "Heroic Will",
+  :tier 3,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "When you purchase this talent for your character, choose two characteristics. You may spend a Story Point to use this talent to have your character ignore the effects of all Critical Injuries on any skill checks using those two characteristics until the end of the current encounter. (Your character still suffers the Critical Injuries; they just ignore the effects. See page 114.)",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :how-convenient,
+  :name "How Convenient!",
+  :tier 4,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Mechanics check. If successful, one device involved in the current encounter (subject to your GM’s approval) spontaneously fails. This can be because of your character’s actions, or it can simply be incredibly convenient timing!",
+  :source {:book "crb", :page 80},
+  :settings "You should use this talent in all settings."}
+ {:id :indomitable,
+  :name "Indomitable",
+  :tier 5,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "Once per encounter, when your character would be incapacitated due to exceeding their wound or strain threshold, you may spend a Story Point to use this talent. Then, your character is not incapacitated until the end of their next turn. If your character reduces their strain or wounds to below their threshold before the end of their next turn, they are not incapacitated.",
+  :source {:book "crb", :page 81},
+  :settings "You should use this talent in all settings."}
+ {:id :inspiring-rhetoric,
+  :name "Inspiring Rhetoric",
+  :tier 2,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Your character may use this talent to make an Average ([difficulty] [difficulty]) Leadership check. For each [success] the check generates, one ally within short range heals one strain. For each [advantage], one ally benefiting from Inspiring Rhetoric heals one additional strain.",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in all settings."}
+ {:id :inspiring-rhetoric-improved,
+  :name "Inspiring Rhetoric (Improved)",
+  :tier 3,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character must have purchased the Inspiring Rhetoric talent to benefit from this talent. Allies affected by your character’s Inspiring Rhetoric add [boost] to all skill checks they make for a number of rounds equal to your character’s ranks in Leadership.",
+  :source {:book "crb", :page 78},
+  :settings "You should use this talent in all settings."}
+ {:id :inspiring-rhetoric-supreme,
+  :name "Inspiring Rhetoric (Supreme)",
+  :tier 4,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Your character must have purchased the Inspiring Rhetoric talent to benefit from this talent. Your character may choose to suffer 1 strain to use the Inspiring Rhetoric talent as a maneuver, instead of as an action.",
+  :source {:book "crb", :page 80},
+  :settings "You should use this talent in all settings."}
+ {:id :inventor,
+  :name "Inventor",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "When your character makes a check to construct new items or modify existing ones, use this talent to add a number of [boost] to the check equal to ranks of Inventor. In addition, your character may attempt to reconstruct devices that they have heard described but have not seen and do not have any kinds of plans or schematics for.",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in all settings."}
+ {:id :jump-up,
+  :name "Jump Up",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per round during your character’s turn, your character may use this talent to stand from a prone or seated position as an incidental.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :knack-for-it,
+  :name "Knack for It",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "When you purchase this talent for your character, select one skill. Your character removes [setback] [setback] from any checks they make using this skill. Each additional time you purchase this talent for your character, select two additional skills. Your character also removes [setback] [setback] from any checks they make using these skills. You cannot select combat or magic skills when choosing skills for this talent.",
+  :source {:book "crb", :page 73},
+  :settings "You should use this talent in all settings."}
+ {:id :know-somebody,
+  :name "Know Somebody",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Once per session, when attempting to purchase a legally available item, your character may use this talent to reduce its rarity by one per rank of Know Somebody.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :lets-ride,
+  :name "Let’s Ride",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per round during your character's turn, your character can use this talent to mount or dismount from a vehicle or animal, or move from one position in a vehicle to another (such as from the cockpit to a gun turret) as an incidental. In addition, if your character suffers a short-range fall (see page 112) from a vehicle or animal, they suffer no damage and land on their feet.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :lucky-strike,
+  :name "Lucky Strike",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When your character purchases this talent, choose one characteristic. After your character makes a successful combat check, you may spend one Story Point to use this talent to add damage equal to your character’s ranks in that characteristic to one hit of the combat check.",
+  :source {:book "crb", :page 76},
+  :settings "You should use this talent in all settings."}
+ {:id :mad-inventor,
+  :name "Mad Inventor",
+  :tier 4,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to make a Mechanics check to attempt to cobble together the functional equivalent of any item using spare parts or salvage. The difficulty of the check is based on the item’s rarity; see Table I.4–1: Mad Inventor Item Rarity. Your GM will modify the check based on the circumstances and might decide that some items simply can’t be created with what’s available (if you are being held in a prison cell, for instance). Your GM may spend [despair] on the check to indicate the item ends up being dangerous to the user and anyone around them in some way. For instance, a pistol might explode instead of running out of ammo, or a breathing mask might make the user light-headed.",
+  :source {:book "crb", :page 80},
+  :settings "You should use this talent in the steampunk and weird war settings."}
+ {:id :master,
+  :name "Master",
+  :tier 5,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When you purchase this talent for your character, choose one skill. Once per round, your character may suffer 2 strain to use this talent to reduce the difficulty of the next check they make using that skill by two, to a minimum of Easy ([difficulty]).",
+  :source {:book "crb", :page 81},
+  :settings "You should use this talent in all settings."}
+ {:id :natural,
+  :name "Natural",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When your character purchases this talent, choose two skills. Once per session, your character may use this talent to reroll one skill check that uses one of those two skills.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :one-with-nature,
+  :name "One with Nature",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When in the wilderness, your character may make a Simple (–) Survival check, instead of Discipline or Cool, to recover strain at the end of an encounter (see page 117).",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :overcharge,
+  :name "Overcharge",
+  :tier 4,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per encounter, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Mechanics check and choose one of their cybernetic implants that grants them one of the following: +1 to a characteristic rating, +1 rank to a skill, +1 rank of a ranked talent. If your character succeeds, until the end of the encounter, the",
+  :source {:book "crb", :page 80}}
+ {:id :overcharge-improved,
+  :name "Overcharge (Improved)",
+  :tier 5,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character must have purchased the Overcharge talent to benefit from this talent. When using the Overcharge talent, your character may spend [advantage] [advantage] or [triumph] from the Mechanics check to immediately take one additional action. This talent can only be used once per check.",
+  :source {:book "crb", :page 81},
+  :settings "You should use this talent in the science fiction and space opera settings."}
+ {:id :painkiller-specialization,
+  :name "Painkiller Specialization",
+  :tier 3,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "When your character uses painkillers (or their equivalent, depending on the setting), the target heals one additional wound per rank of Painkiller Specialization. The sixth painkiller and beyond each day still has no effect.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :parry,
+  :name "Parry",
+  :tier 1,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked true,
+  :text
+  "When your character suffers a hit from a melee combat check, after damage is calculated but before soak is applied (so immediately after Step 3 of Perform a Combat check, page 102), your character may suffer 3 strain to use this talent to reduce the damage of the hit by two plus their ranks in Parry. This talent can only be used once per hit, and your character needs to be wielding a Melee weapon.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :parry-improved,
+  :name "Parry (Improved)",
+  :tier 3,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "Your character must have purchased the Parry talent to benefit from this talent. When your character suffers a hit from a melee combat check and uses Parry to reduce the damage from that hit, after the attack is resolved, you may spend [despair] or [threat] [threat] [threat] from the attacker’s check to use this talent. Then, your character automatically hits the attacker once with a Brawl or Melee weapon your character is wielding. The hit deals the weapon’s base damage, plus any damage from applicable talents or abilities. Your character can’t use this talent if the original attack incapacitates them.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :proper-upbringing,
+  :name "Proper Upbringing",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "When your character makes a social skill check in polite company (as determined by your GM), they may suffer a number of strain to use this talent to add an equal number of [advantage] to the check. The number may not exceed your character’s ranks in Proper Upbringing.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :quick-draw,
+  :name "Quick Draw",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per round on your character’s turn, they may use this talent to draw or holster an easily accessible weapon or item as an incidental. Quick Draw also reduces a weapon’s Prepare rating by one, to a minimum of one.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :quick-strike,
+  :name "Quick Strike",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "Your character adds [boost] for each rank of Quick Strike to any combat checks they make against any targets that have not yet taken their turn in the current encounter.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :rapid-archery,
+  :name "Rapid Archery",
+  :tier 3,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "While your character is armed with a bow (or similar weapon, at your GM’s discretion) they may suffer 2 strain to use this talent. During the next ranged combat check your character makes this turn, the bow gains the Linked quality with a value equal to their ranks in the Ranged skill.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in the fantasy setting."}
+ {:id :rapid-reaction,
+  :name "Rapid Reaction",
+  :tier 1,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked true,
+  :text
+  "Your character may suffer a number of strain to use this talent to add an equal number of [success] to a Vigilance or Cool check they make to determine Initiative order. The number may not exceed your character’s ranks in Rapid Reaction.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :ruinous-repartee,
+  :name "Ruinous Repartee",
+  :tier 5,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per encounter, your character may use this talent to make an opposed Charm or Coercion versus Discipline check targeting one character within medium range (or within earshot). If successful, the target suffers strain equal to twice your character’s Presence, plus one additional strain per [success]. Your character heals strain equal to the strain inflicted. If incapacitated due to this talent, the target could flee the scene in shame, collapse in a dejected heap, or throw themself at your character in fury, depending on your GM and the nature of your character’s witty barbs.",
+  :source {:book "crb", :page 81},
+  :settings "You should use this talent in all settings."}
+ {:id :scathing-tirade,
+  :name "Scathing Tirade",
+  :tier 2,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Your character may use this talent to make an Average ([difficulty] [difficulty]) Coercion check. For each [success] the check generates, one enemy within short range suffers 1 strain. For each [advantage], one enemy affected by Scathing Tirade suffers 1 additional strain.",
+  :source {:book "crb", :page 77},
+  :settings "You should use this talent in all settings."}
+ {:id :scathing-tirade-improved,
+  :name "Scathing Tirade (Improved)",
+  :tier 3,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character must have purchased the Scathing Tirade talent to benefit from this talent. Enemies affected by your character’s Scathing Tirade add [setback] to all skill checks they make for a number of rounds equal to your character’s ranks in Coercion.",
+  :source {:book "crb", :page 79},
+  :settings "You should use this talent in all settings."}
+ {:id :scathing-tirade-supreme,
+  :name "Scathing Tirade (Supreme)",
+  :tier 4,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Your character must have purchased the Scathing Tirade talent to benefit from this talent. Your character may choose to suffer 1 strain to use the Scathing Tirade talent as a maneuver, instead of as an action.",
+  :source {:book "crb", :page 81},
+  :settings "You should use this talent in all settings."}
+ {:id :second-wind,
+  :name "Second Wind",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Once per encounter, your character may use this talent to heal an amount of strain equal to their ranks in Second Wind.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :side-step,
+  :name "Side Step",
+  :tier 2,
+  :activation "Active (Action)",
+  :ranked true,
+  :text
+  "Once per round, your character may suffer a number of strain no greater than their ranks in Side Step to use this talent. Until the end of your character’s next turn, upgrade the difficulty of all ranged combat checks targeting your character a number of times equal to the strain suffered.",
+  :source {:book "crb", :page 77},
+  :settings "You should use this talent in all settings."}
+ {:id :surgeon,
+  :name "Surgeon",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "When your character makes a Medicine check to heal wounds, the target heals one additional wound per rank of Surgeon.",
+  :source {:book "crb", :page 74},
+  :settings "You should use this talent in all settings."}
+ {:id :swift,
+  :name "Swift",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character does not suffer the penalties for moving through difficult terrain (they move through difficult terrain at normal speed without spending additional maneuvers).",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in all settings."}
+ {:id :toughened,
+  :name "Toughened",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text "Each rank of Toughened increases your character’s wound threshold by two.",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in all settings."}
+ {:id :unremarkable,
+  :name "Unremarkable",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text "Other characters add [failure] to any checks made to find or identify your character in a crowd.",
+  :source {:book "crb", :page 75},
+  :settings "You should use this talent in all settings."}]

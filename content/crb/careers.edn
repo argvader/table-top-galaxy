@@ -1,0 +1,84 @@
+[{:id :druid,
+  :name "Druid",
+  :skills ["Athletics" "Brawl" "Coordination" "Melee" "Primal" "Resilience" "Survival" "Vigilance"],
+  :text "(Any Setting Using the Magic Alternate Rules)",
+  :source {:book "crb", :page 43}}
+ {:id :entertainer,
+  :name "Entertainer",
+  :skills ["Charm" "Coordination" "Deception" "Discipline" "Leadership" "Melee" "Skulduggery" "Stealth"],
+  :text "",
+  :source {:book "crb", :page 40}}
+ {:id :explorer,
+  :name "Explorer",
+  :skills ["Athletics" "Brawl" "Coordination" "Deception" "Perception" "Ranged" "Stealth" "Survival"],
+  :text "",
+  :source {:book "crb", :page 41}}
+ {:id :fighter-pilot,
+  :name "Fighter Pilot",
+  :skills ["Cool" "Driving" "Gunnery" "Mechanics" "Perception" "Piloting" "Ranged (Light)" "Vigilance"],
+  :text "(Weird War, Modern, Science Fiction, Space Opera, Any Setting Using Vehicle Alternate Rules)",
+  :source {:book "crb", :page 42}}
+ {:id :hacker,
+  :name "Hacker",
+  :skills
+  ["Computers" "Discipline" "Knowledge" "Mechanics" "Perception" "Piloting" "Streetwise" "Vigilance"],
+  :text "(Science Fiction, Space Opera, Any Setting Using the Hacking Alternate Rules)",
+  :source {:book "crb", :page 42}}
+ {:id :healer,
+  :name "Healer",
+  :skills ["Cool" "Discipline" "Knowledge" "Medicine" "Melee" "Resilience" "Survival" "Vigilance"],
+  :text "",
+  :source {:book "crb", :page 41}}
+ {:id :knight,
+  :name "Knight",
+  :skills
+  ["Athletics" "Discipline" "Leadership" "Melee (Heavy)" "Melee (Light)" "Resilience" "Riding" "Vigilance"],
+  :text "(Fantasy)",
+  :source {:book "crb", :page 42}}
+ {:id :leader,
+  :name "Leader",
+  :skills ["Charm" "Coercion" "Cool" "Discipline" "Leadership" "Melee" "Negotiation" "Perception"],
+  :text "",
+  :source {:book "crb", :page 41}}
+ {:id :mad-scientist,
+  :name "Mad Scientist",
+  :skills
+  ["Alchemy" "Coercion" "Knowledge" "Mechanics" "Medicine" "Operating" "Skulduggery" "Ranged (Heavy)"],
+  :text "(Steampunk, Weird War)",
+  :source {:book "crb", :page 43}}
+ {:id :priest,
+  :name "Priest",
+  :skills ["Charm" "Coercion" "Cool" "Discipline" "Divine" "Medicine" "Melee" "Negotiation"],
+  :text "(Any Setting Using the Magic Alternate Rules)",
+  :source {:book "crb", :page 43}}
+ {:id :scoundrel,
+  :name "Scoundrel",
+  :skills ["Charm" "Cool" "Coordination" "Deception" "Ranged" "Skulduggery" "Stealth" "Streetwise"],
+  :text "",
+  :source {:book "crb", :page 41}}
+ {:id :socialite,
+  :name "Socialite",
+  :skills ["Charm" "Cool" "Deception" "Knowledge" "Negotiation" "Perception" "Streetwise" "Vigilance"],
+  :text "",
+  :source {:book "crb", :page 41}}
+ {:id :soldier,
+  :name "Soldier",
+  :skills ["Athletics" "Brawl" "Coercion" "Melee" "Perception" "Ranged" "Survival" "Vigilance"],
+  :text "",
+  :source {:book "crb", :page 41}}
+ {:id :starship-captain,
+  :name "Starship Captain",
+  :skills ["Computers" "Discipline" "Gunnery" "Knowledge" "Leadership" "Mechanics" "Operating" "Perception"],
+  :text "(Science Fiction, Space Opera, Any Setting Using Vehicle Alternate Rules)",
+  :source {:book "crb", :page 43}}
+ {:id :tradesperson,
+  :name "Tradesperson",
+  :skills
+  ["Athletics" "Brawl" "Discipline" "Mechanics" "Negotiation" "Perception" "Resilience" "Streetwise"],
+  :text "",
+  :source {:book "crb", :page 42}}
+ {:id :wizard,
+  :name "Wizard",
+  :skills ["Arcana" "Coercion" "Discipline" "Knowledge" "Leadership" "Skulduggery" "Stealth" "Vigilance"],
+  :text "(Any Setting Using the Magic Alternate Rules)",
+  :source {:book "crb", :page 43}}]

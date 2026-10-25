@@ -1,0 +1,17 @@
+;; bb dev watches :app on http://localhost:8280; bb build makes the release bundle; bb test runs :test under Node.
+;; :dice3d (three + cannon-es) loads on the first roll. asset-path is relative so it also loads under /roller/.
+{:deps {:aliases [:test]}
+ :dev-http {8280 "public"}
+ :builds {:app {:target :browser
+                :output-dir "public/js"
+                :asset-path "js"
+                :module-loader true
+                :modules {:main {:init-fn ttg.app/init}
+                          :dice3d {:entries [ttg.ui.dice3d] :depends-on #{:main}}}
+                ;; cannon-es's "main" build requires Node's perf_hooks; the browser needs its ES module build.
+                :js-options {:entry-keys ["browser" "module" "main"]}
+                :devtools {:after-load ttg.app/mount!}}
+          :test {:target :node-test
+                 :output-to ".shadow-cljs/test/node-tests.js"
+                 :ns-regexp "-test$"
+                 :autorun true}}}

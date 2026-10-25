@@ -1,0 +1,86 @@
+[{:category "General",
+  :avoid-when
+  ["Your character is trying to reactivate a deactivated program. This would require the Computers (Sysops) skill."
+   "Your character is trying to open a mechanical lock. Your character needs to use Skulduggery to defeat a mechanical item of that type."
+   "Your character is trying to backtrace someone who has intruded on a server. This also requires the Computers (Sysops) skill."],
+  :name "Computers (Hacking)",
+  :source {:book "sotb", :page 43},
+  :variant-of :computers,
+  :characteristic :intellect,
+  :id :computers-hacking,
+  :use-when
+  ["Your character is trying to enter a secured server."
+   "Your character is shutting down a piece of ice."
+   "Your character is trying to open an electronic lock."
+   "Your character is trying to destroy a computer program."],
+  :text
+  "Hacking represents any offensive and destructive uses of the Computers skill presented in the Genesys Core Rulebook. It covers any attempts at electronic code breaking, intrusion or, of course, running on servers and breaking ice."}
+ {:category "General",
+  :avoid-when
+  ["Your character is trying to deactivate or destroy a program. This would require the Computers (Hacking) skill."
+   "Your character wants to remember details about a particular server on the Net. They need the Knowledge (The Net) skill for that."
+   "Your character is trying to crack an electronic code or encryption. This also requires Computers (Hacking)."],
+  :name "Computers (Sysops)",
+  :source {:book "sotb", :page 44},
+  :variant-of :computers,
+  :characteristic :intellect,
+  :id :computers-sysops,
+  :use-when
+  ["Your character is trying to backtrace a runner who is trying to hack your server."
+   "Your character needs to activate ice or other countermeasure programs."
+   "Your character is trying to repair a damaged program."
+   "Your character is trying to create a new program."],
+  :text
+  "If Hacking represents offensive or destructive uses of the Computers skill, Sysops represents its defensive and constructive uses. The most prominent use of Sysops is to defend computer systems against runners, viruses, and other intrusions."}
+ {:category "Knowledge",
+  :avoid-when
+  ["Your character is trying to fix a hydrogen fuel cell. This would require Mechanics."
+   "Your character is trying to fly a spacecraft along a specific trajectory. Your character may use Knowledge (Science) to calculate the course, but they need to use Operating to fly it."
+   "Your character needs to know the specifics of the Fed’s jurisdiction in New Angeles, which would require the Knowledge (Society) skill instead. Skill Char Type Source Athletics Brawn General Core Rulebook (page 58) Brawl Brawn Combat Core Rulebook (page 67) Charm Presence Social Core Rulebook (page 54) Coercion Willpower Social Core Rulebook (page 55) Computers (Hacking) Intellect General Computers (Sysops) Intellect General Cool Presence General Core Rulebook (page 59) Coordination Agility General Core Rulebook (page 59) Deception Cunning Social Core Rulebook (page 56) Discipline Willpower General Core Rulebook (page 60) Driving Agility General Core Rulebook (page 60) Gunnery Agility Combat Core Rulebook (page 69) Knowledge (Science) Intellect Knowledge Knowledge (Society) Intellect Knowledge Knowledge (The Net) Intellect Knowledge Leadership Presence Social Core Rulebook (page 56) Mechanics Intellect General Core Rulebook (page 60) Medicine Intellect General Core Rulebook (page 61) Melee Brawn Combat Core Rulebook (page 67) Negotiation Presence Social Core Rulebook (page 56) Operating Intellect General Core Rulebook (page 62) Perception Cunning General Core Rulebook (page 62) Piloting Agility General Core Rulebook (page 62) Ranged (Heavy) Agility Combat Core Rulebook (page 69) Ranged (Light) Agility Combat Core Rulebook (page 68) Resilience Brawn General Core Rulebook (page 63) Skulduggery Cunning General Core Rulebook (page 64) Stealth Agility General Core Rulebook (page 64) Streetwise Cunning General Core Rulebook (page 65) Survival Cunning General Core Rulebook (page 65) Vigilance Willpower General Core Rulebook (page 65)"],
+  :name "Knowledge (Science)",
+  :source {:book "sotb", :page 42},
+  :variant-of :knowledge,
+  :characteristic :intellect,
+  :id :knowledge-science,
+  :use-when
+  ["Your character is trying to recall the formula for a drug or chemical."
+   "Your character needs to remember the name of a lunar crater."
+   "Your character tries to calculate the correct trajectory for a spacecraft entering Earth orbit."
+   "Your character needs to know how many people a buckyweave rope can support before breaking."],
+  :text
+  "Science has made great discoveries, the results of which are all around the citizens of New Angeles. New technologies such as fusion power, clones, bioroids, the space elevator, and the Net have fundamentally changed the lives of ordinary people."}
+ {:category "Knowledge",
+  :avoid-when
+  ["Your character needs to find the nearest NAPD station. This would require Streetwise (although knowing information about the NAPD in general would be covered by Knowledge [Society])."
+   "Your character needs to know some element of Network etiquette and habits. They would need Knowledge (The Net) instead."
+   "Your character wants to know how far a local street gang’s territory reaches. This would be a Streetwise check."],
+  :name "Knowledge (Society)",
+  :source {:book "sotb", :page 43},
+  :variant-of :knowledge,
+  :characteristic :intellect,
+  :id :knowledge-society,
+  :use-when
+  ["Your character wants to remember facts about New Angeles."
+   "Your character needs to make an argument in a court of law that’s grounded on a solid legal base."
+   "Your character wants to remember how the average Loonie feels about the NAPD before traveling to Luna."
+   "Your character wants to know if someone is trying to manipulate the stock market by short selling shares in a major company."
+   "Your character is trying to figure out what the most powerful organized crime outfits in New Angeles are."],
+  :text
+  "This skill has two distinct aspects that it governs. The first is knowledge about societies in general and how they function, which can include economic theory, sociology, law, and the like."}
+ {:category "Knowledge",
+  :avoid-when
+  ["Your character is attempting to break through a piece of ice. This is handled by the Computers (Hacking) skill."
+   "Your character is trying to reactivate or repair lines of code in a program. This is handled by the Computers (Sysops) skill."
+   "Your character wants to see what they know about current popular culture. Although that information can be found on the Net (in exhausting detail), it still requires a Knowledge (Society) check."],
+  :name "Knowledge (The Net)",
+  :source {:book "sotb", :page 43},
+  :variant-of :knowledge,
+  :characteristic :intellect,
+  :id :knowledge-the-net,
+  :use-when
+  ["Your character wants to know which Shadow Net virtual chatspaces they should visit to recruit a reliable runner."
+   "Your character wants to know the dangers of trying to break a piece of ice."
+   "Your character is trying to figure out what real-world corp is hosting a server full of valuable information."
+   "Your character is trying to remember any rumors about so-called “god ice,” “ghost runners,” or other legends of the Net."],
+  :text
+  "These days, the Network has become far more than the internets of years past. For all intents and purposes, it is its own world, growing and changing, with its own inhabitants and dangers, all paralleling our own."}]

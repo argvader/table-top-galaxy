@@ -1,9 +1,12 @@
-{:paths ["tools/bb"]
+{:paths ["tools/bb" "libs/src"]
 
  :tasks
  {:requires ([ttg.local :as local]
              [ttg.check :as check]
-             [ttg.proto :as proto])
+             [ttg.proto :as proto]
+             [ttg.ingest :as ingest]
+             [ttg.deploy :as deploy]
+             [ttg.quality :as quality])
 
   setup  {:doc  "Check required tools (java, node, clojure, aws, sls)"
           :task (check/report!)}
@@ -23,5 +26,50 @@
   proto  {:doc  "Serve the UX prototypes on http://localhost:8090"
           :task (local/serve-prototypes!)}
 
+  test   {:doc  "Run the libs tests on the JVM and Node, and the apps/web tests on Node"
+          :task (quality/test!)}
+
+  lint   {:doc  "clj-kondo over libs, apps/web and tools/bb"
+          :task (quality/lint!)}
+
+  dev    {:doc  "Watch apps/web with hot reload on http://localhost:8280 (API + DynamoDB join at M4)"
+          :task (quality/dev!)}
+
+  build  {:doc  "Release build of apps/web into apps/web/public/js"
+          :task (quality/build!)}
+
   proto-build {:doc  "Assemble prototypes/src pages with the shared dice code"
-               :task (proto/build!)}}}
+               :task (proto/build!)}
+
+  ingest:setup {:doc  "Create the Python venv used to read the PDFs (.local/ingest-venv)"
+                :task (ingest/setup!)}
+
+  ingest:probe {:doc  "Report page count, text layer and TOC per book: bb ingest:probe [pdf-dir]"
+                :task (apply ingest/probe! *command-line-args*)}
+
+  ingest:extract {:doc  "Extract lines, fonts and tables to .local/books/<slug>/pages.jsonl: bb ingest:extract [slug ...]"
+                  :task (apply ingest/extract! *command-line-args*)}
+
+  ingest:build {:doc  "Parse extracted books into content/<slug>/<type>.edn: bb ingest:build [slug ...]"
+                :task (apply ingest/build! *command-line-args*)}
+
+  ingest:check {:doc  "Validate every content EDN file against its spec"
+                :task (ingest/check!)}
+
+  ingest:library {:doc  "Merge all books and show what a setting gets: bb ingest:library [android]"
+                  :task (apply ingest/library! *command-line-args*)}
+
+  web:infra  {:doc  "Create or update the S3 bucket, CloudFront distribution and password gate: bb web:infra [dev|prod] [--profile p]"
+              :task (apply deploy/infra! *command-line-args*)}
+
+  web:deploy {:doc  "Build the prototypes and upload them to S3, then clear the CloudFront cache: bb web:deploy [dev|prod] [--profile p]"
+              :task (apply deploy/deploy! *command-line-args*)}
+
+  web:url    {:doc  "Print the site address: bb web:url [dev|prod] [--profile p]"
+              :task (apply deploy/url! *command-line-args*)}
+
+  web:whoami {:doc  "Show which AWS identity the web tasks use: bb web:whoami [--profile p]"
+              :task (apply deploy/whoami! *command-line-args*)}
+
+  web:remove {:doc  "Empty the bucket and delete the stack: bb web:remove dev"
+              :task (apply deploy/remove! *command-line-args*)}}}

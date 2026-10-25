@@ -1,0 +1,676 @@
+[{:name "Ace",
+  :equipment "None.",
+  :type "rival",
+  :source {:book "epg", :page 91},
+  :abilities "None.",
+  :setting "general",
+  :wounds 8,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 3, :social 2, :general 2},
+  :talents
+  "Barrel Roll (when piloting a starfighter or airplane of silhouette 3 or less, after suffering a hit, may suffer 3 system strain to reduce the damage by four as an incidental), Defensive Driving 2 (increase the defense of any vehicle this character pilots by two).",
+  :skills
+  [{:name "Charm", :rank 1}
+   {:name "Coordination", :rank 2}
+   {:name "Gunnery", :rank 3}
+   {:name "Mechanics", :rank 1}
+   {:name "Piloting", :rank 4}
+   {:name "Ranged", :rank 2}
+   {:name "Vigilance", :rank 2}],
+  :id :ace,
+  :characteristics {"brawn" 2, "agility" 4, "intellect" 2, "cunning" 2, "willpower" 2, "presence" 3},
+  :soak 2,
+  :text
+  "Traditionally, any pilot who downs five enemy aircraft is an ace. Aces can push vehicles beyond normal tolerances to make maneuvers no one else can. In the age of myth, fantasy, and monsterworld settings, replace the Piloting skill with the Riding skill. In the post apocalypse setting, replace the Piloting skill with the Driving skill."}
+ {:name "Advisor",
+  :equipment "None.",
+  :type "nemesis",
+  :source {:book "epg", :page 89},
+  :abilities
+  "Take a Breath (once per encounter, may suffer 2 strain as an out-of-turn incidental during an ally’s turn; the ally loses a maneuver and either heals 6 strain or may reroll a fear check they just failed).",
+  :setting "general",
+  :wounds 8,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 6, :general 4},
+  :talents "Second Wind 3 (once per encounter as an incidental, may heal 3 strain).",
+  :skills
+  [{:name "Cool", :rank 3}
+   {:name "Deception", :rank 3}
+   {:name "Discipline", :rank 3}
+   {:name "Knowledge", :rank 4}
+   {:name "Perception", :rank 2}
+   {:name "Vigilance", :rank 2}],
+  :id :advisor,
+  :characteristics {"brawn" 2, "agility" 1, "intellect" 2, "cunning" 2, "willpower" 4, "presence" 3},
+  :strain 16,
+  :soak 2,
+  :text
+  "An advisor might be a therapist, priest, or a wise political advisor. They are more defensive socially than offensive, which means a group will have to work hard to overcome them in a social encounter."}
+ {:name "Attacker",
+  :equipment "None.",
+  :type "rival",
+  :source {:book "epg", :page 91},
+  :abilities
+  "Momentum (If this character performed a move maneuver, they add 3 to the damage of one hit of any successful Brawl or Melee combat checks they make during the same turn).",
+  :setting "general",
+  :wounds 14,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 3, :social 2, :general 2},
+  :talents "Adversary 1 (upgrade difficulty of all combat checks against this target once).",
+  :skills
+  [{:name "Athletics", :rank 2}
+   {:name "Brawl", :rank 2}
+   {:name "Coercion", :rank 2}
+   {:name "Coordination", :rank 3}
+   {:name "Discipline", :rank 2}
+   {:name "Melee", :rank 2}],
+  :id :attacker,
+  :characteristics {"brawn" 4, "agility" 2, "intellect" 2, "cunning" 1, "willpower" 3, "presence" 2},
+  :soak 4,
+  :text
+  "This highly trained combatant favors aggressive, frontal assaults, winning engagements by employing overwhelming force. An attacker might be an ax-wielding berserker, charging soldier brandishing a bayonet, or SWAT team member who is first into the breach."}
+ {:name "Bear",
+  :equipment
+  "Claws (Brawl; Damage 7; Critical 4; Range [Engaged]; Concussive 1, Knockdown), bite (Brawl; Damage 6; Critical 2; Range [Engaged]; Ensnare 1, Pierce 3).",
+  :type "rival",
+  :source {:book "epg", :page 86},
+  :abilities "Silhouette 2.",
+  :setting "general",
+  :wounds 21,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 5, :social 1, :general 2},
+  :talents "Adversary 1 (upgrade difficulty of all combat checks against this target once).",
+  :skills
+  [{:name "Athletics", :rank 4}
+   {:name "Brawl", :rank 3}
+   {:name "Coercion", :rank 3}
+   {:name "Perception", :rank 2}
+   {:name "Resilience", :rank 2}
+   {:name "Survival", :rank 4}],
+  :id :bear,
+  :characteristics {"brawn" 4, "agility" 2, "intellect" 1, "cunning" 1, "willpower" 2, "presence" 1},
+  :soak 5,
+  :text
+  "Bears tend to be strong, surprisingly fast, and very tough. This profile best represents the particularly large and ferocious specimens of bear, such as the grizzly, Kodiak, and polar bears."}
+ {:name "Big Cat",
+  :equipment "Claws and fangs (Brawl; Damage 6; Critical 2; Range [Engaged]; Vicious 3).",
+  :type "rival",
+  :source {:book "epg", :page 86},
+  :abilities
+  "Ambush Predator (when attacking a target that has not yet acted during the current encounter, this creature adds [boost] [boost] to its combat checks), Pounce (once per turn, while at short range this creature may perform a move maneuver to engage a target as an incidental).",
+  :setting "general",
+  :wounds 16,
+  :defense {:melee 2, :ranged 2},
+  :power {:combat 4, :social 2, :general 2},
+  :talents "Swift (this creature does not suffer penalties for moving through difficult terrain).",
+  :skills
+  [{:name "Athletics", :rank 3}
+   {:name "Brawl", :rank 3}
+   {:name "Cool", :rank 3}
+   {:name "Coordination", :rank 2}
+   {:name "Perception", :rank 2}
+   {:name "Stealth", :rank 2}],
+  :id :big-cat,
+  :characteristics {"brawn" 3, "agility" 4, "intellect" 1, "cunning" 3, "willpower" 2, "presence" 2},
+  :soak 3,
+  :text
+  "Lions, tigers, pumas, jaguars, and leopards stalk the tall grasses of expansive plains, thick forests, and other wilderness regions. Big cats hunt their prey by silently closing the distance before pouncing, pinning their victim, and going for the jugular."}
+ {:name "Blueblood",
+  :equipment "Formal clothing, expensive jewelry, unlimited funds.",
+  :type "rival",
+  :source {:book "epg", :page 89},
+  :abilities
+  "Let Me Get You Something (once per encounter, this character may give another character 100 currency to downgrade the difficulty of the next social check they make targeting that character).",
+  :setting "general",
+  :wounds 9,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 3, :general 2},
+  :talents "None.",
+  :skills
+  [{:name "Charm", :rank 1}
+   {:name "Coercion", :rank 3}
+   {:name "Discipline", :rank 1}
+   {:name "Knowledge", :rank 4}
+   {:name "Leadership", :rank 3}
+   {:name "Perception", :rank 1}],
+  :id :blueblood,
+  :characteristics {"brawn" 1, "agility" 2, "intellect" 2, "cunning" 3, "willpower" 3, "presence" 2},
+  :soak 1,
+  :text
+  "Bluebloods are a society's wealthy people of leisure. Money affords them great power to indulge in their assorted proclivities and solve many problems."}
+ {:name "Bull",
+  :equipment "Horns (Brawl; Damage 5; Critical 3; Range [Engaged]; Pierce 2, Vicious 4).",
+  :type "rival",
+  :source {:book "epg", :page 86},
+  :abilities "Encumbrance Capacity 18, Silhouette 2.",
+  :setting "general",
+  :wounds 20,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 3, :social 1, :general 1},
+  :talents
+  "Bullrush (When this creature makes a Brawl combat check after using a maneuver to engage a target, may spend [advantage] [advantage] [advantage] or [triumph] to knock the target prone and move them up to one range band away from this creature).",
+  :skills
+  [{:name "Athletics", :rank 3}
+   {:name "Brawl", :rank 1}
+   {:name "Coercion", :rank 2}
+   {:name "Resilience", :rank 3}],
+  :id :bull,
+  :characteristics {"brawn" 4, "agility" 2, "intellect" 1, "cunning" 1, "willpower" 1, "presence" 1},
+  :soak 4,
+  :text
+  "Bulls often get used as draft animals on farms. Although usually peaceful, a provoked bull can charge and gore enemies with its horns."}
+ {:name "Defender",
+  :equipment "None.",
+  :type "nemesis",
+  :source {:book "epg", :page 92},
+  :abilities "None.",
+  :setting "general",
+  :wounds 16,
+  :defense {:melee 1, :ranged 1},
+  :power {:combat 5, :social 3, :general 2},
+  :talents
+  "Body Guard 2 (as a maneuver, may suffer up to 2 strain to upgrade the difficulty of all combat checks targeting one ally engaged with this character a number of times equal to the strain suffered), Rapid Reaction 2 (May suffer up to 2 strain to add an equal number of [success] to a Vigilance or Cool check to determine Initiative order).",
+  :skills
+  [{:name "Athletics", :rank 1}
+   {:name "Cool", :rank 1}
+   {:name "Discipline", :rank 3}
+   {:name "Melee", :rank 3}
+   {:name "Ranged", :rank 3}
+   {:name "Vigilance", :rank 3}],
+  :id :defender,
+  :characteristics {"brawn" 4, "agility" 3, "intellect" 2, "cunning" 2, "willpower" 3, "presence" 2},
+  :strain 12,
+  :soak 4,
+  :text
+  "Defenders guard the walls at castles and bases, act as bodyguards, and control gates and checkpoints. They might be security guards at banks, businesses, or residential high-rises. Any combatant whose primary job is to guard a location should use this profile, and they could range from armored paladins and knights to modern bodyguards."}
+ {:name "Dog",
+  :equipment "Bite (Brawl; Damage 4; Critical 3; Range [Engaged]; Knockdown).",
+  :type "rival",
+  :source {:book "epg", :page 87},
+  :abilities
+  "Pack Fighter (if this creature makes a successful combat check, the next ally making a combat check against the same target during the same round adds [advantage] [advantage] to the results), Silhouette 0.",
+  :setting "general",
+  :wounds 5,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 1, :general 1},
+  :talents "None.",
+  :skills
+  [{:name "Athletics", :rank 1}
+   {:name "Brawl", :rank 1}
+   {:name "Charm", :rank 2}
+   {:name "Perception", :rank 1}
+   {:name "Survival", :rank 1}
+   {:name "Vigilance", :rank 2}],
+  :id :dog,
+  :characteristics {"brawn" 2, "agility" 3, "intellect" 1, "cunning" 3, "willpower" 2, "presence" 2},
+  :soak 2,
+  :text
+  "Humanity has had domesticated dogs for thousands of years. This profile represents a medium or large dog who’s ready to be a faithful companion and join some lucky individual on adventures."}
+ {:name "Elephant",
+  :equipment "Tusks and trampling feet (Brawl; Damage 10; Critical 4; Range [Engaged]; Knockdown).",
+  :type "nemesis",
+  :source {:book "epg", :page 87},
+  :abilities
+  "Encumbrance Capacity 30, Silhouette 3, Toss (after making a combat check, this creature may spend [triumph] to move the target up to short range, inflict 4 strain, and knock the target prone).",
+  :setting "general",
+  :wounds 35,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 8, :social 3, :general 3},
+  :talents "None.",
+  :skills
+  [{:name "Athletics", :rank 1}
+   {:name "Brawl", :rank 2}
+   {:name "Discipline", :rank 2}
+   {:name "Survival", :rank 2}
+   {:name "Vigilance", :rank 3}],
+  :id :elephant,
+  :characteristics {"brawn" 5, "agility" 1, "intellect" 2, "cunning" 2, "willpower" 2, "presence" 3},
+  :strain 18,
+  :soak 7,
+  :text
+  "Elephants have prehensile trunks, large tusks, and a gentle nature. They roam forests and savannas in herds, defending their young from attack. While often friendly, and even domesticated as mounts by some cultures, wild elephants are not something one should mess with."}
+ {:name "Falcon",
+  :equipment "Claws and beak (Brawl; Damage 3; Critical 3; Range [Engaged]; Vicious 1).",
+  :type "rival",
+  :source {:book "epg", :page 87},
+  :abilities "Flyer (can fly; see page 100 of the Core Rulebook), Silhouette 0.",
+  :setting "general",
+  :wounds 4,
+  :defense {:melee 0, :ranged 1},
+  :power {:combat 1, :social 1, :general 1},
+  :talents "None.",
+  :skills
+  [{:name "Athletics", :rank 2}
+   {:name "Brawl", :rank 2}
+   {:name "Perception", :rank 3}
+   {:name "Vigilance", :rank 3}],
+  :id :falcon,
+  :characteristics {"brawn" 1, "agility" 3, "intellect" 1, "cunning" 2, "willpower" 1, "presence" 1},
+  :soak 1,
+  :text
+  "Falcons are swift and vicious birds of prey. However, they are often domesticated as pets or aids in hunting. This profile could also be used to represent a hawk, eagle, or owl."}
+ {:name "Field Leader",
+  :equipment "None.",
+  :type "rival",
+  :source {:book "epg", :page 92},
+  :abilities "None.",
+  :setting "general",
+  :wounds 15,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 3, :social 3, :general 1},
+  :talents
+  "Adversary 1 (upgrade difficulty of all combat checks against this target once), Field Commander (as an action, make an Average [[difficulty] [difficulty]] Leadership check; if successful, 3 allies may immediately perform one maneuver as an out-of-turn incidental).",
+  :skills
+  [{:name "Cool", :rank 1}
+   {:name "Discipline", :rank 1}
+   {:name "Drive", :rank 2}
+   {:name "Leadership", :rank 2}
+   {:name "Melee", :rank 2}
+   {:name "Perception", :rank 1}
+   {:name "Ranged", :rank 2}
+   {:name "Survival", :rank 1}],
+  :id :field-leader,
+  :characteristics {"brawn" 3, "agility" 3, "intellect" 2, "cunning" 2, "willpower" 3, "presence" 3},
+  :soak 3,
+  :text
+  "The field leader is proficient in tactical direction and movement. They lead their forces from the front, deploying units to ensure success. A field leader might be a gruff squad leader or an inspirational cavalry officer. For the age of myth and fantasy settings (and possibly the steampunk and monsterworld settings), you should replace the Drive skill with the Ride skill."}
+ {:name "Fixer",
+  :equipment "Toolkit.",
+  :type "rival",
+  :source {:book "epg", :page 89},
+  :abilities
+  "Many Hands Make Light the Load (if this character provides assistance when another character makes a Mechanics check to repair a vehicle, increase the hull trauma or system strain repaired by 2; if the check is being made to repair a Critical Hit, reduce the difficulty of the check by 1, to a minimum of Easy [[difficulty]]; this is in addition to the other benefits of assistance).",
+  :setting "general",
+  :wounds 12,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 1, :general 3},
+  :talents "None.",
+  :skills
+  [{:name "Athletics", :rank 1}
+   {:name "Computers", :rank 3}
+   {:name "Knowledge", :rank 1}
+   {:name "Mechanics", :rank 3}
+   {:name "Negotiation", :rank 2}
+   {:name "Perception", :rank 3}],
+  :id :fixer,
+  :characteristics {"brawn" 3, "agility" 3, "intellect" 3, "cunning" 1, "willpower" 2, "presence" 1},
+  :soak 3,
+  :text
+  "When things break, a fixer repairs them. They might mend everything from simple carts to high-tech gadgets and vehicles. To make this character usable in a pre-modern setting, remove the Computers skill."}
+ {:name "Gunner",
+  :equipment "None.",
+  :type "minion",
+  :source {:book "epg", :page 92},
+  :abilities "None.",
+  :setting "general",
+  :wounds 4,
+  :defense {:melee 0, :ranged 1},
+  :power {:combat 1, :social 1, :general 1},
+  :talents "None.",
+  :skills [{:name "Athletics"} {:name "Discipline"} {:name "Gunnery"} {:name "Mechanics"}],
+  :id :gunner,
+  :characteristics {"brawn" 2, "agility" 3, "intellect" 2, "cunning" 2, "willpower" 2, "presence" 1},
+  :soak 2,
+  :text
+  "Gunners operate large-scale weapons, from ballistae and catapults to missile launchers and laser cannons. They might work aboard a vehicle or operate a weapon emplacement. If used in older settings, switch their Gunnery skill for the Ranged skill."}
+ {:name "Healer",
+  :equipment "Healer’s garb, doctor’s tools.",
+  :type "rival",
+  :source {:book "epg", :page 89},
+  :abilities
+  "Time to Heal (if this character is caring for a character who is benefiting from natural rest, the resting character heals 2 wounds each night and decreases the difficulty of any Resilience checks they make to heal Critical Injuries by 1, to a minimum of Easy [[difficulty]]).",
+  :setting "general",
+  :wounds 8,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 2, :general 4},
+  :talents "Surgeon 2 (when making Medicine checks to heal wounds, heals 2 additional wounds).",
+  :skills
+  [{:name "Cool", :rank 1}
+   {:name "Discipline", :rank 2}
+   {:name "Knowledge", :rank 3}
+   {:name "Medicine", :rank 4}
+   {:name "Negotiation", :rank 1}
+   {:name "Perception", :rank 1}],
+  :id :healer,
+  :characteristics {"brawn" 1, "agility" 2, "intellect" 3, "cunning" 2, "willpower" 2, "presence" 3},
+  :soak 1,
+  :text
+  "A healer treats ailments and injuries alike, either traveling to visit their patients or working within a medical facility. They might be an educated doctor, a veterinarian, or just really into holistic remedies."}
+ {:name "Horse",
+  :equipment "Hooves (Brawl; Damage 4; Critical 4; Range [Engaged]; Knockdown, Stun 3).",
+  :type "minion",
+  :source {:book "epg", :page 87},
+  :abilities "Encumbrance Capacity 12, Silhouette 2.",
+  :setting "general",
+  :wounds 5,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 3, :social 1, :general 1},
+  :talents "None.",
+  :skills [{:name "Athletics"} {:name "Resilience"}],
+  :id :horse,
+  :characteristics {"brawn" 4, "agility" 3, "intellect" 1, "cunning" 1, "willpower" 1, "presence" 1},
+  :soak 4,
+  :text
+  "One of the most common domesticated mounts, horses are bred for racing, farm work, everyday transportation, and even combat. Sometimes stubborn, horses are generally docile creatures, though riders risk getting thrown, kicked, or trampled."}
+ {:name "Kraken",
+  :type "nemesis",
+  :source {:book "epg", :page 87},
+  :abilities
+  "Amphibious (this creature may breathe underwater and never suffers movement penalties for traveling through water), Crush (while engaged with a vehicle, this creature may make a Hard [[difficulty] [difficulty] [difficulty]] Athletics check as an action; if the check is successful, the vehicle suffers a Critical Hit and may not move during the following round), Multitentacled (after making a successful combat check, this creature may spend 3 strain to inflict one additional hit with its thrashing tentacles against one other target within short range that is no more difficult to hit than original target, dealing base damage +1 per [success]; it may do so up to three times), Silhouette 5. Weapons: Multiple thrashing tentacles (Brawl; Damage 8; Critical 5; Range [Short]; Ensnare 3, Knockdown), piercing beak (Brawl; Damage 15; Critical 2; Range [Engaged]; Breach 1, Vicious 3).",
+  :setting "general",
+  :wounds 80,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 16, :social 1, :general 2},
+  :talents "Adversary 2 (upgrade difficulty of all combat checks against this target twice).",
+  :skills
+  [{:name "Athletics", :rank 4}
+   {:name "Brawl", :rank 4}
+   {:name "Perception", :rank 2}
+   {:name "Survival", :rank 2}],
+  :id :kraken,
+  :characteristics {"brawn" 6, "agility" 3, "intellect" 1, "cunning" 3, "willpower" 1, "presence" 1},
+  :strain 40,
+  :soak 6,
+  :text
+  "Octopi and squid rarely get much larger than a human, but rumors abound of larger specimens. Allegedly, the giant creatures lurk in the ocean, wielding multiple long, suckered tentacles that are able to crush ships and terrorize their crews. This profile is of a truly immense specimen, able to consume a large ship."}
+ {:name "Laborer",
+  :equipment "Fists (Damage 3; Brawl; Critical 5; Range [Engaged]; Disorient 1, Knockdown), work clothes.",
+  :type "minion",
+  :source {:book "epg", :page 89},
+  :abilities "None.",
+  :setting "general",
+  :wounds 6,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 1, :general 1},
+  :talents "None.",
+  :skills [{:name "Athletics"} {:name "Brawl"} {:name "Resilience"}],
+  :id :laborer,
+  :characteristics {"brawn" 3, "agility" 2, "intellect" 2, "cunning" 2, "willpower" 2, "presence" 1},
+  :soak 3,
+  :text
+  "Laborers perform physical work in fields, warehouses, factories, and elsewhere. They often work in teams to handle complex tasks. After a hard day’s work they relax in a tavern, sometimes getting into fights."}
+ {:name "Leader",
+  :equipment "Formal clothing.",
+  :type "nemesis",
+  :source {:book "epg", :page 90},
+  :abilities
+  "Let’s Make a Deal (if this character knows an opponent’s Desire Motivation, when this character inflicts strain on the opponent, the opponent suffers 4 additional strain).",
+  :setting "general",
+  :wounds 12,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 8, :general 3},
+  :talents
+  "Adversary 1 (upgrade difficulty of all combat checks against this target once), Clever Retort (once per encounter, add [threat] [threat] to another character’s social skill check), Ruinous Repartee (once per encounter, may make an opposed Charm versus Discipline check against a character within medium range [or within earshot]; if successful, target suffers 8 strain, plus 1 per [success], and this character heals strain equal to strain inflicted).",
+  :skills
+  [{:name "Charm", :rank 3}
+   {:name "Cool", :rank 2}
+   {:name "Deception", :rank 2}
+   {:name "Discipline", :rank 2}
+   {:name "Knowledge", :rank 3}
+   {:name "Leadership", :rank 3}
+   {:name "Vigilance", :rank 1}],
+  :id :leader,
+  :characteristics {"brawn" 2, "agility" 2, "intellect" 3, "cunning" 3, "willpower" 4, "presence" 4},
+  :strain 15,
+  :soak 2,
+  :text
+  "A leader might be a duly elected politician, protest organizer, CEO, religious leader, or other influential public figure. Their position grants great influence, which they wield against their foes to great effect."}
+ {:name "Manager",
+  :equipment "None.",
+  :type "rival",
+  :source {:book "epg", :page 90},
+  :abilities
+  "Corporate Oversight (when performing the assist maneuver, add [success] [threat] [threat] to the result instead of adding [boost]).",
+  :setting "general",
+  :wounds 9,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 3, :general 1},
+  :talents
+  "Improved Inspiring Rhetoric (as an action, may make an Average [[difficulty] [difficulty]] Leadership check; for each [success], one ally within short range heals 1 strain; for each [advantage], one ally benefiting from Inspiring Rhetoric heals 1 additional strain; all allies affected by Inspiring Rhetoric add [boost] to all skill checks for 3 rounds).",
+  :skills
+  [{:name "Charm", :rank 1}
+   {:name "Leadership", :rank 3}
+   {:name "Operating", :rank 1}
+   {:name "Vigilance", :rank 2}],
+  :id :manager,
+  :characteristics {"brawn" 2, "agility" 2, "intellect" 2, "cunning" 2, "willpower" 2, "presence" 3},
+  :soak 2,
+  :text
+  "A manager leads workers at a job site or office, arguably improving efficiency and morale. They could be nearly any nonmilitary team leader."}
+ {:name "Medic",
+  :equipment
+  "2 painkillers (or setting equivalent), medical supplies (can make Medicine checks without penalty).",
+  :type "rival",
+  :source {:book "epg", :page 93},
+  :abilities "None.",
+  :setting "general",
+  :wounds 11,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 2, :general 3},
+  :talents
+  "Combat Medicine 2 (before making a Medicine check, this character may add [success] [success] to the results; after the check is resolved, the target suffers 4 strain), Painkiller Specialization 2 (when this character uses painkillers, the target heals 2 additional wounds; the sixth painkiller and beyond each day still have no effect).",
+  :skills
+  [{:name "Athletics", :rank 3}
+   {:name "Cool", :rank 3}
+   {:name "Discipline", :rank 2}
+   {:name "Medicine", :rank 2}
+   {:name "Melee", :rank 2}
+   {:name "Ranged", :rank 1}],
+  :id :medic,
+  :characteristics {"brawn" 2, "agility" 2, "intellect" 2, "cunning" 1, "willpower" 2, "presence" 2},
+  :soak 2,
+  :text
+  "The medic’s primary task is to keep their allies alive and fighting. This often limits them to first aid and administering painkillers, or dragging the seriously wounded to safety where surgeons can address their injuries."}
+ {:name "Paper Pusher",
+  :equipment "Attire appropriate to the place of work.",
+  :type "minion",
+  :source {:book "epg", :page 90},
+  :abilities
+  "Red Tape (once per encounter, as an action, make an opposed Knowledge versus Cool check targeting one character in the encounter; if successful, the target increases the difficulty of all social skill checks they make by two, to a maximum of Formidable [[difficulty] [difficulty] [difficulty] [difficulty] [difficulty]], until the end of the encounter).",
+  :setting "general",
+  :wounds 4,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 2, :general 2},
+  :talents "None.",
+  :skills [{:name "Cool"} {:name "Computers"} {:name "Knowledge"} {:name "Perception"}],
+  :id :paper-pusher,
+  :characteristics {"brawn" 1, "agility" 1, "intellect" 3, "cunning" 2, "willpower" 2, "presence" 1},
+  :soak 1,
+  :text
+  "A paper pusher might be a data entry clerk, scribe, accountant, or programmer, or fill nearly any position performed in a cubicle or its setting equivalent. For some settings, you may need to remove the Computers skill from this profile."}
+ {:name "Ranger",
+  :equipment "None.",
+  :type "rival",
+  :source {:book "epg", :page 93},
+  :abilities "None.",
+  :setting "general",
+  :wounds 16,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 4, :social 2, :general 4},
+  :talents
+  "Adversary 2 (upgrade difficulty of all combat checks against this target twice), Hamstring Shot (once per round, on a successful ranged combat check against a non-vehicle target within range, halve the damage inflicted [before applying soak] to immobilize the target until the end of its next turn), Heightened Awareness (allies within short range add [boost] to Perception and Vigilance checks; engaged allies add [boost] [boost] instead).",
+  :skills
+  [{:name "Athletics", :rank 2}
+   {:name "Cool", :rank 3}
+   {:name "Melee", :rank 1}
+   {:name "Perception", :rank 3}
+   {:name "Ranged", :rank 3}
+   {:name "Stealth", :rank 3}
+   {:name "Survival", :rank 4}],
+  :id :ranger,
+  :characteristics {"brawn" 3, "agility" 4, "intellect" 2, "cunning" 3, "willpower" 2, "presence" 1},
+  :soak 3,
+  :text
+  "Rangers, scouts, and snipers operate independently or in small teams, identifying enemy locations, performing reconnaissance, and taking out enemy scouts. Rangers are adept at avoiding detection, and might be medieval rangers, modern recon scouts, or even snipers."}
+ {:name "Sapper",
+  :equipment "Hatchet or similar tool (Melee [Light]; Damage 4; Critical 3; Range [Engaged]; Vicious 1).",
+  :type "rival",
+  :source {:book "epg", :page 93},
+  :abilities
+  "Destroy Terrain (when engaged with a silhouette 2 or smaller terrain feature that is providing cover or obstructs movement—such as a section of fence, foxhole, door, or sandbagged emplacement— this character may spend an action and make a Hard [[difficulty] [difficulty] [difficulty]] Mechanics check; if the check succeeds the terrain feature is destroyed and no longer provides cover or obstructs movement), Flush Target (after making a combat check targeting a character in cover, may spend [advantage] [advantage] or [triumph] to force the character to immediately move out of cover as an out-of-turn incidental).",
+  :setting "general",
+  :wounds 13,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 2, :social 1, :general 4},
+  :talents "None",
+  :skills
+  [{:name "Athletics", :rank 2}
+   {:name "Discipline", :rank 2}
+   {:name "Mechanics", :rank 4}
+   {:name "Melee", :rank 3}
+   {:name "Perception", :rank 2}
+   {:name "Ranged", :rank 2}
+   {:name "Resilience", :rank 4}],
+  :id :sapper,
+  :characteristics {"brawn" 2, "agility" 3, "intellect" 2, "cunning" 3, "willpower" 2, "presence" 1},
+  :soak 2,
+  :text
+  "Combat engineers destroy enemy defenses and clear out fortified positions. They might accomplish this through the use of shovels and sledgehammers, or advanced tools and explosives."}
+ {:name "Seller",
+  :equipment "Rumpled and worn professional attire.",
+  :type "nemesis",
+  :source {:book "epg", :page 90},
+  :abilities "None.",
+  :setting "general",
+  :wounds 7,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 5, :general 2},
+  :talents
+  "Indomitable (once per encounter, if this character would otherwise become incapacitated due to exceeding their wound or strain threshold, spend a Story Point to delay incapacitation until the end of their next turn; if this character reduces their strain or wounds to their threshold or below before the end of their next turn, they are not incapacitated), Second Wind 3 (once per encounter as an incidental, may heal 3 strain).",
+  :skills
+  [{:name "Charm", :rank 2}
+   {:name "Cool", :rank 3}
+   {:name "Deception", :rank 3}
+   {:name "Knowledge", :rank 2}
+   {:name "Negotiation", :rank 3}
+   {:name "Streetwise", :rank 1}],
+  :id :seller,
+  :characteristics {"brawn" 2, "agility" 1, "intellect" 2, "cunning" 3, "willpower" 2, "presence" 4},
+  :strain 12,
+  :soak 2,
+  :text
+  "A seller talks fast and counts profits. They might be a merchant, a car salesman, or even someone collecting for charity. The important thing is that the seller wants your money, and they can convince you to part with it."}
+ {:name "Shark",
+  :equipment "Powerful jaws (Brawl; Damage 8; Critical 2; Range [Engaged]; Ensnare 1, Vicious 4).",
+  :type "rival",
+  :source {:book "epg", :page 88},
+  :abilities
+  "Aquatic (this creature suffers no penalties for moving through water and can breathe underwater, but cannot move or survive on land).",
+  :setting "general",
+  :wounds 21,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 5, :social 1, :general 2},
+  :talents "Adversary 1 (upgrade difficulty of all combat checks against this target once).",
+  :skills
+  [{:name "Athletics", :rank 3}
+   {:name "Brawl", :rank 4}
+   {:name "Perception", :rank 3}
+   {:name "Stealth", :rank 2}
+   {:name "Vigilance", :rank 2}],
+  :id :shark,
+  :characteristics {"brawn" 3, "agility" 3, "intellect" 1, "cunning" 1, "willpower" 2, "presence" 1},
+  :soak 4,
+  :text
+  "The ocean’s apex predators, larger sharks have jaws wide enough to swallow a person, and their razorsharp teeth can easily bite someone in half."}
+ {:name "Tracker",
+  :equipment "None.",
+  :type "rival",
+  :source {:book "epg", :page 91},
+  :abilities "None.",
+  :setting "general",
+  :wounds 10,
+  :defense {:melee 1, :ranged 1},
+  :power {:combat 2, :social 2, :general 3},
+  :talents
+  "Hamstring Shot (once per round, on a successful ranged combat check against a non-vehicle target within range, halve the damage inflicted [before applying soak] to immobilize the target until the end of its next turn).",
+  :skills
+  [{:name "Athletics", :rank 2}
+   {:name "Coercion", :rank 1}
+   {:name "Ranged", :rank 3}
+   {:name "Survival", :rank 4}
+   {:name "Vigilance", :rank 3}],
+  :id :tracker,
+  :characteristics {"brawn" 2, "agility" 3, "intellect" 2, "cunning" 3, "willpower" 3, "presence" 1},
+  :soak 2,
+  :text
+  "A tracker can discern the obscure signs left behind by humans and creatures to follow them over rugged terrain. To convert the tracker from a wilderness guide to an urban debt collector or detective, swap out Athletics for Computers, and Survival for Streetwise."}
+ {:name "Venomous Snake",
+  :type "rival",
+  :source {:book "epg", :page 88},
+  :abilities "Neurotoxin (if this creature inflicts wounds with a combat check, the target must make a Hard",
+  :setting "general",
+  :wounds 4,
+  :defense {:melee 0, :ranged 2},
+  :power {:combat 1, :social 1, :general 1},
+  :talents "None.",
+  :skills
+  [{:name "Brawl", :rank 2}
+   {:name "Coercion", :rank 2}
+   {:name "Perception", :rank 2}
+   {:name "Survival", :rank 2}],
+  :id :venomous-snake,
+  :characteristics {"brawn" 1, "agility" 2, "intellect" 1, "cunning" 2, "willpower" 1, "presence" 1},
+  :soak 1,
+  :text
+  "Venomous snakes hunt small game, and their poisonous bite is effective at deterring predators as well. Their venom can cause a variety of severe effects, including death."}
+ {:name "Wanderer",
+  :equipment "Fists (Damage 3; Brawl; Critical 5; Range [Engaged]; Disorient 2, Knockdown), rugged clothes.",
+  :type "rival",
+  :source {:book "epg", :page 91},
+  :abilities
+  "Been There, Done That (when providing assistance, this character adds [success] [advantage] to the results instead of [boost]).",
+  :setting "general",
+  :wounds 12,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 2, :social 2, :general 4},
+  :talents
+  "Animal Companion (has a silhouette 0 animal companion; once per round, may spend a maneuver to direct the animal to perform one action and one maneuver during this character's turn).",
+  :skills
+  [{:name "Brawl", :rank 2}
+   {:name "Charm", :rank 2}
+   {:name "Cool", :rank 1}
+   {:name "Knowledge", :rank 2}
+   {:name "Mechanics", :rank 1}
+   {:name "Negotiation", :rank 1}
+   {:name "Resilience", :rank 3}
+   {:name "Streetwise", :rank 2}
+   {:name "Survival", :rank 2}
+   {:name "Vigilance", :rank 3}],
+  :id :wanderer,
+  :characteristics {"brawn" 3, "agility" 3, "intellect" 2, "cunning" 4, "willpower" 1, "presence" 2},
+  :soak 4,
+  :text
+  "The wanderer never stays in one place for long, and doesn’t seem to have a home. They happily, or perhaps quietly, roam from place to place doing odd jobs. They often have a traveling companion in the form of a stray animal, or possibly even a small drone or robot (two creatures that would serve in this role would be the dog and falcon on page 87)."}
+ {:name "Warrior",
+  :equipment
+  "Fists (Brawl; Damage 3; Critical 5; Range [Engaged]; Disorient 1, Knockdown). I n Part II, we discussed new rules for creating your own vehicles and adversaries. Now, in Part III, we’re going to introduce new alternate rules that you can use to further customize your own Genesys games. These alternate rules expand on the game in the same vein as the rules presented in Part III–Chapter 2 and Chapter 4 of the Genesys Core Rulebook. The first chapter in Part III of this book expands on the magic rule set, while the second chapter presents new rules for using specialization trees to purchase talents. The third chapter offers rules and guidance for one-versusmany social encounters. Finally, the forth chapter presents two new tones for use in your game.",
+  :type "minion",
+  :source {:book "epg", :page 93},
+  :abilities "None.",
+  :setting "general",
+  :wounds 5,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 1, :social 1, :general 1},
+  :talents "None.",
+  :skills [{:name "Athletics"} {:name "Brawl"} {:name "Discipline"} {:name "Melee"} {:name "Ranged"}],
+  :id :warrior,
+  :characteristics {"brawn" 3, "agility" 2, "intellect" 2, "cunning" 2, "willpower" 2, "presence" 1},
+  :soak 3,
+  :text
+  "Warriors are infantry fighters that could trained in close-quarters combat or ranged fighting. Depending on the equipment and the setting, warriors might represent a phalanx of Spartans, a horde of barbarians, squads of rifle infantry, or a line of archers."}
+ {:name "Wolf",
+  :type "minion",
+  :source {:book "epg", :page 88},
+  :abilities
+  "Pack Tactics (when this creature’s minion group consists of at least two minions and is engaged with a target, they can spend a maneuver to prevent the target from disengaging from the minion group until the end of their next turn and to add [advantage] [advantage] to their next combat check against that target), Silhouette 0. Weapons: Bite (Brawl; Damage 5; Critical 3; Range [Engaged]; Knockdown, Vicious 1).",
+  :setting "general",
+  :wounds 5,
+  :defense {:melee 0, :ranged 0},
+  :power {:combat 2, :social 1, :general 2},
+  :talents "None.",
+  :skills [{:name "Athletics"} {:name "Brawl"} {:name "Coercion"} {:name "Survival"}],
+  :id :wolf,
+  :characteristics {"brawn" 2, "agility" 3, "intellect" 1, "cunning" 3, "willpower" 2, "presence" 1},
+  :soak 2,
+  :text
+  "Wolves are territorial pack hunters common to forests, plains, and tundra. While a single wolf poses little threat to a well-prepared human, the real danger is when the pack isolates a single target."}]

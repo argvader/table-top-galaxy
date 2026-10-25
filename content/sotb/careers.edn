@@ -1,0 +1,146 @@
+[{:id :academic,
+  :name "Academic",
+  :skills
+  ["Discipline"
+   "Knowledge (Science)"
+   "Knowledge (Society)"
+   "Knowledge (The Net)"
+   "Leadership"
+   "Medicine"
+   "Melee"
+   "Negotiation"],
+  :useful-talents
+  [{:tier 1, :name "Former Professor", :id :former-professor}
+   {:tier 1, :name "Proper Upbringing", :id :proper-upbringing}
+   {:tier 1, :name "Surgeon", :id :surgeon}
+   {:tier 2, :name "Inspiring Rhetoric", :id :inspiring-rhetoric}
+   {:tier 2, :name "Probing Question", :id :probing-question}
+   {:tier 3, :name "Applied Research", :id :applied-research}],
+  :source {:book "sotb", :page 32}}
+ {:id :bounty-hunter,
+  :name "Bounty Hunter",
+  :skills ["Brawl" "Coercion" "Discipline" "Driving" "Melee" "Ranged (Heavy)" "Resilience" "Streetwise"],
+  :useful-talents
+  [{:tier 1, :name "Durable", :id :durable}
+   {:tier 1, :name "Hamstring Shot", :id :hamstring-shot}
+   {:tier 1, :name "Street Fighter", :id :street-fighter}
+   {:tier 2, :name "Special Use Permit", :id :special-use-permit}
+   {:tier 2, :name "Undercity Contacts", :id :undercity-contacts}
+   {:tier 3, :name "Takedown", :id :takedown}],
+  :source {:book "sotb", :page 33}}
+ {:id :con-artist,
+  :name "Con Artist",
+  :skills
+  ["Charm" "Coordination" "Deception" "Melee" "Negotiation" "Ranged (Light)" "Skulduggery" "Stealth"],
+  :useful-talents
+  [{:tier 1, :name "Clever Retort", :id :clever-retort}
+   {:tier 1, :name "Customer Service Experience", :id :customer-service-experience}
+   {:tier 1, :name "Tri-Maf Contact", :id :tri-maf-contact}
+   {:tier 2, :name "Counteroffer", :id :counteroffer}
+   {:tier 2, :name "Probing Question", :id :probing-question}
+   {:tier 3, :name "You Owe Me One", :id :you-owe-me-one}],
+  :source {:book "sotb", :page 34}}
+ {:id :courier,
+  :name "Courier",
+  :skills ["Athletics" "Brawl" "Charm" "Coordination" "Driving" "Piloting" "Stealth" "Survival"],
+  :useful-talents
+  [{:tier 1, :name "Hand on the Throttle", :id :hand-on-the-throttle}
+   {:tier 1, :name "Jump Up", :id :jump-up}
+   {:tier 1, :name "Knockout Punch", :id :knockout-punch}
+   {:tier 2, :name "Daring Aviator", :id :daring-aviator}
+   {:tier 2, :name "Parkour!", :id :parkour}
+   {:tier 3, :name "Nimble", :id :nimble}],
+  :source {:book "sotb", :page 35}}
+ {:id :investigator,
+  :name "Investigator",
+  :skills
+  ["Coercion"
+   "Computers (Hacking)"
+   "Knowledge (Society)"
+   "Leadership"
+   "Perception"
+   "Ranged (Light)"
+   "Streetwise"
+   "Vigilance"],
+  :useful-talents
+  [{:tier 1, :name "Bought Info", :id :bought-info}
+   {:tier 1, :name "Quick Draw", :id :quick-draw}
+   {:tier 1, :name "Years on the Force", :id :years-on-the-force}
+   {:tier 2, :name "Bad Cop", :id :bad-cop}
+   {:tier 2, :name "Two-Handed Stance", :id :two-handed-stance}
+   {:tier 3, :name "Hard-Boiled", :id :hard-boiled}],
+  :source {:book "sotb", :page 36}}
+ {:id :ristie,
+  :name "Ristie",
+  :skills
+  ["Charm" "Cool" "Deception" "Knowledge (Society)" "Leadership" "Negotiation" "Perception" "Vigilance"],
+  :useful-talents
+  [{:tier 1, :name "Corporate Drone", :id :corporate-drone}
+   {:tier 1, :name "Know Somebody", :id :know-somebody}
+   {:tier 1, :name "Proper Upbringing", :id :proper-upbringing}
+   {:tier 2, :name "Counteroffer", :id :counteroffer}
+   {:tier 2, :name "Haughty Demeanor", :id :haughty-demeanor}
+   {:tier 3, :name "Laugh it Off", :id :laugh-it-off}],
+  :source {:book "sotb", :page 37}}
+ {:id :roughneck,
+  :name "Roughneck",
+  :skills
+  ["Athletics" "Gunnery" "Mechanics" "Operating" "Piloting" "Ranged (Heavy)" "Resilience" "Vigilance"],
+  :useful-talents
+  [{:tier 1, :name "Durable", :id :durable}
+   {:tier 1, :name "Let's Ride", :id :lets-ride}
+   {:tier 1, :name "Union Member", :id :union-member}
+   {:tier 2, :name "Big Guns", :id :big-guns}
+   {:tier 2, :name "Determined Driver", :id :determined-driver}
+   {:tier 3, :name "Hold It Steady", :id :hold-it-steady}],
+  :source {:book "sotb", :page 38}}
+ {:id :runner,
+  :name "Runner",
+  :skills
+  ["Computers (Hacking)"
+   "Computers (Sysops)"
+   "Cool"
+   "Deception"
+   "Knowledge (The Net)"
+   "Perception"
+   "Skulduggery"
+   "Streetwise"],
+  :useful-talents
+  [{:tier 1, :name "Disenfrancisto", :id :disenfrancisto}
+   {:tier 1, :name "Knack for It", :id :knack-for-it}
+   {:tier 1, :name "Net Search", :id :net-search}
+   {:tier 2, :name "Codeslinger", :id :codeslinger}
+   {:tier 2, :name "NetHunter", :id :nethunter}
+   {:tier 3, :name "Distinctive Style", :id :distinctive-style}],
+  :source {:book "sotb", :page 39}}
+ {:id :soldier,
+  :name "Soldier",
+  :skills
+  ["Athletics" "Coercion" "Gunnery" "Melee" "Ranged (Light)" "Ranged (Heavy)" "Resilience" "Survival"],
+  :useful-talents
+  [{:tier 1, :name "Quick Draw", :id :quick-draw}
+   {:tier 1, :name "Toughened", :id :toughened}
+   {:tier 1, :name "Worlds War Vet", :id :worlds-war-vet}
+   {:tier 2, :name "Big Guns", :id :big-guns}
+   {:tier 2, :name "Tactical Focus", :id :tactical-focus}
+   {:tier 3, :name "Suppressing Fire", :id :suppressing-fire}],
+  :source {:book "sotb", :page 40}}
+ {:id :tech,
+  :name "Tech",
+  :skills
+  ["Brawl"
+   "Computers (Sysops)"
+   "Knowledge (Science)"
+   "Knowledge (The Net)"
+   "Mechanics"
+   "Medicine"
+   "Operating"
+   "Piloting"],
+  :useful-talents
+  [{:tier 1, :name "Deep Pockets", :id :deep-pockets}
+   {:tier 1, :name "Defensive Sysops", :id :defensive-sysops}
+   {:tier 1, :name "Resourceful Mechanic", :id :resourceful-mechanic}
+   {:tier 2, :name "Inventor", :id :inventor}
+   {:tier 2, :name "Quick Fix", :id :quick-fix}
+   {:tier 3, :name "Bad Habit", :id :bad-habit}],
+  :source {:book "sotb", :page 41}}]

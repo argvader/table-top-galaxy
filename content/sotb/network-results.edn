@@ -1,0 +1,156 @@
+[{:id :network-triumph-3,
+  :name
+  "Backup Ice (Sysop Only): The sysop activates their emergency defensive protocols. A system immediately gains an active Ice Wall barrier (see page 134).",
+  :table :spend,
+  :cost "[triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-triumph-1,
+  :name
+  "Blurred Sig (Runner Only): The runner obscures their online identity and masks the origins of their signal, canceling one successful trace against them.",
+  :table :spend,
+  :cost "[triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-threat-or-despair-2,
+  :name
+  "Careless Protocols (Sysop Only): Reduce the strength of one active piece of ice (runner’s choice) by 1, to a minimum of 1.",
+  :table :spend,
+  :cost "[threat] [threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-advantage-or-triumph-1,
+  :name
+  "Cover Tracks (Runner Only): The runner hides their presence, adding [setback] to the sysop’s next trace user action this encounter.",
+  :table :spend,
+  :cost "[advantage] [advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-or-despair-0,
+  :name
+  "Disorganized System: The user gets lost in a maze of poorly named sub-folders. Add [setback] to the character’s next Computers check in this system.",
+  :table :spend,
+  :cost "[threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-advantage-or-triumph-2,
+  :name
+  "Dynamic Code (Sysop Only): The sysop modifies the coding on a piece of ice, adding [setback] to all break ice checks targeting it.",
+  :table :spend,
+  :cost "[advantage] [advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-triumph-0,
+  :name
+  "Hard Shutdown (Runner Only): If the runner successfully broke a piece of ice, it is so thoroughly disabled that it cannot be reactivated for the remainder of the encounter.",
+  :table :spend,
+  :cost "[triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-threat-or-despair-1,
+  :name
+  "I Know You! (Runner Only): A sysop on the system recognizes the runner’s style. The next time they successfully perform the trace user action, they successfully trace the runner one additional time.",
+  :table :spend,
+  :cost "[threat] [threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-triumph-4,
+  :name
+  "Identified Exploit (Sysop Only): The sysop spots a back door in the system, removing one permanent back door of their choice.",
+  :table :spend,
+  :cost "[triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-threat-or-despair-0,
+  :name
+  "Limited Access (Runner Only): The runner may only perform one Network action or one Network maneuver during their next turn.",
+  :table :spend,
+  :cost "[threat] [threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-threat-threat-or-despair-0,
+  :name
+  "Major Alert (Runner Only): All users with access to the system become aware of the presence of an intruder on the network.",
+  :table :spend,
+  :cost "[threat] [threat] [threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-or-despair-1,
+  :name
+  "Online Distractions: The user gets too focused on the online world. Add [setback] [setback] to any non-Computers checks the user makes next turn.",
+  :table :spend,
+  :cost "[threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-or-triumph-0,
+  :name
+  "Opportunity Identified: The character finds a useful system exploit. Add [boost] to the character’s next Computers check in this system.",
+  :table :spend,
+  :cost "[advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-advantage-advantage-or-triumph-1,
+  :name
+  "Permanent Back Door (Runner Only): The runner sets up a permanent means of accessing the system without needing to deal with its verification protocols. The difficulty of the access system action becomes Easy ([difficulty]) as long as the runner can access the back door.",
+  :table :spend,
+  :cost "[advantage] [advantage] [advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-threat-threat-threat-or-despair-1,
+  :name
+  "Permanent Back Door (Sysop Only): As the sysop attempts to lock the system down, they leave a portion vulnerable. The runner gains a means of accessing the system without needing to deal with its verification protocols. The difficulty of the access system action becomes Easy ([difficulty]) as long as the runner can access the back door.",
+  :table :spend,
+  :cost "[threat] [threat] [threat] or [despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-advantage-or-triumph-0,
+  :name
+  "Quick Commands: The character may immediately perform an additional enact command maneuver as an incidental.",
+  :table :spend,
+  :cost "[advantage] [advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-triumph-2,
+  :name
+  "Scouting Ahead (Runner Only): The runner learns the type, strength, and rules of one un-encountered piece of ice on the system.",
+  :table :spend,
+  :cost "[triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-despair-0,
+  :name
+  "Successful Trace (Runner Only): Sloppy work allows one sysop on the system to successfully trace the runner once.",
+  :table :spend,
+  :cost "[despair]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-advantage-advantage-or-triumph-2,
+  :name
+  "Successful Trace (Sysop Only): The sysop successfully traces the runner once (in addition to the other results of the check).",
+  :table :spend,
+  :cost "[advantage] [advantage] [advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :trace-4,
+  :name
+  "The sysops learns the address or exact location of the runner. The sysops reduces the difficulty of the lockout action four times.",
+  :table :trace,
+  :cost "4",
+  :source {:book "sotb", :page 131}}
+ {:id :trace-3,
+  :name
+  "The sysops learns what city or community the hacker is in (or their location within a 10 kilometer radius). The sysops reduces the difficulty of the lockout action three times.",
+  :table :trace,
+  :cost "3",
+  :source {:book "sotb", :page 131}}
+ {:id :trace-1,
+  :name
+  "The sysops learns what country the runner is currently in (and whether the runner is on the Earth, Moon, or orbit). The sysops reduces the difficulty of the lockout action once.",
+  :table :trace,
+  :cost "1",
+  :source {:book "sotb", :page 131}}
+ {:id :trace-2,
+  :name
+  "The sysops learns what state, province, or region the runner is in within that country. The sysops reduces the difficulty of the lockout action twice.",
+  :table :trace,
+  :cost "2",
+  :source {:book "sotb", :page 131}}
+ {:id :network-advantage-or-triumph-1,
+  :name
+  "Thorough Override (Runner Only): If the runner successfully broke a piece of ice, it cannot be reactivated for one additional round.",
+  :table :spend,
+  :cost "[advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-advantage-advantage-advantage-or-triumph-0,
+  :name
+  "Trolling: The character takes a few moments to mock their opponent. Inflict 3 strain on one other user in the system.",
+  :table :spend,
+  :cost "[advantage] [advantage] [advantage] or [triumph]",
+  :source {:book "sotb", :page 130}}
+ {:id :network-despair-1,
+  :name
+  "Wrong Person (Sysop Only): As the sysop traces the runner, they get one crucial element of the runner’s identity completely wrong. This does not negate a successful trace, but it does mean that they may have the wrong name, apartment number, or exact location of the runner, which guarantees that the runner avoids any real-world retaliation and probably embarrasses the sysop in front of their superiors.",
+  :table :spend,
+  :cost "[despair]",
+  :source {:book "sotb", :page 130}}]

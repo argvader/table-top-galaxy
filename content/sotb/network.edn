@@ -1,0 +1,450 @@
+[{:id :access-system,
+  :name "Access System",
+  :source {:book "sotb", :page 129},
+  :kind :action,
+  :text
+  "Once the runner has a direct link to the system, they need to access the system. This action represents the runner establishing a way into the system, giving them some measure of control so that they can attempt to fully control it later. As an action, the runner may make a Computers (Hacking) check to gain access to the system. The difficulty of the check is based on the system’s security protocols and overall complexity. See Table 3–1: Example Systems and Difficulties on page 126 for some example difficulties. Once a runner has successfully accessed a system, they can move around the system with an attempt access incidental and use the enact command maneuver to make the system do what they want (within the system's limits).",
+  :available-to ["Runner"],
+  :difficulty "Computers (Hacking) check (Difficulty Varies)"}
+ {:id :activate-program,
+  :name "Activate Program",
+  :source {:book "sotb", :page 132},
+  :kind :maneuver,
+  :text
+  "Characters use this maneuver to activate (or In Shadow of the Beanstalk, security programs are colloquially known as ice (once an acronym for “intrusion countermeasures electronics”). Ice falls into one of three broad categories: barriers, sentries, and code gates. Barriers keep unauthorized users out, sentries collect data on users and watch for any who might not be authorized to be in the system, and code gates differentiate between authorized and unauthorized connections (and boot those unauthorized connections from the system). Typically, runners know that ice is protecting a portion of the system, but they do not know what that ice is (unless they’ve encountered it before, or been able to spend [triumph] on prior checks to learn about it). Once they decide to access the protected portion of the system, they must first encounter the ice. When a runner encounters ice during a Network encounter, they automatically attempt to use the break ice action against it. Almost all ice has negative consequences for failing to break it, and most of the time a runner can’t avoid it by backing out at the last moment. Once they decide to encounter ice, they have to break it or suffer the consequences. reactivate) ice and icebreakers, as well as programs that do not fall into either category. If a sysop activates or reactivates a piece of ice, a runner can’t access (or can no longer access) any of the subsystems behind it until they break through the piece of ice (or break through it again). If a runner activates an icebreaker, all of their other icebreakers automatically deactivate. A runner may only have one icebreaker active at a time. You can think of this maneuver as similar to drawing and readying a weapon in the real world, except that in cyberspace, your character’s weapons are ice and icebreakers.",
+  :available-to ["Runner" "Sysop"]}
+ {:id :anatomy-of-ice,
+  :name "Anatomy of Ice",
+  :source {:book "sotb", :page 132},
+  :kind :rule,
+  :text
+  "Each piece of ice has the following parts. • Name and Description: Every piece of ice has a name and brief description. • Program Strength: Each piece of ice has a listed program strength. When attempting to override the ice, the strength of your character’s override must exceed the ice’s program strength to succeed. • Effects: Each piece of ice has something that happens to your character if they attempt to override it and fail. Barriers tend to stop runners from accessing the partitioned section of the system, code gates tend to boot runners from the system entirely, and sentries tend to alert any sysop on the system to the intrusion. However, specific pieces of ice may have other unique effects. • Additional Rules: Some pieces of ice have additional rules that govern how characters may interact with it."}
+ {:id :anatomy-of-icebreakers,
+  :name "Anatomy of Icebreakers",
+  :source {:book "sotb", :page 133},
+  :kind :rule,
+  :text
+  "Just as ice has some specific parts, so do icebreakers. • Name and Description: Every icebreaker has a name and brief description. • Able to Affect: Icebreakers tend to be designed to only be effective against specific types of ice (since the resources a program needs to be effective against all types of ice often mean it comes with other, significant drawbacks). This section lists the types of ice that the icebreaker can be used against. If the type isn’t on the list, the icebreaker cannot be used to break it. • Override Strength: Every icebreaker has a listed override strength. If your character makes a successful override security program check, then they can add the strength of one active icebreaker to their total override strength (as long as the icebreaker is able to affect the ice, of course!). • Additional Rules: Some icebreakers have other, additional rules that govern how characters may interact with it or use it."}
+ {:name "Archer",
+  :ice-type "Sentry",
+  :source {:book "sotb", :page 134},
+  :rules
+  "If the runner generates [threat] [threat] [threat] when attempting to break Archer, one of the runner’s icebreakers (GM’s choice) is damaged two steps (see the Damaging Programs and Systems sidebar, on page 133). If the runner generates [despair], one of their icebreakers is destroyed instead.",
+  :restricted true,
+  :strength 5,
+  :id :archer,
+  :effects
+  "If a runner attempts to break this ice and fails, the sysops or other system admins are immediately notified of the intrusion, and one of the runner’s icebreakers is destroyed. Archer then deactivates until the end of the runner's next turn.",
+  :kind :ice,
+  :rarity 5,
+  :price 850,
+  :text
+  "True to form, the sentry ice developed by Argus Security’s Network Defense division focuses on targeting and destroying runner software with burst-viruses."}
+ {:name "Athena",
+  :affects ["Barrier" "Code Gate"],
+  :source {:book "sotb", :page 136},
+  :rules
+  "While Athena is active, the runner may spend [advantage] [advantage] to identify one unidentified piece of ice on the system. Athena is too large to be used on a PAD, and can only be hosted on a rig or larger (your GM is the final arbitrator of what hardware is too small to host this icebreaker).",
+  :restricted true,
+  :strength 5,
+  :id :athena,
+  :kind :icebreaker,
+  :rarity 7,
+  :price 2600,
+  :text
+  "Normally, naming a program after a deity gets you accused of corporate arrogance in runner chatspaces. But this icebreaker earns its name. Although it consumes terrific processing power (equivalent to most AIs), it is uniquely capable of crunching the logic loops employed by code gates and overwhelming barriers with perfectly timed waves of false queries. Runners with BMIs claim the program universally “appears” as a shining warrior wielding a spear and accompanied by an owl. But that’s probably just a quirk created by the original programmer."}
+ {:name "Authenticator",
+  :ice-type "Code Gate",
+  :source {:book "sotb", :page 135},
+  :rules "None.",
+  :strength 3,
+  :id :authenticator,
+  :effects
+  "If a runner attempts to break this ice and fails, they lose access to the entire system and must perform the access system action again.",
+  :kind :ice,
+  :rarity 2,
+  :price 300,
+  :text
+  "Authenticator code gates simply check a user’s credentials. If they don’t match a list of preapproved users, they boot the intruder from the system. However, the lengthy list of users means these programs tend to be easier to override than barriers."}
+ {:name "Battering Ram",
+  :affects ["Barrier"],
+  :source {:book "sotb", :page 136},
+  :rules "None.",
+  :strength 6,
+  :id :battering-ram,
+  :kind :icebreaker,
+  :rarity 5,
+  :price 400,
+  :text
+  "When people think of icebreakers, they tend to think of programs like Battering Ram. This program takes a simple, brute-force approach to breaking through barrier ice, usually by overwhelming it with a barrage of pings until it shuts down."}
+ {:id :break-ice,
+  :name "Break Ice",
+  :source {:book "sotb", :page 129},
+  :kind :action,
+  :text
+  "Once a runner has successfully performed the access system action, its sub-systems may still be protected by ice. To interact with those parts of the system, the hacker must override the security program. Each piece of ice has a program strength. To break the ice, the runner’s attempt must generate a strength that exceeds the strength of the ice they are targeting. To determine that strength, the runner makes an Average ([difficulty] [difficulty]) Computers check. If the check succeeds, their strength is equal to the number of [success] generated on the check. Often, a runner is using an icebreaker to help them break the piece of ice. If the runner is using an appropriate icebreaker, they add the icebreaker’s strength to the strength of their override check (this works similarly to calculating damage with a ranged weapon on a successful combat check). If the runner fails, something (usually bad) happens. What happens is determined by the ice (see page 132). If the runner succeeds, the security program shuts down and cannot be reactivated until the end of the runner’s next turn. Runners can spend [advantage] or [triumph] to keep a program shut down longer, or to completely disable it (see page 130).",
+  :available-to ["Runner"],
+  :difficulty "Average ([difficulty] [difficulty]) Computers (Hacking) check"}
+ {:id :burn-system,
+  :name "Burn System",
+  :source {:book "sotb", :page 129},
+  :kind :action,
+  :text
+  "Sometimes, all a runner or sysop wants to do is sow destruction. This is very difficult, as system programs are generally very robust and can even be self-repairing. As an action, a runner or sysop may attempt a Daunting ([difficulty] [difficulty] [difficulty] [difficulty]) Computers (Hacking) check to damage a system they currently have access to (in the case of a sysop, this includes a runner’s own computer rig if the sysop has already located it with a successful trace user action). If the check is successful, the system is damaged one step, plus one additional step for every additional [success] [success]. Damage follows the rules found in the Item Maintenance section on page 89 in the Genesys Core Rulebook; apply the penalty found on Table I.5–4: Repairing Gear to all checks made to do anything within the system.",
+  :available-to ["Runner" "Sysop"],
+  :difficulty "Daunting ([difficulty] [difficulty] [difficulty] [difficulty]) Computers (Hacking) check"}
+ {:name "Corroder",
+  :affects ["Barrier"],
+  :source {:book "sotb", :page 136},
+  :rules
+  "While Corroder is active, the runner may spend [advantage] [advantage] from a check to break ice to reduce the strength of the ice the runner is attempting to break by 1 to a minimum of 1 until the end of the encounter.",
+  :restricted true,
+  :strength 4,
+  :id :corroder,
+  :kind :icebreaker,
+  :rarity 4,
+  :price 350,
+  :text
+  "Sysops tend to revile the Corroder program, as it degrades the strength of their ice even as it attempts to break through it. Needless to say, this wanton electronic destruction makes it even more popular in the runner community."}
+ {:name "Crypsis",
+  :affects ["Barrier" "Code Gate" "Sentry"],
+  :source {:book "sotb", :page 137},
+  :rules
+  "After a runner uses Crypsis to break a piece of ice, they must spend a maneuver. If they do not, Crypsis becomes damaged one step (see the Damaging Programs and Systems sidebar, on page 133). Crypsis is too large to be used on a PAD, and can only be hosted on a rig or larger (your GM is the final arbitrator of what hardware is too small to host this icebreaker)",
+  :restricted true,
+  :strength 3,
+  :id :crypsis,
+  :kind :icebreaker,
+  :rarity 5,
+  :price 450,
+  :text
+  "Quite a few runners would love to take credit for creating one of the first true AIs used as an icebreaker, although it’s far more likely that whoever programmed the first Crypsis stole the core code from a corporate laboratory. In any case, the Crypsis icebreaker is considered something of a work of art among runner circles. Although the AI is decidedly slow, it does have truly adaptive code. As such, even though pushing the program too hard can cause it to crash and eventually corrupt itself into junk data, patient users find that Crypsis can eventually overcome any type of ice."}
+ {:id :enact-command,
+  :name "Enact Command",
+  :source {:book "sotb", :page 132},
+  :kind :maneuver,
+  :text
+  "This maneuver is what characters use to do things within a system after accessing it. What they do with this maneuver depends on the capabilities of the system, and could range from looping footage, to opening doors, to downloading data, to resetting a guard drone’s targeting parameters. The enact command maneuver only lets your character perform a single command within a system (if what your character wants to do is too complex, your GM may require them to spend two or more enact command maneuvers to do it). Characters can only perform this maneuver after they have successfully performed the access system action. Remember that some parts of a system may be protected behind ice, which must be encountered and passed before the character can enact commands affecting that part of the system.",
+  :available-to ["Runner" "Sysop"]}
+ {:name "Enigma",
+  :ice-type "Code Gate",
+  :source {:book "sotb", :page 135},
+  :rules
+  "Before breaking Enigma, the runner must spend a maneuver studying it. If they are unable to do so, they may not attempt to break Enigma.",
+  :strength 3,
+  :id :enigma,
+  :effects
+  "If a runner attempts to break this ice and fails, they lose access to the entire system and must perform the access system action again.",
+  :kind :ice,
+  :rarity 2,
+  :price 400,
+  :text
+  "This ice uses illogical puzzle loops to endlessly redirect queries that don’t possess the correct password answers. Runners hate running into an Enigma code gate, because it inevitably takes time to study the particular contradictions before attempting to bypass it."}
+ {:name "Faerie",
+  :affects ["Sentry"],
+  :source {:book "sotb", :page 137},
+  :rules
+  "After a runner attempts to break ice while using Faerie, Faerie deactivates and may not be used again for the rest of the encounter.",
+  :strength 5,
+  :id :faerie,
+  :kind :icebreaker,
+  :rarity 3,
+  :price 300,
+  :text
+  "Faerie provides a powerful weapon against malicious sentry ice, but it works by distracting the programs constantly while the runner remains in the system. That means the program only works once."}
+ {:name "Femme Fatale",
+  :affects ["Sentry"],
+  :source {:book "sotb", :page 137},
+  :rules
+  "Once per encounter, when a runner attempts to break a piece of ice while Femme Fatale is active, the runner may spend one Story Point to succeed without making a check. Once per encounter, when a runner attempts to break a piece of ice while Femme Fatale is active, the GM may spend one Story Point to add [despair] to the check.",
+  :restricted true,
+  :strength 4,
+  :id :femme-fatale,
+  :kind :icebreaker,
+  :rarity 6,
+  :price 1200,
+  :text
+  "Designed in a Tri-Maf code shop (or so the stories say), Femme Fatale was an attempt to design a smarter, meaner version of Faerie that could distract multiple sentries at once. The Tri-Maf’s code slingers succeeded, but when they beefed up the ever-changing algorithms, they realized that every so often, an algorithm would match a piece of ice’s IFF protocols and allow the user to bypass it completely. It wasn’t until later that some runners working for the Tri-Maf angrily reported that sometimes the code would shift in such a way that it became harder to override a piece of ice. However, most runners feel that the somewhat fickle icebreaker is still a powerful tool in their kit."}
+ {:name "Fire Wall",
+  :ice-type "Barrier",
+  :source {:book "sotb", :page 133},
+  :rules "None.",
+  :strength 6,
+  :id :fire-wall,
+  :effects
+  "If a character attempts to break this ice and fails, they are unable to access the sub-system Fire Wall protects (there are no further effects).",
+  :kind :ice,
+  :rarity 3,
+  :price 400,
+  :text
+  "Most people assume the same coder who designed the Ice Wall developed the so-called Fire Wall. However, this ice was actually designed by a Megabuy-owned studio trying to piggyback off of Ice Wall’s popularity."}
+ {:name "Garrote",
+  :affects ["Sentry"],
+  :source {:book "sotb", :page 137},
+  :rules
+  "When a runner uses Garrote to break a sentry, the runner may spend [advantage] to stop the sentry from notifying any sysops or systems administrators about the runner’s existence (whether or not the runner successfully breaks the ice). After attempting to break a piece of ice, the runner may spend [advantage] to add [success] to the next break ice check made targeting the same piece of ice during the encounter.",
+  :strength 2,
+  :id :garrote,
+  :kind :icebreaker,
+  :rarity 2,
+  :price 225,
+  :text
+  "Garrote got its name because of its straightforward approach. It waits for a sentry to ping a runner, then uses an ever-tightening string of logic puzzles to choke off the data the ice is sending back to the system. This guarantees that even if the runner can’t bypass the ice, the ice can’t tell anyone about it."}
+ {:name "Gordian Blade",
+  :affects ["Code Gate"],
+  :source {:book "sotb", :page 137},
+  :rules
+  "While Gordian Blade is active, the runner may spend [advantage] [advantage] to increase Gordian Blade’s override strength to 4 until the end of their following turn.",
+  :strength 3,
+  :id :gordian-blade,
+  :kind :icebreaker,
+  :rarity 4,
+  :price 400,
+  :text
+  "The Gordian Blade is said to have been developed open-source by a team of runners in less than three hours. They invented an appropriately simple program that used a logic-resolution engine to overcome most code gates, and runners tend to delight in “slicing” through the complex mathematical puzzles employed by sysops to restrict system access."}
+ {:name "Great Wall",
+  :ice-type "Barrier",
+  :source {:book "sotb", :page 133},
+  :rules "Up to three sub-systems may be protected by this ice.",
+  :strength 6,
+  :id :great-wall,
+  :effects
+  "If a character attempts to break this ice and fails, they are unable to access the sub-system(s) Great Wall protects (there are no further effects).",
+  :kind :ice,
+  :rarity 4,
+  :price 600,
+  :text
+  "This piece of ice is popular with sysops on a budget, because it can partition off large amounts of a system behind one security program. However, if a runner breaks this ice, all of its sub-systems become vulnerable."}
+ {:name "Hadrian’s Wall",
+  :ice-type "Barrier",
+  :source {:book "sotb", :page 133},
+  :rules
+  "During their turn, a sysop may spend a maneuver to reinforce Hadrian’s Wall. If they do so, the ice increases its program strength to 10 until the end of the sysop’s next turn.",
+  :strength 8,
+  :id :hadrians-wall,
+  :effects
+  "If a character attempts to break this ice and fails, they are unable to access the sub-system Hadrian’s Wall protects (there are no further effects).",
+  :kind :ice,
+  :rarity 5,
+  :price 650,
+  :text
+  "Developed by an in-house Weyland subsidiary, this barrier has interactive algorithms that allow sysops to reinforce its strength on the fly. Though it requires a skilled sysop to use, this ice can block even an elite runner."}
+ {:name "Hawk’s Eye",
+  :ice-type "Sentry",
+  :source {:book "sotb", :page 134},
+  :rules
+  "If the runner generates [threat] [threat] when attempting to break Hawk’s Eye, Hawk’s Eye provides any sysops who access the system during the current encounter one successful trace against the runner.",
+  :strength 4,
+  :id :hawks-eye,
+  :effects
+  "If a runner attempts to break this ice and fails, the sysops or other system admins are immediately notified of the intrusion and Hawk’s Eye provides any sysops who access the system during the current encounter one successful trace against the runner. Hawk's Eye then deactivates until the end of the runner's next turn.",
+  :kind :ice,
+  :rarity 4,
+  :price 475,
+  :text
+  "NBN’s data analytics division originally produced this ice to measure and report on consumer habits. When they realized just how good it was at spotting and tracing presences on the Network, NBN started selling it as a security program."}
+ {:name "Heimdall 1.0",
+  :ice-type "Barrier",
+  :source {:book "sotb", :page 133},
+  :rules
+  "During their turn, a runner may spend a maneuver to interact with Heimdall 1.0. If they do so, they decrease Heimdall 1.0’s program strength by 1 until the end of their next round. The runner must add [threat] for each previous time they have encountered Heimdall 1.0 until the end of the encounter.",
+  :restricted true,
+  :strength 7,
+  :id :heimdall-1-0,
+  :effects
+  "If a character attempts to break this ice and fails, they are unable to access the sub-system Heimdall 1.0 protects (there are no further effects).",
+  :kind :ice,
+  :rarity 6,
+  :price 1000,
+  :text
+  "Haas-Bioroid takes a novel approach to ice. Instead of designing programs, it builds bioroid brains and plugs them into its servers. Though less adaptable and intelligent than a true sysop, this “bioroid ice” can interact with and adapt to would-be intruders. Some clever runners try to use this programmed curiosity to engage with and even trick the ice, but doing so can be a risky proposition."}
+ {:name "Ice Wall",
+  :ice-type "Barrier",
+  :source {:book "sotb", :page 134},
+  :rules "None.",
+  :strength 5,
+  :id :ice-wall,
+  :effects
+  "If a character attempts to break this ice and fails, they are unable to access sub-system Ice Wall protects (there are no further effects).",
+  :kind :ice,
+  :rarity 2,
+  :price 250,
+  :text
+  "Invented by some insufferably clever coder, this barrier exists in numerous iterations. Many runners use this as a base when developing their own ice."}
+ {:name "Janus 1.0",
+  :ice-type "Sentry",
+  :source {:book "sotb", :page 134},
+  :rules
+  "For every [threat] the runner generates when attempting to break Janus 1.0, the runner suffers 2 strain. If the runner is using a BMI, they suffer 1 strain and 1 wound instead.",
+  :restricted true,
+  :strength 9,
+  :id :janus-1-0,
+  :effects
+  "If a runner attempts to break this ice and fails, the system of the rig or computer the runner is using is destroyed (which also kicks the runner out of the system). If the runner is using a BMI, they suffer an automatic Head Ringer Critical Injury instead, and they must attempt to override Janus again during their following turn. If they are already suffering from the Head Ringer Critical Injury, they suffer the At The Brink Critical Injury instead. If they are already suffering from the At The Brink Critical Injury, they suffer The End is Nigh Critical Injury instead.",
+  :kind :ice,
+  :rarity 8,
+  :price 5000,
+  :text
+  "A few runners whisper about the bioroid ice known as Janus. They say this sentry stalks Haas-Bioroid’s most important servers, hunting unauthorized users, and that it shreds minds as easily as it shreds programs."}
+ {:id :lockout,
+  :name "Lockout",
+  :source {:book "sotb", :page 131},
+  :kind :action,
+  :text
+  "Since the sysop has direct control over the system being hacked, they can lock any users out of the system. As long as they can find a runner, they can give them the boot. Once the sysop is aware of the runner’s presence, the sysop may make a Formidable ([difficulty] [difficulty] [difficulty] [difficulty] [difficulty]) Computers (Sysops) check. If the sysop is successful, the runner targeted by this action loses access to the system. At the GM’s discretion, the runner may be able to regain access to the system by performing the access system action again. However, if they don’t do something to disguise their signal (such as routing it through another server), the difficulty of the access system action increases by 2. Reduce the difficulty of the lockout action once for every successful trace against the runner, to a minimum of Easy ([difficulty]).",
+  :available-to ["Sysop"],
+  :difficulty
+  "Formidable ([difficulty] [difficulty] [difficulty] [difficulty] [difficulty]) Computers (Sysops) check"}
+ {:name "Pop-Up",
+  :ice-type "Code Gate",
+  :source {:book "sotb", :page 135},
+  :rules
+  "The runner may feel a fleeting compulsion to buy a new hopper, refinance the mortgage on their condo-hab, or invest their credits in precious metals.",
+  :strength 2,
+  :id :pop-up,
+  :effects
+  "If a runner attempts to break this ice and fails, they suffer 2 strain. Pop-up then deactivates until the end of the runner's next turn.",
+  :kind :ice,
+  :rarity 1,
+  :price 25,
+  :text
+  "This version of a code gate is exceedingly popular with corporate marketing teams and universally reviled by everyone else."}
+ {:name "Remora",
+  :affects ["Code Gate" "Sentry"],
+  :source {:book "sotb", :page 137},
+  :rules
+  "When a runner uses Remora to break sentries or code gates, the runner may spend [advantage] [advantage] [advantage] or [triumph] to avoid suffering any of the effects from failing to override the ice. (This does not apply to anything that might happen due to the ice's additional rules.)",
+  :restricted true,
+  :strength 0,
+  :id :remora,
+  :kind :icebreaker,
+  :rarity 3,
+  :price 475,
+  :text
+  "Nothing says \"high risk/reward\" more than this particular icebreaker. Remora doesn't have the code strength to break through anything but the weakest ice. However, it's designed to piggyback onto passing approved data packets and slip past sentry and code gate programs. The trick doesn't work against barrier ice, and there's always a chance any ice might spot the hitchhiker. But there's also a chance the runner can bypass the ice without ever encountering it."}
+ {:name "Sagittarius A*",
+  :affects ["Barrier" "Code Gate" "Sentry"],
+  :source {:book "sotb", :page 138},
+  :rules
+  "When Sagittarius A* successfully overrides a piece of ice, it destroys it. When a runner uses Sagittarius A* to break a piece of ice, the runner must spend [advantage] or [triumph] to destroy another piece of active ice on the system, and the GM must spend [threat] or [despair] to destroy one other icebreaker on the runner's rig. If there are no other pieces of active ice on the system, the runner must spend [advantage] or [triumph] to destroy the system, instead. (This ends the Network encounter, and almost certainly has other catastrophic effects depending on the GM and what the system controlled).",
+  :restricted true,
+  :strength 6,
+  :id :sagittarius-a,
+  :kind :icebreaker,
+  :rarity 8,
+  :price 2000,
+  :text
+  "This rare, dangerous, and incredibly illegal icebreaker doesn't just override ice, it destroys it completely. However, the program has a voracious appetite for code. If a runner isn't careful it can devour everything on the server, including the runner's other programs and even the system's core architecture, leaving nothing but a incomprehensible packet of impossibly compressed data in its wake."}
+ {:name "Sentinel",
+  :ice-type "Sentry",
+  :source {:book "sotb", :page 134},
+  :rules "None.",
+  :strength 3,
+  :id :sentinel,
+  :effects
+  "If a character attempts to break this ice and fails, the sysops or other system admins are immediately notified of the intrusion. Sentinel then deactivates until the end of the runner's next turn.",
+  :kind :ice,
+  :rarity 2,
+  :price 100,
+  :text
+  "Sentinel is one of a number of basic, over-the-counter types of sentry ice used by corporations that see “cybersecurity” as a regrettable drain on their profit margin."}
+ {:name "Shinobi",
+  :ice-type "Sentry",
+  :source {:book "sotb", :page 135},
+  :rules
+  "For every [threat] the runner generates when attempting to break Shinobi, the runner suffers 2 strain.",
+  :restricted true,
+  :strength 3,
+  :id :shinobi,
+  :effects
+  "If a runner attempts to break this ice and fails, the runner suffers 6 strain and one of their icebreakers is damaged one step (see the Damaging Programs and Systems sidebar, on page 133). Shinobi then moves to protect a different sub-system on the system (if able).",
+  :kind :ice,
+  :rarity 3,
+  :price 550,
+  :text
+  "Runners claim that shinobi ice was designed and developed by Jinteki, but no corporate representatives have ever admitted to it. This program seems completely autonomous, and it lashes out at any unauthorized user with an overwhelming barrage of junk code."}
+ {:id :sweep,
+  :name "Sweep",
+  :source {:book "sotb", :page 132},
+  :kind :action,
+  :text
+  "Even when the sysop doesn't know if there's an intruder in their system, they can use their own programs to sweep for intruders. This is similar to a guard checking to make sure everything is all right (and is thematically similar to a Perception check to spot someone sneaking around). If the sysop fails, they do not do a thorough job checking, and do not know if there are any intruders on their system or not. If they succeed, they spot one intruder who has access to their system, plus one additional intruder for every additional [success].",
+  :available-to ["Sysop"],
+  :difficulty "Hard ([difficulty] [difficulty] [difficulty]) Computers (Sysops) check"}
+ {:name "Syn 2.2",
+  :ice-type "Code Gate",
+  :source {:book "sotb", :page 135},
+  :rules
+  "If a runner fails to break Syn, they add [failure] [failure] to any further attempts to break this piece of ice until the end of the encounter.",
+  :strength 6,
+  :id :syn-2-2,
+  :effects
+  "If a runner attempts to break this ice and fails, they lose access to the entire system and must perform the access system action again.",
+  :kind :ice,
+  :rarity 5,
+  :price 1250,
+  :text
+  "Syn continues HB’s intermittent tradition of naming its ice after figures from Western mythology. Syn is one of the strongest bioroid code gates in HB’s electronic arsenal, appropriately named after the old Norse goddess of refusal and doorways."}
+ {:name "Tollbooth",
+  :ice-type "Code Gate",
+  :source {:book "sotb", :page 136},
+  :rules
+  "The runner may pay a set fee (usually between 5 and 50 credits) to automatically succeed on their check to break Tollbooth.",
+  :strength 3,
+  :id :tollbooth,
+  :effects
+  "If a runner attempts to break this ice and fails, they lose access to the entire system and must perform the access system action again.",
+  :kind :ice,
+  :rarity 2,
+  :price 200,
+  :text
+  "Most corporations use paywalls to charge for online content or services. Although the paywalls are not dangerous, many runners would rather breach them than pay a fee. Tollbooth is part of a suite of programs that NBN uses to protect its pay-to-view content on its media networks."}
+ {:name "Torch",
+  :affects ["Code Gate"],
+  :source {:book "sotb", :page 138},
+  :rules
+  "The runner may spend [advantage] after successfully breaking a piece of ice to stop that piece of ice from being reactivated for the remainder of the encounter.",
+  :restricted true,
+  :strength 9,
+  :id :torch,
+  :kind :icebreaker,
+  :rarity 9,
+  :price 3000,
+  :text
+  "Runners claim that the legendary g00ru, the nigh-mythical runner who supposedly taught all other runners how to exploit the Network, created this icebreaker when they traveled into the heart of the Net. There, they stole a fragment of source code from the grid’s burning heart, code that could sear through any authentication program ever devised. It’s a nice, if utterly fanciful, story. However, given Torch’s sheer power, it’s easy to see how that story got started."}
+ {:id :trace-user,
+  :name "Trace User",
+  :source {:book "sotb", :page 130},
+  :kind :action,
+  :text
+  "Once the sysop knows that their system is being hacked, they still need to know where the run is coming from. The more they know about the origin of the run, the easier it is to lock the runner out of their system. To find out where the run is coming from, the sysops needs to trace the runner by performing the trace user action. The sysop makes an opposed Computers (Sysops) versus Computers (Hacking) check targeting the runner. If the sysop is successful, they gain one traces (narrowing down the runner’s location). This makes it easier to lock the runner out of the system or even destroy the runner’s gear (see the lockout and burn system actions). It also provides information about the runner’s real-world location. See the Trace Information sidebar, on the next page, for what information a successful trace provides. Besides using this information to lock the runner out of the system, the sysop can also use it for other purposes, such as reporting the runner to the NAPD or sending a blackops team to the runner’s apartment. Your GM can also have the sysop perform the trace user action to learn other key details about the runner, such as how to access the runner’s computer over the Network. Your runner can even use this action to learn the physical location of someone else online, such as an enemy sysop or rival runner. (In this case, this would be a special exemption of the action only being available to a sysop, and subject to approval by your GM.)",
+  :available-to ["Sysop"],
+  :difficulty "Opposed Computers (Sysops) versus Computers (Hacking) check"}
+ {:name "Viktor 2.0",
+  :ice-type "Code Gate",
+  :source {:book "sotb", :page 136},
+  :rules
+  "For every [threat] the runner generates when attempting to break Viktor 2.0, the runner suffers 1 strain. If the runner is using a BMI, they suffer 1 wound instead.",
+  :restricted true,
+  :strength 4,
+  :id :viktor-2-0,
+  :effects
+  "If a runner attempts to break this ice and fails, they lose access to the entire system and must perform the access system action again.",
+  :kind :ice,
+  :rarity 5,
+  :price 1000,
+  :text
+  "An evolution of the original “Viktor” program, this is, according to HB, a sophisticated guardian program that can non-lethally incapacitate unauthorized users. The number of runners who have ended up in the hospital or morgue after a run-in with Viktor 2.0 puts lie to the “non-lethal” claim, however."}
+ {:name "Yog.0",
+  :affects ["Code Gate"],
+  :source {:book "sotb", :page 138},
+  :rules
+  "While Yog.0 is active, after making a break ice check the runner may spend [advantage] [advantage] [advantage] or [triumph] to override the targeted code gate (even if the override strength does not exceed the program strength).",
+  :restricted true,
+  :strength 1,
+  :id :yog-0,
+  :kind :icebreaker,
+  :rarity 6,
+  :price 550,
+  :text
+  "The Yog.0 icebreaker is a crowd-sourced database containing millions of sniffed, spoofed, and logged passkeys, combined with a high-speed access/comparison program. As long as the passkey fits the code gate, you’re in. On the other hand, since Yog.0 is not an adaptable icebreaker, if it doesn’t have the code it has a hard time overriding the gate."}]

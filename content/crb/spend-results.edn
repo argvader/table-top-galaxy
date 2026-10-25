@@ -1,0 +1,180 @@
+[{:id :positive-advantage-1-or-triumph-true-4,
+  :name "Activate an item quality ([advantage] cost may vary).",
+  :side :positive,
+  :cost {:advantage 1, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-2-or-triumph-true-2,
+  :name "Add [boost] to any allied character’s next check, including that of the active character.",
+  :side :positive,
+  :cost {:advantage 2, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-1-or-triumph-true-1,
+  :name "Add [boost] to the next allied character’s check.",
+  :side :positive,
+  :cost {:advantage 1, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-2-1,
+  :name "Add [boost] to the targeted character’s next check.",
+  :side :negative,
+  :cost {:threat 2, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-2-or-triumph-true-1,
+  :name "Add [setback] to the targeted character’s next check.",
+  :side :positive,
+  :cost {:advantage 2, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-2-0,
+  :name
+  "An opponent may immediately perform one free maneuver as an incidental in response to the active character’s check.",
+  :side :negative,
+  :cost {:threat 2, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-triumph-1-2,
+  :name "Do something vital, such as shooting the controls to the nearby blast doors to seal them shut.",
+  :side :positive,
+  :cost {:triumph 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-3-or-triumph-true-4,
+  :name "Force the target to drop a melee or ranged weapon they are wielding.",
+  :side :positive,
+  :cost {:advantage 3, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-3-or-triumph-true-3,
+  :name "Gain +1 melee or ranged defense until the end of the active character’s next turn.",
+  :side :positive,
+  :cost {:advantage 3, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-3-or-triumph-true-1,
+  :name
+  "Ignore penalizing environmental effects such as inclement weather, zero gravity, or similar circumstances until the end of the active character’s next turn.",
+  :side :positive,
+  :cost {:advantage 3, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-1-or-triumph-true-3,
+  :name
+  "Inflict a Critical Injury with a successful attack that deals damage past soak ([advantage] cost may vary).",
+  :side :positive,
+  :cost {:advantage 1, :or-triumph true},
+  :crit true,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-3-or-triumph-true-0,
+  :name
+  "Negate the targeted enemy’s defense (such as the defense gained from cover, equipment, or performing the guarded stance maneuver) until the end of the current round.",
+  :side :positive,
+  :cost {:advantage 3, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-1-or-triumph-true-2,
+  :name
+  "Notice a single important point in the ongoing conflict, such as the location of a door’s control panel or a weak point on an armored car.",
+  :side :positive,
+  :cost {:advantage 1, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-triumph-1-3,
+  :name "On an Initiative check, perform an immediate free maneuver before combat begins.",
+  :side :positive,
+  :cost {:triumph 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-2-or-triumph-true-0,
+  :name "Perform an immediate free maneuver that does not exceed the limit of two maneuvers per turn.",
+  :side :positive,
+  :cost {:advantage 2, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-1-or-triumph-true-0,
+  :name "Recover 1 strain.",
+  :side :positive,
+  :cost {:advantage 1, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-3-0,
+  :name "The active character falls prone.",
+  :side :negative,
+  :cost {:threat 3, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-3-1,
+  :name
+  "The active character grants the enemy a significant advantage in the ongoing encounter, such as accidentally blasting the controls to a bridge the active character was planning to use for their escape.",
+  :side :negative,
+  :cost {:threat 3, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-1-1,
+  :name
+  "The active character loses the benefits of a prior maneuver (such as from taking cover or assuming a guarded stance) until they perform the maneuver again.",
+  :side :negative,
+  :cost {:threat 1, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-2-2,
+  :name "The active character or an allied character suffers [setback] on their next action.",
+  :side :negative,
+  :cost {:threat 2, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-or-despair-true-threat-1-0,
+  :name "The active character suffers 1 strain.",
+  :side :negative,
+  :cost {:threat 1, :or-despair true},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-despair-1-0,
+  :name
+  "The character’s weapon immediately runs out of ammunition and may not be used for the remainder of the encounter.",
+  :side :negative,
+  :cost {:despair 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-despair-1-2,
+  :name "The tool, Brawl, or Melee weapon the active character is using becomes damaged (see page 89).",
+  :side :negative,
+  :cost {:despair 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-triumph-1-1,
+  :name
+  "Upgrade the ability of any allied character’s next check, including that of the current active character.",
+  :side :positive,
+  :cost {:triumph 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :negative-despair-1-1,
+  :name
+  "Upgrade the difficulty of an allied character’s next check or the next check of the current active character.",
+  :side :negative,
+  :cost {:despair 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-triumph-1-0,
+  :name "Upgrade the difficulty of the targeted character’s next check.",
+  :side :positive,
+  :cost {:triumph 1},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-triumph-2-0,
+  :name
+  "When dealing damage to a target, have the attack destroy a piece of equipment the target is using, such as blowing up their assault rifle or slicing their sword in half.",
+  :side :positive,
+  :cost {:triumph 2},
+  :crit false,
+  :source {:book "crb", :page 104}}
+ {:id :positive-advantage-3-or-triumph-true-2,
+  :name
+  "When dealing damage to a target, have the attack disable the opponent or one piece of gear rather than dealing wounds or strain. This could include hobbling them temporarily with a shot to the leg, or disabling their radio. This should be agreed upon by the player and the GM, and the effects are up to the GM (although Table I.6–10: Critical Injury Result, on page 115, is a good resource to consult for possible effects). The effects should be temporary and not too excessive.",
+  :side :positive,
+  :cost {:advantage 3, :or-triumph true},
+  :crit false,
+  :source {:book "crb", :page 104}}]

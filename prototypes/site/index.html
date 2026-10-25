@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Table Top Galaxy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=IBM+Plex+Mono:wght@400;600&family=Saira+Condensed:wght@500;600;700&display=swap">
+<style>
+/* Same ship-console tokens as the prototypes: a short list of the pages, one card each. */
+:root {
+  --bg: #e6ecec; --surface: #f6f9f9; --ink: #12201f; --muted: #586a69; --line: #c6d2d1; --accent: #0d6f78;
+  --f-display: "Saira Condensed", "Arial Narrow", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0c1214; --surface: #141d20; --ink: #e2ebeb; --muted: #8ea1a2; --line: #26363b; --accent: #49bfc8; color-scheme: dark; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45;
+  padding: max(24px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+.wrap { max-width: 860px; margin: 0 auto; display: grid; gap: 20px; }
+header h1 { margin: 0; font-family: var(--f-display); font-size: 40px; line-height: 1; }
+header p { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+.pages { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+a.page { display: grid; gap: 6px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); color: inherit; text-decoration: none; }
+a.page:hover, a.page:focus-visible { border-color: var(--accent); outline: none; box-shadow: inset 0 0 0 1px var(--accent); }
+a.page h2 { margin: 0; font-family: var(--f-display); font-size: 24px; line-height: 1.05; }
+a.page p { margin: 0; font-size: 14px; color: var(--muted); }
+.tag { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+footer { font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Table Top Galaxy</h1>
+    <p>Prototypes for Manifest Destiny, a Genesys game in the Android setting. They run on content from the table's books, so keep this address to the group.</p>
+  </header>
+  <nav class="pages" aria-label="Prototypes">
+    <a class="page" href="character-builder.html"><span class="tag">Step by step</span><h2>Character builder</h2><p>Archetype, career, Obligation, XP, gear and motivations, with the book's rules checked as you go.</p></a>
+    <a class="page" href="character-sheet.html"><span class="tag">At the table</span><h2>Character sheet</h2><p>Prance Galavent's sheet: wounds and strain, rolls from any skill, crits and the Obligation.</p></a>
+    <a class="page" href="roller/index.html"><span class="tag">App · M2</span><h2>Dice roller</h2><p>The real roller: build a pool, see the exact odds before you roll, spend the results, keep a roll log.</p></a>
+    <a class="page" href="dice-roller.html"><span class="tag">Prototype · dice</span><h2>Dice roller prototype</h2><p>The original mock-up: sample characters, story points and 3D dice.</p></a>
+  </nav>
+  <footer>Prototype build. Progress is saved in this browser only.</footer>
+</div>
+</body>
+</html>

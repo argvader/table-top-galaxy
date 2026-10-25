@@ -54,6 +54,11 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, [tabindex]:fo
 .tag { display: inline-block; font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; color: var(--muted); white-space: nowrap; }
 .tag.gm { border-style: dashed; }
 .note { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
+/* Book citation: every rule and entry says where it came from */
+.cite { display: inline-block; font-family: var(--f-mono); font-size: 10.5px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; vertical-align: 2px; white-space: nowrap; }
+/* Dice and symbols inline in rules text ([advantage], [setback] ...) */
+.glyph { display: inline-block; width: 1.05em; height: 1.05em; vertical-align: -0.15em; }
+.glyph svg { width: 100%; height: 100%; display: block; }
 
 /* Top bar */
 .top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding-block: 12px; border-bottom: 1px solid var(--line); }

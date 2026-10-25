@@ -1,0 +1,12 @@
+;; House rule: Secrets and Obligations replace Shadow of the Beanstalk's Debt and Favors.
+;; :settled marks what the table has agreed; everything else is a draft (see docs/house-rules.md).
+[{:id :obligation-rules
+  :name "Secrets and Obligations"
+  :replaces [:sotb/debt :sotb/favors]
+  :magnitude {:choices [5 10 15] :xp-equals-magnitude true :settled true}
+  :attachment {:fields [:attachment :why-it-matters] :settled true}
+  :session-check {:roll "d100 vs party total" :comes-due {:self-strain -2 :others-strain -1 :doubles :double-effect}
+                  :settled true}
+  :text "At character creation, each player picks or rolls one Secret or Obligation, chooses a magnitude of 5, 10 or 15 for that much XP, and names who or what it ties them to."
+  :inspiration "https://www.reddit.com/r/genesysrpg/comments/7sw5kj/curses_and_obligation_in_genesys/"
+  :source {:book "house" :doc "docs/house-rules.md#secrets-and-obligations"}}]

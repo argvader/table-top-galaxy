@@ -1,0 +1,471 @@
+[{:id :applied-research,
+  :name "Applied Research",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Your character may use this talent before making a check to use any knowledge skill and Intellect instead of the skill and characteristic the check would normally require. Your character may use this talent a number of times per session equal to their ranks in Applied Research. When your character uses this talent, you should explain how their mastery of knowledge lets them accomplish this task. In addition, your GM may rule that a particular knowledge skill makes the most sense in a given situation, and require your character to use that specific knowledge skill.",
+  :source {:book "sotb", :page 49}}
+ {:id :bad-cop,
+  :name "Bad Cop",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Your character may spend [advantage] [advantage] from a Coercion or Deception check to use this talent to upgrade the ability of a single ally’s subsequent social skill check a number of times equal to your character’s ranks in Bad Cop. The check must target the same character as your character’s initial check, and it must take place during the same encounter. Only one character may affect a check with this talent.",
+  :source {:book "sotb", :page 47}}
+ {:id :bad-habit,
+  :name "Bad Habit",
+  :tier 3,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "Your character may use this talent to become disoriented for the remainder of the encounter. At the beginning of each of your character’s turns, if they are still disoriented due to this talent, they heal 2 strain.",
+  :source {:book "sotb", :page 49}}
+ {:id :big-guns,
+  :name "Big Guns",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character’s encumbrance threshold is 10 plus their Brawn, instead of 5 plus their Brawn. Your character reduces the Cumbersome rating of any weapon they carry by 1, to a minimum of 3.",
+  :source {:book "sotb", :page 47}}
+ {:id :body-guard,
+  :name "Body Guard",
+  :tier 3,
+  :activation "Active (Maneuver)",
+  :ranked true,
+  :text
+  "Once per round, your character may suffer a number of strain no greater than their ranks in Body Guard to use this talent. Choose one ally engaged with your character, until the end of your character's next turn, upgrade the difficulty of all combat checks targeting that ally a number of times equal to the strain suffered.",
+  :source {:book "sotb", :page 49}}
+ {:id :burn-through,
+  :name "Burn Through",
+  :tier 4,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "After making a successful break ice action, your character may suffer 3 strain to use this talent. If they do, they may perform a second override ice action on the same system as an incidental.",
+  :source {:book "sotb", :page 51}}
+ {:id :codeslinger,
+  :name "Codeslinger",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When your character performs the activate program maneuver (page 132) in a hacking encounter, they can choose not to deactivate one other active icebreaker. They may have two icebreakers active at once.",
+  :source {:book "sotb", :page 48}}
+ {:id :combat-medicine,
+  :name "Combat Medicine",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Before making a Medicine check, your character may use this talent to add [success] equal to their ranks in Combat Medicine to the results. After the check is resolved, the target suffers 2 strain for each rank your character has in Combat Medicine.",
+  :source {:book "sotb", :page 48}}
+ {:id :corporate-drone,
+  :name "Corporate Drone",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains Knowledge (Society) or Negotiation as a career skill. In addition, once per session, your character may collect a small favor from any other member of a single corporation (chosen when you take this talent), even if they do not owe your character a favor.",
+  :source {:book "sotb", :page 44}}
+ {:id :custom-code,
+  :name "Custom Code",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When your character selects this talent they choose one icebreaker or piece of ice that they own. If they choose an icebreaker, whenever they use that icebreaker to override ice, they add [advantage] to the results. If they choose a piece of ice, whenever someone else attempts to override it, they add [threat] to the results.",
+  :source {:book "sotb", :page 44}}
+ {:id :custom-rig,
+  :name "Custom Rig",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "When your character selects this talent they choose one computer (such as a rig, PAD, or spinal modem) that they own. The amount of ice or icebreakers (your character's choice) that they can have on that computer is increased by 1 per rank of Custom Rig. (This may be a mix of ice and icebreakers, as long as the combined total increase does not exceed your character's ranks in Custom Rig). If your character loses their affected computer, they may choose a new computer to be affected by this talent.",
+  :source {:book "sotb", :page 44}}
+ {:id :customer-service-experience,
+  :name "Customer Service Experience",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "After your character makes a Charm check, they may suffer 1 strain use this talent to cancel [threat] equal to your character’s ranks in Customer Service Experience.",
+  :source {:book "sotb", :page 45}}
+ {:id :deep-pockets,
+  :name "Deep Pockets",
+  :tier 1,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to produce a small but narratively useful item from their pockets, backpack, or similar receptacle (it turns out the item had been there the whole time). Your GM has final say as to what items can be produced with Deep Pockets, but generally the item should cost less than 100 credits and have an encumbrance of 0 or 1.",
+  :source {:book "sotb", :page 45}}
+ {:id :determined-driver,
+  :name "Determined Driver",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "You may spend a Story Point to use this talent to have your character heal system strain on a vehicle they are currently driving, piloting, or operating equal to their ranks in Driving, Piloting, or Operating (choose the skill used to direct the vehicle).",
+  :source {:book "sotb", :page 48}}
+ {:id :disenfrancisto,
+  :name "Disenfrancisto",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains Streetwise or Survival (your choice) as a career skill. In addition, once per session, your character may collect a small favor from any other disenfrancisto, even if they do not owe your character a favor.",
+  :source {:book "sotb", :page 45}}
+ {:id :drone-master,
+  :name "Drone Master",
+  :tier 5,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character may control two drones or minion groups of drones no larger than your character's Willpower (either via the rules found on page 233 or via the Animal Companion talent, found on page 77 of the Genesys Core Rulebook). Your character resolves each drone’s (or minion group's) turn individually, choosing the order in which they activate.",
+  :source {:book "sotb", :page 52}}
+ {:id :dumb-luck,
+  :name "Dumb Luck",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per session, you may spend a Story Point to use this talent after your character suffers a Critical Injury but before the result is rolled. Their opponent must roll two results, and you select which applies to your character.",
+  :source {:book "sotb", :page 49}}
+ {:id :elementary,
+  :name "Elementary",
+  :tier 4,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Perception check while present at a crime scene. If they succeed, they identify all prominent physical characteristics of one person who was at the crime scene when the crime was committed (as long as the crime was committed in the past 48 hours). This could include a person's height, weight, body type, clothing, and if they are human or not. Your character may identify all the physical characteristics of one additional person present at the crime scene per additional [success].",
+  :source {:book "sotb", :page 51}}
+ {:id :former-professor,
+  :name "Former Professor",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains one Knowledge skill (of your choice) as a career skill. In addition, once per session, your character may collect a small favor from a member of an institute of higher learning, even if they do not owe your character a favor.",
+  :source {:book "sotb", :page 45}}
+ {:id :ghost-in-the-machine,
+  :name "Ghost in the Machine",
+  :tier 5,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "As long as they have some sort of access point to the Network, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Computers (Hacking) check. If they succeed, they may select one drone, vehicle, or piece of equipment involved in the current encounter and dictate its actions until the start of your character’s next turn. Alternatively, your character can select someone with cybernetic implants or who is wearing powered armor or an exosuit and manipulate it until the beginning of your character’s next turn. This must be approved by your GM but could include shutting off cybereyes, directing the movements of cyberlimbs, or causing an exosuit to eject its occupant. Your character may spend [advantage] [advantage] [advantage] on the check to extend the effects for one additional round, or they may spend [triumph] to extend the effects for the remainder of the encounter.",
+  :source {:book "sotb", :page 52}}
+ {:id :good-cop,
+  :name "Good Cop",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked true,
+  :text
+  "Your character may spend [advantage] [advantage] from a Charm or Negotiation check to use this talent to upgrade the ability of a single ally’s subsequent social skill check a number of times equal to your character’s ranks in Good Cop. The check must target the same character as your character’s initial check, and it must take place during the same encounter. Only one character may affect a check with this talent.",
+  :source {:book "sotb", :page 48}}
+ {:id :hand-on-the-throttle,
+  :name "Hand on the Throttle",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per round while driving or piloting a vehicle, your character may use this talent to increase or decrease its speed by 1, to a minimum of 0 or a maximum of the vehicle’s max speed.",
+  :source {:book "sotb", :page 45}}
+ {:id :hard-boiled,
+  :name "Hard-Boiled",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When your character makes a check to recover from strain at the end of an encounter (as described on page 117 of the Genesys Core Rulebook), your character may make a Simple (–) Resilience check instead of Discipline or Cool. If your character does so, they heal 1 strain per [success] and 1 wound per [advantage].",
+  :source {:book "sotb", :page 50}}
+ {:id :haughty-demeanor,
+  :name "Haughty Demeanor",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text "Other characters add [threat] to social skill checks targeting your character.",
+  :source {:book "sotb", :page 48}}
+ {:id :hold-it-steady,
+  :name "Hold It Steady",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Before performing a combat check using a weapon with the Auto-fire quality, your character may use this talent to use the Auto-fire quality without increasing the difficulty of the combat check. If they do so, each time they trigger an additional hit during the attack, they suffer 2 strain.",
+  :source {:book "sotb", :page 50}}
+ {:id :iaijutsu-training,
+  :name "Iaijutsu Training",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "The first time during an encounter that your character draws a Melee weapon, increase the weapon's damage by 2 for the remainder of the turn.",
+  :source {:book "sotb", :page 45}}
+ {:id :knockout-punch,
+  :name "Knockout Punch",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character adds the Stun quality to their Brawl combat checks, with a rating equal to two plus your character’s ranks in Coordination (this does not stack with other instances of the Stun quality).",
+  :source {:book "sotb", :page 45}}
+ {:id :laugh-it-off,
+  :name "Laugh It Off",
+  :tier 3,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "When your character is targeted by a social skill check they may use this talent to spend [threat] [threat] [threat] or [despair] to reduce any strain the check inflicts by a number equal to their ranks in Charm. If they do so, the character who targeted them suffers an amount of strain equal to the amount of strain reduced.",
+  :source {:book "sotb", :page 50}}
+ {:id :martial-weapons-master,
+  :name "Martial Weapons Master",
+  :tier 3,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "While armed with a Melee weapon, your character may use this talent to make an Average ([difficulty] [difficulty]) Melee check. If successful, your character may force one engaged target to either drop one weapon they are holding or move up to one range band in a direction of your choosing. If your character forces a named rival or nemesis into dangerous terrain (or off a ledge or cliff) using this talent, your GM can spend a Story Point to allow them to catch themselves at the edge and fall prone instead.",
+  :source {:book "sotb", :page 50}}
+ {:id :master-plan,
+  :name "Master Plan",
+  :tier 5,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Discipline check. If they succeed, they reveal that whatever terrible circumstances they currently find themselves in are all part of a brilliant plan that they established at an earlier point. They then choose one non-nemesis adversary in the encounter and reveal them to be a close friend or ally who has positioned themselves to help your character at this exact moment. The details of which character turns out to be an ally depend on the type of encounter and your GM’s approval. However, the ally could also have done their work beforehand, such as loading a squadron of drones with blank ammunition, shutting down power to a security system, or planting a tracer in an opponent’s vehicle.",
+  :source {:book "sotb", :page 52}}
+ {:id :net-search,
+  :name "Net Search",
+  :tier 1,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "If your character has access to the Network, they may use this talent to upgrade the ability of the next Knowledge check they make during their turn twice and the difficulty of that check once. Your GM must spend a [despair] to have your character learn some seemingly relevant and believable information that turns out to be completely (and possibly maliciously) false.",
+  :source {:book "sotb", :page 45}}
+ {:id :net-warrior,
+  :name "Net Warrior",
+  :tier 3,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "While accessing a system using a brain-machine interface (BMI), your character may use this talent to make an opposed Computers (Hacking) versus Computers (Sysops) check targeting one other character on the system that they are aware of. The target suffers 1 strain per [success], and if they are using a BMI, they also suffer 1 wound per [success].",
+  :source {:book "sotb", :page 50}}
+ {:id :nethunter,
+  :name "Nethunter",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When your character successfully traces another character during a Network encounter, your character gains one additional trace.",
+  :source {:book "sotb", :page 48}}
+ {:id :nimble,
+  :name "Nimble",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "At the start of your character’s turn, you may spend one Story Point to use this talent to allow your character to perform a move maneuver as an incidental. (This does not count against the limit of two maneuvers per turn.) If you use this talent, your character can only perform one additional move maneuver during this turn.",
+  :source {:book "sotb", :page 50}}
+ {:id :offensive-driving,
+  :name "Offensive Driving",
+  :tier 4,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "While driving or piloting a vehicle, your character may use this talent to select one other vehicle within medium range and make an opposed Driving or Piloting versus Driving or Piloting check (depending on whether your character and their opponent pilot are using Driving or Piloting to control their vehicle) targeting the other vehicle’s driver or pilot. If successful, roll twice on Table III.2–19: Critical Hit Result, on page 230 of the Genesys Core Rulebook. Choose one Critical Hit result to apply to your character’s vehicle, and the other to apply to the other vehicle. You may spend [triumph] to add +20 to one Critical Hit result. Your GM may spend [despair] to add +20 to both Critical Hit results.",
+  :source {:book "sotb", :page 51}}
+ {:id :parkour,
+  :name "Parkour!",
+  :tier 2,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "Once per round, your character may suffer 1 strain to use this talent and move to any location within short range. This includes locations that are vertically distant or have no easy access route, but there must be an object to move across or path to move along. Your GM may rule some locations cannot be reached (such as ones behind locked doors or walls).",
+  :source {:book "sotb", :page 49}}
+ {:id :parkour-improved,
+  :name "Parkour! (Improved)",
+  :tier 4,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Your character must have purchased the Parkour! talent to benefit from this talent. Once per round, when using the Parkour! talent, your character may suffer 4 strain instead of 1 strain to move to any location within medium range instead of within short range. All other restrictions of Parkour! apply to this movement.",
+  :source {:book "sotb", :page 51}}
+ {:id :probing-question,
+  :name "Probing Question",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "If your character knows an opponent’s Flaw or Fear motivation, when your character inflicts strain on that opponent using a social skill, the opponent suffers 3 additional strain.",
+  :source {:book "sotb", :page 49}}
+ {:id :quick-fix,
+  :name "Quick Fix",
+  :tier 2,
+  :activation "Active (Maneuver)",
+  :ranked false,
+  :text
+  "You may spend a Story Point to use this talent to have your character temporarily repair one damaged item they are engaged with. For a number of rounds equal to your character's ranks in Mechanics, the item may be used without penalty (see page 89 of the Genesys Core Rulebook), even if it is unusable. When the effect ends, the item is damaged one additional step; if it was already suffering from major damage, it is destroyed and cannot be repaired.",
+  :source {:book "sotb", :page 49}}
+ {:id :quick-witted,
+  :name "Quick-Witted",
+  :tier 4,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "Once per encounter, after another character makes a social skill check, your character may use this talent to make an Average ([difficulty] [difficulty]) Vigilance check. If successful, you may add a number of [success] or [advantage] (your choice) equal to your character’s ranks in Charm to the other character’s check. If your character fails, your character suffers 3 strain.",
+  :source {:book "sotb", :page 51}}
+ {:id :resourceful-mechanic,
+  :name "Resourceful Mechanic",
+  :tier 1,
+  :activation "Passive",
+  :ranked true,
+  :text
+  "When your character makes a Mechanics check to repair system strain or hull trauma on a vehicle, they repair one additional system strain or hull trauma per rank of Resourceful Mechanic.",
+  :source {:book "sotb", :page 45}}
+ {:id :snare,
+  :name "Snare",
+  :tier 3,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session, your character may use this talent to make a Hard ([difficulty] [difficulty] [difficulty]) Computers (Sysops) check. If they succeed, once before the end of the encounter, you may spend a Story Point to force one character in the encounter to make a Daunting ([difficulty] [difficulty] [difficulty] [difficulty]) Vigilance check as an incidental. If they fail, they are staggered until the end of their next turn, plus one additional turn per [threat] [threat].",
+  :source {:book "sotb", :page 50}}
+ {:id :special-use-permit,
+  :name "Special Use Permit",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "Your character does not treat any Ranged (Heavy) weapons as restricted (R). This also means your character can carry a Ranged (Heavy) weapon that normally would be restricted in public without being arrested. However, they can still be arrested for using such a weapon in an unlawful manner.",
+  :source {:book "sotb", :page 49}}
+ {:id :street-fighter,
+  :name "Street Fighter",
+  :tier 1,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When your character disorients or knocks their target prone while making a Brawl combat check, they may use this talent to cause the target to suffer wounds equal to your character’s ranks in Skulduggery.",
+  :source {:book "sotb", :page 45}}
+ {:id :suppressing-fire,
+  :name "Suppressing Fire",
+  :tier 3,
+  :activation "Active (Maneuver)",
+  :ranked true,
+  :text
+  "If your character does not make a combat check during their turn, they use this talent to target one character (or minion group) within long range. That character must upgrade the difficulty of any ranged combat checks they make once until the end of your character’s next turn. Your character may choose to affect one additional character for each additional rank of Suppressing Fire. Your character must be holding a ranged weapon to use this talent.",
+  :source {:book "sotb", :page 50}}
+ {:id :tactical-focus,
+  :name "Tactical Focus",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When performing a combat check with a Ranged (Heavy) weapon, if your character did not perform a maneuver to ready or stow a weapon or item during this turn, they add [advantage] to the results.",
+  :source {:book "sotb", :page 49}}
+ {:id :takedown,
+  :name "Takedown",
+  :tier 3,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Your character may use this talent to make an opposed Brawl versus Resilience check targeting one engaged opponent. If the check succeeds, the target is knocked prone and is immobilized until the end of your character’s next turn. If the target is a minion or rival, your character can spend [triumph] to incapacitate (but not kill) the target instead.",
+  :source {:book "sotb", :page 51}}
+ {:id :tri-maf-contact,
+  :name "Tri-Maf Contact",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains Melee or Skulduggery (your choice) as a career skill. In addition, once per session, your character may collect a small favor from a member of a single orgcrime group (chosen when you take this talent), even if they do not owe your character a favor.",
+  :source {:book "sotb", :page 45}}
+ {:id :trick-of-the-light,
+  :name "Trick of the Light",
+  :tier 5,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "When making a combat check with a laser or maser weapon, your character may use this talent to spend [advantage] to inflict one additional hit with this weapon, dealing base damage plus damage equal to the total number of [success] scored on the check. This hit may target the original target or another target within short range of the original target.",
+  :source {:book "sotb", :page 52}}
+ {:id :two-handed-stance,
+  :name "Two-Handed Stance",
+  :tier 2,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When performing a combat check with a Ranged (Light) weapon, if your character has nothing in their other hand, they add [advantage] to the results.",
+  :source {:book "sotb", :page 49}}
+ {:id :undercity-contacts,
+  :name "Undercity Contacts",
+  :tier 2,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per session, you may spend one Story Point to use this talent to let your character learn if a character of your choice is in New Angeles, and if so, what district. At your GM’s discretion, the information may take up to an hour to come back to your character.",
+  :source {:book "sotb", :page 49}}
+ {:id :undercity-contacts-improved,
+  :name "Undercity Contacts (Improved)",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Your character must have purchased the Undercity Contacts talent to benefit from this talent. When you use Undercity Contacts, you may choose to spend two Story Points instead of one. If you do, your character learns the target's specific location.",
+  :source {:book "sotb", :page 51}}
+ {:id :union-member,
+  :name "Union Member",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains Athletics, Mechanics, or Operating (your choice) as a career skill. In addition, once per session, your character may collect a small favor from a member of Humanity Labor or Human First, even if they do not owe your character a favor. TABLE 1–2: GENESYS TALENTS FOR THE ANDROID SETTING Talent Ranked Source Tier 1 Iaijutsu Training Talent Ranked Source Tier 2 Tier 3 TABLE 1–2: GENESYS TALENTS FOR THE ANDROID SETTING (CONT.) Talent Ranked Source Tier 4",
+  :source {:book "sotb", :page 45}}
+ {:id :urban-combatant,
+  :name "Urban Combatant",
+  :tier 4,
+  :activation "Active (Incidental, Out of Turn)",
+  :ranked false,
+  :text
+  "When your character is targeted by a combat check while in an urban environment, you may spend one Story Point to use this talent before the dice pool is rolled. If you do so, your character's opponent removes all [setback] added to the check, and instead adds an equal number of [failure] to the results.",
+  :source {:book "sotb", :page 52}}
+ {:id :web-of-knowledge,
+  :name "Web of Knowledge",
+  :tier 5,
+  :activation "Active (Action)",
+  :ranked false,
+  :text
+  "Once per session your character may make an Average ([difficulty] [difficulty]) Knowledge (Net) check during a Network encounter. If you succeed, your character knows the names, strengths, and other qualities of all ice (active or deactivated) on one system that you currently have access to, as well as all other characters (sysops and runners) that currently are accessing that system. Your character may spend [advantage] [advantage] [advantage] or [triumph] from this check (whether or not they succeeded) to add [success] to all Computer checks involving that system that they make for the remainder of the encounter.",
+  :source {:book "sotb", :page 52}}
+ {:id :worlds-war-vet,
+  :name "Worlds War Vet",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains Ranged (Heavy) or Resilience as a career skill. In addition, once per session, your character may collect a small favor from a current or former member of a single country's military (chosen when you take this talent), even if they do not owe your character a favor.",
+  :source {:book "sotb", :page 47}}
+ {:id :years-on-the-force,
+  :name "Years on the Force",
+  :tier 1,
+  :activation "Passive",
+  :ranked false,
+  :text
+  "When you take this talent, your character gains Perception or Ranged (Light) as a career skill. In addition, once per session, your character may collect a small favor from a current or former member of the NAPD or New Angeles city government, even if they do not owe your character a favor. Talent Ranked Source Tier 5",
+  :source {:book "sotb", :page 47}}
+ {:id :you-owe-me-one,
+  :name "You Owe Me One",
+  :tier 3,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Once per session, you may spend two Story Points to use this talent to have one NPC in the current encounter owe your character a favor. If the favor is not resolved by the end of the encounter, it is forgotten. It’s up to you and your GM to determine exactly why the NPC owes your character a favor.",
+  :source {:book "sotb", :page 51}}
+ {:id :you-owe-me-one-improved,
+  :name "You Owe Me One (Improved)",
+  :tier 4,
+  :activation "Active (Incidental)",
+  :ranked false,
+  :text
+  "Your character must have purchased the You Owe Me One talent to benefit from this talent. Once per session, you may spend two Story Points to use You Owe Me One to have one NPC in the current encounter owe your character a big favor instead of a favor. If the big favor is not resolved by the end of the encounter, it is forgotten.",
+  :source {:book "sotb", :page 52}}]

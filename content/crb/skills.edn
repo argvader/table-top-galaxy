@@ -1,0 +1,504 @@
+[{:id :alchemy,
+  :name "Alchemy",
+  :category "General",
+  :characteristic :intellect,
+  :text
+  "Alchemy encompasses the knowledge and techniques to brew potions and elixirs. Although Alchemy isn’t considered a magic skill, the effects of your concoctions may approximate or even truly be magical, depending on the campaign setting.",
+  :source {:book "crb", :page 57},
+  :use-when
+  ["Your character tries to identify a potion by taste."
+   "Your character wants to name the ingredients needed for a certain elixir."
+   "Your character tries to prepare a potion, elixir, poultice, tonic, or similar compound with wondrous or magical effects."
+   "Your character attempts to prepare a remedy for a disease or illness."],
+  :avoid-when
+  ["Your character attempts to enchant an otherwise mundane liquid."
+   "Your character desires to heal someone directly through medical treatment of their wounds or laying on hands."
+   "Your character seeks to transmute lead into gold. That would clearly be magic!"]}
+ {:id :arcana,
+  :name "Arcana",
+  :category "Magic",
+  :characteristic :intellect,
+  :text
+  "The Arcana skill represents your ability to manipulate magical energies, whether they are the fundamental forces of nature or power drawn from an unnatural source. Magic is used to cast spells and identify sources of magic in the world.",
+  :source {:book "crb", :page 70},
+  :use-when
+  ["Your character wants to throw a fireball at a group of enemies."
+   "Your character tries to use a crystal ball to observe the movements of a distant individual."
+   "Your character attempts to erect a magical barrier to block a passage."
+   "Your character wishes to curse a foe and bring misfortune on their actions."],
+  :avoid-when
+  ["Your character attempts to invoke the power of a deity to smite their foes."
+   "Your character seeks to contact the spirits of the dead to consult them in some business."
+   "Your character attempts to heal an ally."]}
+ {:id :astrocartography,
+  :name "Astrocartography",
+  :category "General",
+  :characteristic :intellect,
+  :text
+  "A galaxy is a big place, and characters in a space opera game often traverse one (or more) quite a lot. The Astrocartography skill covers the understanding, use, and development of star charts, including mapping undiscovered systems.",
+  :source {:book "crb", :page 57},
+  :use-when
+  ["Your character needs to set a course for a system that is not easily reachable or widely known."
+   "Your character tries to make sense of an ancient or damaged star chart (whether physical or electronic)."
+   "Your character plots a course under stressful conditions, such as trying to escape from enemy ships."],
+  :avoid-when
+  ["Your character pilots a vessel: your character uses Operating when actually piloting a ship."
+   "Your character navigates a planet’s surface, which calls instead for Piloting or possibly Driving."
+   "Your character travels a well-known route under normal conditions, which shouldn’t need a check at all."]}
+ {:id :athletics,
+  :name "Athletics",
+  :category "General",
+  :characteristic :brawn,
+  :text
+  "Your group’s characters lead dramatic lives filled with constant physical feats. Sometimes they’ll be fighting an opponent with a gun, but just as often they’ll be climbing mountains, swimming across raging rivers, and leaping across chasms.",
+  :source {:book "crb", :page 58},
+  :use-when
+  ["Your character attempts to climb up or down a structure, particularly when the climb may be tricky or the drop to the bottom is significant."
+   "Your character tries to swim in difficult conditions. High winds, waves, tides, and currents could all contribute to making swimming difficult enough to require an Athletics check."
+   "Your character tries to jump, either vertically or horizontally. Leaping across a deep chasm or trying to jump up and grab a fire escape to get away from an angry dog are both situations when your character needs to make an Athletics check."
+   "Your character attempts to run for an extended time."],
+  :avoid-when
+  ["Your character attempts an activity without any chances of failure. If your character swims on a calm day in a shallow pond, goes for an early morning jog, or jumps over a small log, they don’t need to bother making a check."
+   "Your character attempts a physical activity that relies more on hand-eye coordination and general agility than straight strength. Engaging in parkour and freerunning, swinging on a rope and rappelling down a surface, and most forms of gymnastics are activities better represented by the Coordination skill."]}
+ {:id :brawl,
+  :name "Brawl",
+  :category "Combat",
+  :characteristic :brawn,
+  :text
+  "The Brawl skill is what your character uses to fight anyone who’s right in front of them, rather than beyond arm’s reach, when your character is fighting without any weapons. Martial arts, wrestling, and unarmed combat are all covered by this skill.",
+  :source {:book "crb", :page 67}}
+ {:id :charm,
+  :name "Charm",
+  :category "Social",
+  :characteristic :presence,
+  :text
+  "The ability to compliment, flatter, woo, and generally make other people like you is something that’s pretty important to a lot of player characters. For characters who want to be likable, popular, and good at persuading other people to do what they want them to do, Charm is the skill they rely on.",
+  :source {:book "crb", :page 54},
+  :use-when
+  ["Your character tries to persuade someone to do your character a favor, especially if it might be inconvenient, expensive, or even dangerous for that person."
+   "Your character tries to appeal to someone’s better nature (even if it doesn’t exist!) to get them to do something out of character for that person."
+   "Your character tries to flirt with, seduce, or make a romantic overture to someone."
+   "Your character tries to make themselves look better to everyone around them. A lot of politicians and public figures have high ranks in Charm."
+   "Your character performs in front of an audience, acting, playing music, telling jokes, or giving a speech."],
+  :avoid-when
+  ["Your character is not at all sincere about what they are saying or doing. If there’s duplicity or lying involved, your character should use the Deception skill."
+   "Your character is being polite, but subtly implying"]}
+ {:id :coercion,
+  :name "Coercion",
+  :category "Social",
+  :characteristic :willpower,
+  :text
+  "Some people believe that the only way to maintain respect is to be feared. Others have learned that the best way to get what they want is through screaming and the threat of violence.",
+  :source {:book "crb", :page 55},
+  :use-when
+  ["Your character issues a threat, whether or not accompanied by hostile actions. Even an implied threat—such as gesturing toward a weapon—falls under the Coercion skill."
+   "Your character questions or interrogates a prisoner."
+   "Your character uses physical or psychological torture."],
+  :avoid-when
+  ["Your character issues orders backed by the threat of their authority (such as threatening troops with courts-martial if they don’t follow your character into battle). In cases like this, Leadership would be a better skill for your character to use."
+   "Your character tries to drive a hard bargain with someone. As long as both sides are still getting something out of the deal, Negotiation should be the skill to use."
+   "Your character interacts with someone who is already terrified of or completely cowed by your character. In these cases, any further threats would be superfluous."]}
+ {:id :computers,
+  :name "Computers",
+  :category "General",
+  :characteristic :intellect,
+  :text
+  "The Computers skill grants your character proficiency in the operation of computers and electronic systems. Possessing a lot of ranks in Computers might allow your character to build computer systems, write complex programs, design security systems, or even (depending on just how advanced your setting is) create lightweight AI for running simple constructs.",
+  :source {:book "crb", :page 58},
+  :use-when
+  ["Your character attempts to pick an electronic lock, access a building’s computing systems, or disarm a high-tech security system."
+   "Your character wants to crack the encryption on secure files or messages."
+   "Your character hacks into a database or computer system, or defends against a hacking attempt."
+   "Your character remotely pilots a small, handlaunched drone to do more than just fly it around a park. If a drone is big enough, like a Global Hawk or other full-sized uncrewed aerial vehicle, the Piloting skill might make more sense."],
+  :avoid-when
+  ["Your character has no risk of failure. Simple dayto-day tasks like checking your email, browsing social media on your phone, or watching a movie on your tablet do not require a Computers check."]}
+ {:id :cool,
+  :name "Cool",
+  :category "General",
+  :characteristic :presence,
+  :text
+  "Staying calm and maintaining composure, outwaiting an opponent, generally being cool: these exemplify things your character does with the Cool skill. Cool is something of a defensive skill in nature, since it most often comes up as the skill your character uses to resist attempts to sway or affect them.",
+  :source {:book "crb", :page 59},
+  :use-when
+  ["Your character begins laying a trap, staging an ambush, or otherwise setting up a combat encounter in which your character initiates the combat and has to judge the right time to do so."
+   "Your character needs to stay calm and unaffected when being flattered or charmed by someone."
+   "Your character needs to refrain from saying or doing something foolish during a tense situation."
+   "Your character needs to keep their nerve in a tense situation, such as when piloting one of two vehicles headed toward each other at high speed."
+   "Your character plays a card game or other game of chance in which bluffing, luck, and gambling are all intertwined."],
+  :avoid-when
+  ["Your character tries to prevent being surprised. The Vigilance skill would work better in that situation."
+   "Your character tries to maintain inner self-control, such as when meditating or resisting the effects of fear. When your character is concerned with inner composure, they should use the Discipline skill."]}
+ {:id :coordination,
+  :name "Coordination",
+  :category "General",
+  :characteristic :agility,
+  :text
+  "In the course of adventures, characters sometimes find themselves needing to stay stable on unsteady surfaces, crawl through narrow openings, or even land safely after a fall. Overcoming these types of challenges requires a sense of balance and a heightened degree of flexibility, both of which are represented by the Coordination skill.",
+  :source {:book "crb", :page 59},
+  :use-when
+  ["Your character tries to swing back and forth on a rope or rappel down a structure."
+   "Your character walks across a narrow surface while trying to keep their balance."
+   "Your character tries to squeeze into a tiny or cramped space such as a crawlspace, sewer pipe, air duct, or narrow crevice."
+   "Your character falls and needs to try to slow the fall or land safely."
+   "Your character needs to escape from physical restraints (such as handcuffs or ropes) and wants to contort their limbs or hands so that they can slip out of their bindings."],
+  :avoid-when
+  ["Your character tries to climb up or down a rope or climb up a structure. This activity relies more on strength than agility, and calls for an Athletics check instead."
+   "Your character falls from a short height or onto something soft enough that they won’t suffer damage when they land, or is in any similar situation that has no consequences for failure (is lowered down a structure in a firmly secured harness, for example)."]}
+ {:id :deception,
+  :name "Deception",
+  :category "Social",
+  :characteristic :cunning,
+  :text
+  "When your character needs to lie to someone, they use Deception. In fact, the Deception skill covers most attempts to fool or deceive someone, which makes the skill one of the more straightforward skills to use.",
+  :source {:book "crb", :page 56},
+  :use-when
+  ["Your character tells a lie."
+   "Your character tries to mislead someone through clever wordplay or selective omission of certain facts."
+   "Your character wears a disguise and pretends to be someone else."],
+  :avoid-when
+  ["Your character actually believes the things they are saying (even if they are objectively untrue)."
+   "Your character tells a “white lie,” a minor falsehood to make someone feel better."]}
+ {:id :discipline,
+  :name "Discipline",
+  :category "General",
+  :characteristic :willpower,
+  :text
+  "Discipline is your character’s ability to focus their mind and quiet their thoughts. Discipline represents your character’s maintaining self-mastery and focus, specifically.",
+  :source {:book "crb", :page 60},
+  :use-when
+  ["Your character confronts something terrifying and wants to avoid fleeing in horror (or to avoid other debilitating effects of fear)."
+   "Your character tries to keep their sanity in the face of something that defies reality and rational thought."
+   "Your character wants to heal strain they are suffering from at the end of an encounter."
+   "Your character wants to meditate, calm their mind, and reach a mental equilibrium."],
+  :avoid-when
+  ["Your character tries to keep their composure in a social setting and avoid letting their emotions show. Your character would make a Cool check instead."
+   "Your character catches a lie as it is being told. Noticing a lie depends on your character’s Vigilance."]}
+ {:id :divine,
+  :name "Divine",
+  :category "Magic",
+  :characteristic :willpower,
+  :text
+  "So-called “divine magic” is the ability of priests, holy warriors, and their like to produce miraculous effects by invoking or channeling the power of their deity or faith. For many practitioners, this is completely different from magic, but many others see little practical distinction between the alleged sources of the wondrous effects worked by mages and priests.",
+  :source {:book "crb", :page 70},
+  :use-when
+  ["Your character lays hands on someone to heal their wounds or disease."
+   "Your character calls on the strength of their faith to bolster an ally."
+   "Your character prays to their deity for a sign."
+   "Your character presents their holy symbol in an effort to turn back the undead."],
+  :avoid-when
+  ["Your character wants to fling arcane energy at a living enemy."
+   "Your character recites scripture in an attempt to sway a crowd. This would require the Charm or Leadership skill."
+   "Your character tries to counter an enemy’s spell."]}
+ {:id :driving,
+  :name "Driving",
+  :category "General",
+  :characteristic :agility,
+  :text
+  "The Driving skill includes the operation of all groundbased vehicles, from simple automobiles to multi-car locomotives to high-speed futuristic driving pods. The types of vehicles depend a lot on the setting, of course.",
+  :source {:book "crb", :page 60},
+  :use-when
+  ["Your character wants to bring a vehicle to a safe stop after one of its tires is damaged."
+   "Your character tries to keep up speed while rounding hairpin curves when driving a vehicle."
+   "Your character attempts to catch up to someone else in a vehicle (if the target is on foot, a check should only be necessary if they try to escape in a crowd or through a narrow space)."
+   "Your character swerves to avoid an animal darting across the road, or tries to avoid a falling rock on a winding mountain pass."],
+  :avoid-when
+  ["Your character operates an aircraft of any kind; this would call for the Piloting skill."
+   "Your character drives a vehicle under normal conditions (and at safe speeds) without any immediate danger, which shouldn’t require a check at all."
+   "Your character attempts to modify a vehicle to improve its speed; the Mechanics skill is more appropriate for this."]}
+ {:id :gunnery,
+  :name "Gunnery",
+  :category "Combat",
+  :characteristic :agility,
+  :text
+  "Your character uses Gunnery, the third of the Ranged sub-skills, to fire machine guns, plasma cannons, heavy railguns, missile launchers, grenade launchers, and pretty much any other weapon large enough that you need a tripod or team of people to use it. Your character also uses it to fire weapons mounted on vehicles.",
+  :source {:book "crb", :page 69},
+  :variant-of :ranged}
+ {:id :knowledge,
+  :name "Knowledge",
+  :category "Knowledge",
+  :characteristic :intellect,
+  :text
+  "In the core of Genesys, we only have one knowledge skill. Appropriately enough, we call it Knowledge.",
+  :source {:book "crb", :page 66},
+  :use-when
+  ["Your character tries to find out if they know an important fact about the world around them."
+   "Your character tries to do something academic, such as calculate a theorem, conduct an experiment, or write a history thesis."
+   "Your character tries to research a particular topic."
+   "Your character performs critical thinking or tries to figure out a logic puzzle."],
+  :avoid-when
+  ["Your character needs to know information that is fairly simple or trivial. Asking someone to add 2+2 shouldn’t require a check, for example."
+   "The answer your character is looking for can easily be found in an accessible, easily referenced database, perhaps one that is electronic and accessed through a worldwide communications network. Whether or not your character can apply this information, however, may be determined by a Knowledge check."]}
+ {:id :leadership,
+  :name "Leadership",
+  :category "Social",
+  :characteristic :presence,
+  :text
+  "While some may follow out of a sense of duty or fear, good leaders inspire their followers through a combination of charisma, bravery, and forceful personality. We represent this quality through the Leadership skill.",
+  :source {:book "crb", :page 56},
+  :use-when
+  ["Your character’s allies are suffering from fear (see page 243), and you want to try to rally them."
+   "Your character tries to convince a crowd of citizens to take political action."
+   "Your character leads troops into battle and wants to make sure they follow your character’s orders."
+   "Your character tries to convince a mob of rioters to stand down and return to their homes."],
+  :avoid-when
+  ["Your character threatens to hurt or kill someone if they don’t obey. This would be a good use of Coercion, instead."
+   "Your character tries to convince someone to do something simply by being friendly and appealing. Your character should use Charm here."
+   "Your character has formal authority and issues routine orders, especially outside of combat or other stressful situations. If there is no good reason not to obey your character (and your character has the rank or station to issue orders), other people are simply going to obey most mundane commands automatically."]}
+ {:id :mechanics,
+  :name "Mechanics",
+  :category "General",
+  :characteristic :intellect,
+  :text
+  "The Mechanics skill allows your character to build, disassemble, repair, or modify just about anything mechanical, from a broken radio to a wrecked gyrocopter. In addition, the Mechanics skill is used when salvaging technology, building fortifications, or troubleshooting a malfunctioning water pump, or any time your character needs to swing a hammer or turn a wrench.",
+  :source {:book "crb", :page 60},
+  :use-when
+  ["Your character needs to repair a damaged weapon, vehicle, or other piece of equipment."
+   "Your character needs to identify any parts or tools necessary prior to completing a job. This can save time and money on the project."
+   "Your character has access to a supply of components and tools and wants to design a completely new device."
+   "Your character needs to sabotage an enemy’s vehicle or find a weak point in their defenses."
+   "Your character needs to build an item or modify it."
+   "Your character tries to install and modify cybernetic implants (although if you want, working on a cybernetic implant may require a Medicine and a Mechanics check to represent the fusion of human and machine)."],
+  :avoid-when
+  ["Your character has just a simple task like refueling a vehicle, hanging a door, or changing the batteries in a flashlight."
+   "Your character wants to program an application for a device. That would require a Computers check."]}
+ {:id :medicine,
+  :name "Medicine",
+  :category "General",
+  :characteristic :intellect,
+  :text
+  "In the course of their adventures, we expect your character to suffer injuries: everything from cuts and bruises to broken bones and bullet wounds. Medicine gets your character and their friends back on their feet.",
+  :source {:book "crb", :page 61},
+  :use-when
+  ["They or another character has suffered wounds, and your character wants to heal those wounds."
+   "Your character tries to counteract or administer a poison."
+   "Your character needs to cure a disease."
+   "Your character creates a new pharmaceutical (or recreational) drug."
+   "They or another character has suffered a Critical Injury, and your character wants to heal it."
+   "Your character performs a complex medical procedure such as surgery, cybernetic augmentation, or psychotherapy. Three final notes: Any one character can only make one attempt to heal a particular Critical Injury per week of game time. Also, any one character can only benefit from one Medicine check per encounter. These limits exist to prevent characters from constantly repeating checks until their patient is in perfect health. Finally, if your character tries to heal themself, they increase the difficulty of the check by two. Hey, it’s a lot harder to set your own broken arm!"],
+  :avoid-when
+  ["Your character researches a disease or poison. While studying a disease or poison directly might require Medicine, the act of researching requires a Knowledge check."
+   "Your character tries to heal their own strain at the end of an encounter. Recovering from strain at the end of an encounter requires Discipline or Cool."
+   "Your character tries to administer poison through slight of hand, such as by dropping it in a drinking cup or surreptitiously injecting it into an unsuspecting target. The inherent subterfuge in this activity makes that a Skulduggery check."]}
+ {:id :melee,
+  :name "Melee",
+  :category "Combat",
+  :characteristic :brawn,
+  :text
+  "The Melee skill is what your character uses to fight anyone who’s right in front of them, rather than beyond arm’s reach, when using a weapon. This skill, in its broadest interpretation, covers any sort of hand or melee weapon.",
+  :source {:book "crb", :page 67}}
+ {:id :melee-heavy,
+  :name "Melee (Heavy)",
+  :category "Combat",
+  :characteristic :brawn,
+  :text
+  "In settings with an emphasis on fighting hand-to-hand, the Melee (Heavy) skill is what your character uses to fight with large, heavy weapons that take both hands to swing properly. This includes mauls, greatswords, flails, halberds, and countless similar weapons.",
+  :source {:book "crb", :page 68},
+  :variant-of :melee}
+ {:id :melee-light,
+  :name "Melee (Light)",
+  :category "Combat",
+  :characteristic :brawn,
+  :text
+  "In settings with an emphasis on fighting hand-to-hand, the Melee (Light) skill is what your character uses to fight with pretty much any close combat weapon they can wield in one hand. This includes swords, knives, maces, clubs, and countless similar weapons.",
+  :source {:book "crb", :page 68},
+  :variant-of :melee}
+ {:id :negotiation,
+  :name "Negotiation",
+  :category "Social",
+  :characteristic :presence,
+  :text
+  "When your character wants to make a deal, they’re going to use Negotiation. If Coercion is threatening someone, Deception is lying to someone, Charm is sweet-talking someone, and Leadership is telling someone what to do, Negotiation is convincing someone to do what you want by giving them something they want in return.",
+  :source {:book "crb", :page 56},
+  :use-when
+  ["Your character tries to purchase goods or services and wants to haggle over the price."
+   "Your character tries to sell goods or services and turn a profit. In this case, your character needs to use Negotiation to raise the price."
+   "Your character attempts to broker a political agreement or treaty between two parties."],
+  :avoid-when
+  ["Your character isn’t offering anything in return for what they want. Getting something for nothing is something your character can try to do using other social skills, but Negotiation is predicated on the idea of an exchange."
+   "Your character tells someone what to do. Negotiation has to be a bargain, so at the end of the interactions, the opposing party has agreed to do something, not been ordered to do it."
+   "Your character wants to buy something for a previously established price."]}
+ {:id :operating,
+  :name "Operating",
+  :category "General",
+  :characteristic :intellect,
+  :text
+  "Sometimes, a vehicle is so big that quick reflexes and a steady hand aren’t enough to operate it. When using these sorts of vehicles, for which your character needs training, a sharp mind, and the ability to keep track of a lot of information, your character employs the Operating skill.",
+  :source {:book "crb", :page 62},
+  :use-when
+  ["Your clipper must safely ride out a storm without losing speed (or a mast)."
+   "Your character pilots a zeppelin to slip around the stern of an opponent’s flying fortress."
+   "Your character calculates an orbital slingshot maneuver for their starship."
+   "Your character docks a spaceship with a space station."],
+  :avoid-when
+  ["Your character performs routine ship maneuvers in open space."
+   "Your character wants to upgrade the engines of the ship. That requires a Mechanics check."
+   "Your character is the captain of a ship and is giving orders. This requires the Leadership skill."]}
+ {:id :perception,
+  :name "Perception",
+  :category "General",
+  :characteristic :cunning,
+  :text
+  "When your character wants to make an active attempt to study their surroundings, notice clues in a crime scene, or search for hidden foes, they use the Perception skill to do so. Perception represents your character’s conscious use of all five senses to observe their environment (or, if you’re playing some sort of alien species, your character may have more than five).",
+  :source {:book "crb", :page 62},
+  :use-when
+  ["Your character wants to search a crime scene for clues."
+   "Your character wants to study the surrounding landscape for possible threats."
+   "Your character conducts surveillance on an unaware target from a distance."
+   "Your character studies an ancient relic, trying to spot any minute details that could reveal its purpose or construction."],
+  :avoid-when
+  ["Your character tries to avoid being surprised during an ambush. Constant, unconscious awareness of your character’s surroundings is a function of the Vigilance skill."
+   "Your character is being lied to, and you’re trying to find out if your character noticed or not. Again, Vigilance is the skill for this situation."
+   "Your character tries to follow a trail or track a foe through the wilderness. The Survival skill covers these activities."]}
+ {:id :piloting,
+  :name "Piloting",
+  :category "General",
+  :characteristic :agility,
+  :text
+  "This skill covers the operation of any aerial vehicle that requires reflexes and hand-eye coordination to operate, from gyrocopters and helicopters, to jet fighters and gliders, all the way up to starfighters and spacecapable drop ships. As with the Driving skill, the type of vehicles involved depend on the setting.",
+  :source {:book "crb", :page 62},
+  :use-when
+  ["Your character needs to land an airplane with one (or both!) engines out."
+   "Your character tries to outmaneuver opponents in a dogfight."
+   "Your character flies a drop ship through a maze of needle-sharp rock spires to a landing zone."
+   "Your character attempts to land a personal dirigible while under fire from an enemy airship."],
+  :avoid-when
+  ["Your character tries to repair a damaged aircraft propeller or engine, a task that calls for the Mechanics skill."
+   "Your character drives a car off a precipice and wants to land with as few fatalities as possible; that’s still Driving (and likely with a pretty high difficulty!)"
+   "Your character fires a weapon mounted on a vehicle, which requires a Ranged or Gunnery check."
+   "There is no chance of catastrophic failure when operating the vehicle. Checks are not required for simple tasks like flying in open skies with light wind."]}
+ {:id :ranged,
+  :name "Ranged",
+  :category "Combat",
+  :characteristic :agility,
+  :text
+  "While the Melee skill is what your character uses to fight anyone who’s right in front of them, the Ranged skill is what your character uses to fight everyone else. Your character uses this skill to fight with any sort of ranged weapon, from bows and arrows to particle beam cannons.",
+  :source {:book "crb", :page 68}}
+ {:id :ranged-heavy,
+  :name "Ranged (Heavy)",
+  :category "Combat",
+  :characteristic :agility,
+  :text
+  "In those same firearm-focused settings, your character uses Ranged (Heavy) to shoot rifles, shotguns, assault rifles, laser rifles, and similar weapons. This skill covers pretty much every heavy ranged weapon designed to be fired while carried in two hands, but not large enough that it requires multiple people or a tripod to use.",
+  :source {:book "crb", :page 69},
+  :variant-of :ranged}
+ {:id :ranged-light,
+  :name "Ranged (Light)",
+  :category "Combat",
+  :characteristic :agility,
+  :text
+  "In settings where your characters do most of their fighting with firearms, your character uses Ranged (Light) to shoot pistols, throw knives, and toss grenades at their opponents. This skill covers pretty much every light ranged weapon designed to be fired (or thrown) from one hand.",
+  :source {:book "crb", :page 68},
+  :variant-of :ranged}
+ {:id :resilience,
+  :name "Resilience",
+  :category "General",
+  :characteristic :brawn,
+  :text
+  "When the going gets tough, the tough rely on their Resilience skill to keep going. Resilience represents your character’s ability to overcome pain and fight through fatigue.",
+  :source {:book "crb", :page 63},
+  :use-when
+  ["Your character tries to go without sleeping for days on end, and you need to see if they stay awake."
+   "Your character ingests a toxin, and you need to see how bad the effects are."
+   "Your character endures a hostile environment (somewhere too hot, too cold, or even too polluted) for days on end."
+   "Your character attempts to recover from a Critical Injury on their own, without medical attention."],
+  :avoid-when
+  ["Your character tries to do something that isn’t beyond the limits of normal endurance. Going for a day-long hike wouldn’t call for a Resilience check unless the hike is through the Rocky Mountains in a snowstorm."
+   "Your character immediately stops and rests to recover fully at the end of the activity. If there’s no need to track lasting consequences, there’s no need to make the check."]}
+ {:id :riding,
+  :name "Riding",
+  :category "General",
+  :characteristic :agility,
+  :text
+  "Sooner or later, characters in a fantasy campaign are going to want to use mounts. These are most likely horses, but the same skill is used for riding anything from donkeys to giant insects.",
+  :source {:book "crb", :page 63},
+  :use-when
+  ["Your character flees from pursuers who are also mounted, or fast enough to potentially catch up."
+   "Your character tries to joust at a tournament."
+   "Your character competes in a friendly (or not so friendly) race."
+   "Your character tries to catch up to enemies with a significant head start."
+   "Your character’s mount panics during a storm, and your character needs to get the creature under control."],
+  :avoid-when
+  ["Your character travels without any immediate danger."
+   "Your character makes an attack from horseback. The additional difficulty brought about by attacking from a horse should be factored into the combat check’s difficulty, generally in the form of one or more [setback]."
+   "Your character tries to tame a wild animal. In this case, your character uses the Survival skill."]}
+ {:id :skulduggery,
+  :name "Skulduggery",
+  :category "General",
+  :characteristic :cunning,
+  :text
+  "Most roleplaying games have a long and storied tradition of characters disarming traps, picking locks, and (if those tasks fail) breaking out of prison. In our game, characters perform those activities with the Skulduggery skill.",
+  :source {:book "crb", :page 64},
+  :use-when
+  ["Your character attempts to pick someone’s pocket or lift their wallet."
+   "Your character tries to pick a lock or disable a trap. Your character would also use Skulduggery to set a trap in the first place."
+   "Your character wants to study a security system."
+   "Your character attempts to distract an opponent through guile or a feint, such as by throwing a handful of dirt in their eyes during a fight."
+   "Your character tries to surreptitiously slip a poison into someone’s food or drink."],
+  :avoid-when
+  ["Your character attempts to sneak into a location unnoticed. Your character needs to make a Stealth check instead."
+   "Your character attempts to pick someone’s pocket when that person is helpless or incapacitated. This doesn’t require a check at all."
+   "Your character tries to make a poison. Your character needs Medicine to make poisons or toxins, but they do need Skulduggery to use them."]}
+ {:id :stealth,
+  :name "Stealth",
+  :category "General",
+  :characteristic :agility,
+  :text
+  "When your character wants to act unnoticed by anyone else, they use the Stealth skill. In many ways, Stealth is one of the simpler skills, and it covers a pretty specific set of activities.",
+  :source {:book "crb", :page 64},
+  :use-when
+  ["Your character attempts to hide from someone."
+   "Your character tries to tail someone through a crowd, and to do it without being noticed."
+   "Your character tries to infiltrate a government installation while avoiding both electronic security and human guards."
+   "Your character tries to move quietly through a house."],
+  :avoid-when
+  ["Your character tries to pick someone’s pocket. Your character needs Skulduggery for this activity."
+   "Your character tries to remain hidden when their opponent has no chance of spotting them, such as if they try to avoid being seen by an aircraft during a blizzard at midnight."
+   "Your character has no realistic chance of hiding from an opponent, such as if trying to hide from a nearby person while in the middle of miles of salt flats at noon."]}
+ {:id :streetwise,
+  :name "Streetwise",
+  :category "General",
+  :characteristic :cunning,
+  :text
+  "Some call it the “school of hard knocks,” while others refer to it as “street smarts” or “gut instincts,” but in all cases, the Streetwise skill is your character’s ability to survive and thrive in rough and dangerous urban areas. If your character has ranks in Streetwise, they instinctively know how criminals tend to operate, which locations to avoid after dark, where to go to obtain illicit drugs and services, and other information crucial for making their way in the seedy underbelly of a major city.",
+  :source {:book "crb", :page 65},
+  :use-when
+  ["Your character looks for a merchant who sells black-market goods or illegal services."
+   "Your character wants to understand particular references or slang in a conversation."
+   "Your character tries to approach criminals and start up a conversation without appearing like an outsider or a threat."
+   "Your character tries to find their way around an unfamiliar city."
+   "Your character tries to track and hunt someone somewhere in a city."],
+  :avoid-when
+  ["Your character tries to find their way around a rural or wilderness environment. In this case, your character should be using Survival."
+   "Your character interacts with the upper crust of society. Charm (or possibly Deception or Coercion) may serve the character better here."
+   "Your character has already established themself as a member of the criminal underworld, and is continuing to interact with other criminals. Streetwise lets your character fit in, know how to act, and know what topics to bring up and what to avoid. However, it shouldn’t replace social skills."]}
+ {:id :survival,
+  :name "Survival",
+  :category "General",
+  :characteristic :cunning,
+  :text
+  "There are a thousand tricks your character needs to master in order to survive in the wilderness, and the more ranks in Survival they have, the more likely they are to know them. The Survival skill covers your character’s ability to find food and water, cope with dangerous conditions, hunt and skin animals, and, well, survive in any location that doesn’t have a supermarket on the corner.",
+  :source {:book "crb", :page 65},
+  :use-when
+  ["Your character is trapped in the wilderness and needs to find food and potable water."
+   "Your character needs to notice approaching severe weather and know how to prepare for it."
+   "Your character needs to follow a crude map or directions through a rural area to find a specific location."
+   "Your character tries to tame or calm a wild animal, or handle a domesticated animal."
+   "Your character hunts something (or someone!) through a wilderness setting."],
+  :avoid-when
+  ["Your character uses a highly accurate and detailed map to find a location."
+   "Your character tries to find their way around an urban environment. In this case, your character should be using Streetwise."
+   "Your character interacts with an animal that already likes or respects your character, or your character asks an animal to do something completely within their nature (they wouldn’t need to make a Survival check to get a dog to play “fetch,” for example)."]}
+ {:id :vigilance,
+  :name "Vigilance",
+  :category "General",
+  :characteristic :willpower,
+  :text
+  "Vigilance represents the ability to be constantly aware of your surroundings, often without consciously making the effort. Characters with ranks in Vigilance are more likely to spot threats in their environment, notice important clues out of the corner of their eye, and catch lies as they’re being told.",
+  :source {:book "crb", :page 65},
+  :use-when
+  ["Your character just got ambushed, and you are rolling to determine Initiative order. A high Vigilance means your character has a better chance of reacting quickly to the threat."
+   "Your character is being lied to; the opponent’s Deception check is opposed by your character’s Vigilance skill."
+   "Your character has a chance to notice important details in their surroundings while not looking for them directly."],
+  :avoid-when
+  ["You are determining Initiative order when your character is not surprised (such as when they are the ambushers, instead of the ambushed). In this case, your character uses Cool instead."
+   "Your character actively looks for something. This calls for a Perception check."]}]

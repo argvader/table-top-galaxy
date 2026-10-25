@@ -1,0 +1,103 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "StackLifecycle",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:UpdateStack",
+        "cloudformation:DeleteStack",
+        "cloudformation:DescribeStacks",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStackResources",
+        "cloudformation:GetTemplate",
+        "cloudformation:CreateChangeSet",
+        "cloudformation:DescribeChangeSet",
+        "cloudformation:ExecuteChangeSet",
+        "cloudformation:DeleteChangeSet",
+        "cloudformation:TagResource"
+      ],
+      "Resource": "arn:aws:cloudformation:us-east-1:108359914472:stack/ttg-web-*/*"
+    },
+    {
+      "Sid": "TemplateChecks",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:GetTemplateSummary",
+        "cloudformation:ValidateTemplate"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "SiteBucketConfig",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:ListBucket",
+        "s3:GetBucket*",
+        "s3:PutBucketPolicy",
+        "s3:DeleteBucketPolicy",
+        "s3:PutBucketPublicAccessBlock",
+        "s3:PutBucketOwnershipControls",
+        "s3:PutBucketTagging",
+        "s3:PutEncryptionConfiguration",
+        "s3:GetEncryptionConfiguration",
+        "s3:GetLifecycleConfiguration",
+        "s3:GetReplicationConfiguration",
+        "s3:GetAccelerateConfiguration",
+        "s3:GetAnalyticsConfiguration",
+        "s3:GetIntelligentTieringConfiguration",
+        "s3:GetInventoryConfiguration",
+        "s3:GetMetricsConfiguration"
+      ],
+      "Resource": "arn:aws:s3:::ttg-web-*"
+    },
+    {
+      "Sid": "SiteObjects",
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:GetObject",
+        "s3:DeleteObject"
+      ],
+      "Resource": "arn:aws:s3:::ttg-web-*/*"
+    },
+    {
+      "Sid": "CloudFrontSite",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:CreateDistribution",
+        "cloudfront:CreateDistributionWithTags",
+        "cloudfront:UpdateDistribution",
+        "cloudfront:DeleteDistribution",
+        "cloudfront:GetDistribution",
+        "cloudfront:GetDistributionConfig",
+        "cloudfront:TagResource",
+        "cloudfront:UntagResource",
+        "cloudfront:ListTagsForResource",
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetInvalidation",
+        "cloudfront:CreateOriginAccessControl",
+        "cloudfront:UpdateOriginAccessControl",
+        "cloudfront:DeleteOriginAccessControl",
+        "cloudfront:GetOriginAccessControl",
+        "cloudfront:GetOriginAccessControlConfig",
+        "cloudfront:CreateFunction",
+        "cloudfront:UpdateFunction",
+        "cloudfront:DeleteFunction",
+        "cloudfront:PublishFunction",
+        "cloudfront:DescribeFunction",
+        "cloudfront:GetFunction",
+        "cloudfront:CreateResponseHeadersPolicy",
+        "cloudfront:UpdateResponseHeadersPolicy",
+        "cloudfront:DeleteResponseHeadersPolicy",
+        "cloudfront:GetResponseHeadersPolicy",
+        "cloudfront:GetResponseHeadersPolicyConfig",
+        "cloudfront:GetCachePolicy"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

@@ -1,8 +1,14 @@
 node_modules/
 .shadow-cljs/
 .cpcache/
-public/js/
+**/public/js/
 serverless/
 .nrepl-port
 cdk.out/
 .local/
+
+# Local secrets (see secrets.example.edn)
+secrets.edn
+
+# clj-kondo cache
+.clj-kondo/.cache/

@@ -1,0 +1,56 @@
+[{:free-skills {:ranks 1, :skills ["Cool"]},
+  :name "Aristocrat",
+  :starting-skills
+  "An aristocrat starts with one rank  in Cool during character creation. They obtain this rank before spending experience points, and may not increase Cool above rank 2 during character creation.",
+  :source {:book "crb", :page 39},
+  :abilities
+  [{:name "Forceful Personality",
+    :text
+    "Once per session, your char acter may spend a Story Point as an incidental. If they do so, during the next skill check they make during that turn, your character doubles the strain they inflict or the strain they heal (you choose before making the check)."}],
+  :wounds 10,
+  :id :aristocrat,
+  :characteristics {:brawn 1, :agility 2, :intellect 2, :cunning 2, :willpower 2, :presence 3},
+  :strain 10,
+  :xp 100}
+ {:free-skills {:ranks 1, :choose 2, :non-career true},
+  :name "Average Human",
+  :starting-skills
+  "An average human starts with one  rank in each of two different non-career skills at character creation. They obtain this rank before spending experience points, and these skills may not be increased higher than rank 2 during character creation.",
+  :source {:book "crb", :page 36},
+  :abilities
+  [{:name "Ready for Anything",
+    :text
+    "Once per session as an out-of-turn incidental, you may move one Story Point from the Game Master’s pool to the players’ pool."}],
+  :wounds 10,
+  :id :average-human,
+  :characteristics {:brawn 2, :agility 2, :intellect 2, :cunning 2, :willpower 2, :presence 2},
+  :strain 10,
+  :xp 110}
+ {:free-skills {:ranks 1, :skills ["Knowledge"]},
+  :name "Intellectual",
+  :starting-skills
+  "An intellectual starts with one  rank in Knowledge during character creation. They obtain this rank before spending experience points, and may not increase Knowledge above rank 2 during character creation.",
+  :source {:book "crb", :page 38},
+  :abilities
+  [{:name "Brilliant!",
+    :text
+    "Once per session, your character may  spend a Story Point as an incidental. If they do so, during the next check they make during that turn, you count their ranks in the skill being used as equal to their Intellect."}],
+  :wounds 8,
+  :id :intellectual,
+  :characteristics {:brawn 2, :agility 1, :intellect 3, :cunning 2, :willpower 2, :presence 2},
+  :strain 12,
+  :xp 100}
+ {:free-skills {:ranks 1, :skills ["Athletics"]},
+  :name "Laborer",
+  :starting-skills
+  "A laborer starts with one rank in  Athletics during character creation. They obtain this rank before spending experience points, and may not increase Athletics above rank 2 during character creation.",
+  :source {:book "crb", :page 37},
+  :abilities
+  [{:name "Tough as Nails",
+    :text
+    "Once per session, your character  may spend a Story Point as an out-of-turn incidental immediately after suffering a Critical Injury and determining the result. If they do so, they count the result rolled as “01.”"}],
+  :wounds 12,
+  :id :laborer,
+  :characteristics {:brawn 3, :agility 2, :intellect 2, :cunning 2, :willpower 1, :presence 2},
+  :strain 8,
+  :xp 100}]

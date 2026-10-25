@@ -85,7 +85,10 @@ We iterate on each prototype until the user signs off. That signed-off design be
 - **Auth:** Cognito with Hosted UI and Google sign-in. The GM shares a campaign invite link. Roles are `gm` and `player` per campaign.
 - **Visibility:** GM-only fields are stripped on the server, inside the Lambda, for player requests. They are never just hidden in the UI.
 - **IaC:** Serverless Framework, matching argvader-tools. `apps/serverless/serverless.yml` defines the Lambdas, the HTTP and WebSocket APIs, DynamoDB, Cognito, and the S3 bucket plus CloudFront distribution as CloudFormation resources. `serverless-offline` runs the API locally.
-- **Server-authoritative dice:** rolls happen in the Lambda so players can trust the shared feed. A local "private roll" mode exists for GM secrets.
+- **Client-side dice (decided 2026-10-24):** the table is a group of friends, so each browser rolls its own dice and posts the result to the shared feed. The server relays and stores rolls but doesn't make or verify them.
+  - **The engine picks each face** using the platform's cryptographic RNG (exact 1/n odds per face, each roll independent). The 3D dice only act the result out: the throw is simulated offscreen (cannon-es) until every die rests flat, each die is repainted so the face it landed on carries the engine's face, then the recorded throw plays back (three.js, loaded lazily on the first roll). Physics is presentation, so a simulation quirk can never skew the odds. Reduced motion, no WebGL, or a load failure fall back to the 2D dice.
+  - GM secret checks are rolled in the GM's browser. The server sends them only to the GM, so they're redacted server-side like other GM-only data.
+  - The seeded RNG in `ttg.dice` stays for tests and replaying a logged roll. It is not a trust mechanism.
 
 ### Shared domain code (cljc, used by the client and the Lambdas)
 - `ttg.dice`: the dice engine. It holds die face definitions, pool construction, rolling with an injectable RNG, cancellation, and a probability calculator. The calculator powers a "chance of success" preview, which is better than what Demiplane offers.
@@ -115,8 +118,8 @@ apps/web/                   # re-frame PWA: deps.edn, shadow-cljs.edn (:target :
 apps/serverless/            # Lambdas: deps.edn, shadow-cljs.edn (:node-library), serverless.yml, package.json
   src/cljs/ttg/api/{handler,service,gateway}.cljs   # handler -> service -> gateway (DynamoDB), as in acronym
   src/cljs/ttg/realtime/{handler,service}.cljs
-libs/                       # deps.edn {:paths ["."]}, consumed via :local/root
-  ttg/dice.cljc  ttg/system.cljc  ttg/genesys/{model,rules,android}.cljc
+libs/                       # deps.edn {:paths ["src"]}, consumed via :local/root; tests in libs/test
+  src/ttg/dice.cljc (+ dice/{rng,odds,model})  src/ttg/system.cljc  src/ttg/genesys/{model,rules,android}.cljc
   router/                   # bidi + pushy re-frame router, from argvader-tools libs/router
 tools/                      # deps.edn {:paths ["."]}
   env/{core.clj,config.cljc}            # aero config + shadow load-env hook, from argvader-tools
@@ -140,10 +143,11 @@ bb orchestrates and shells out to `clojure -M:<alias>`, `npx shadow-cljs` and `s
 | `bb up` / `bb down` / `bb status` | DynamoDB Local on :8000 (Java process, no Docker) with ttg tables | done |
 | `bb reset` | Stop and wipe local data | done |
 | `bb proto` | Serve `prototypes/` on :8090 | done |
-| `bb dev` | `bb up` + shadow watch (web + serverless) + `sls offline` | M2 |
-| `bb test` / `bb lint` | cljs tests on Node + JVM, clj-kondo | M2 |
+| `bb proto-build` | Assemble `prototypes/src` pages with the shared dice code | done |
+| `bb dev` | shadow watch for apps/web on :8280 now; `bb up` + serverless watch + `sls offline` join at M4 | partial |
+| `bb test` / `bb lint` | libs tests on the JVM and Node, clj-kondo | done |
 | `bb seed` | Load sample library and Manifest Destiny campaign into local DynamoDB | M3 |
-| `bb build` | Release builds for web and Lambdas | M2 |
+| `bb build` | Release builds for web (done) and Lambdas (M4) | partial |
 | `bb deploy [stage]` | `sls deploy --stage`, web to S3, CloudFront invalidation | Infra |
 | `bb logs fn` / `bb remove stage` | Tail Lambda logs, tear down a stage | Infra |
 

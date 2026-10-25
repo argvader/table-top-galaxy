@@ -1,0 +1,6 @@
+;; Runs the cljc tests under Node, so the dice engine is checked in both runtimes (bb test).
+{:deps {:aliases [:cljs-test]}
+ :builds {:test {:target :node-test
+                 :output-to ".shadow-cljs/test/node-tests.js"
+                 :ns-regexp "-test$"
+                 :autorun true}}}
