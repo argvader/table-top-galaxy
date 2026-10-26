@@ -20,7 +20,8 @@
   [:archetypes :careers :skills :talents :weapons :armor :gear :motivations :obligation-types :crits :spend-results :item-qualities])
 
 (def ^:private page-types
-  {"gm-dashboard" [:archetypes :careers :skills :adversaries :factions :obligation-types :crits :spend-results]})
+  {"gm-dashboard" [:archetypes :careers :skills :adversaries :factions :obligation-types :crits :spend-results]
+   "campaign-manager" [:factions]})
 
 ;; Fields a page never shows: factions keep their name, adversaries drop settings outside the Android table.
 (def ^:private android-adversary-settings #{"general" "modern" "science-fiction" "space-opera"})

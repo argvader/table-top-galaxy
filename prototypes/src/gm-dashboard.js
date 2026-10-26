@@ -33,42 +33,42 @@
       ranks: { Cool: 1, Vigilance: 1, Perception: 1, Piloting: 2, "Ranged (Light)": 1, Stealth: 1 },
       wounds: 4, strain: 3, crits: [4],
       ob: { type: "debt", mag: 10, att: "Weyland Consortium", why: "Weyland paid for the berth on the Concord, the salvage rig and the scout ship's fuel." },
-      s0: { q: "What did you hear on the comms the night the Meridian went through the gate?", a: "A voice they knew, calling their name. They have told no one.", act: "Act III · Ten" },
+      s0: { q: "Out past the last gate, you heard something on an empty comms channel. What did it say, and why did it use your name?", a: "A voice they knew, calling their name. Prance has told no one.", act: "Act III · Ten" },
       sig: [["Piloting", "Steering through the debris field"], ["Ranged (Light)", "Enforcer at the drone"], ["Perception", "Scanning the cargo ring"]] },
     { id: "krum", name: "Krum", initials: "KR", arch: "g-mod", career: "runner", color: "var(--pc-2)",
       chars: { Br: 2, Ag: 2, Int: 4, Cun: 3, Will: 1, Pr: 2 }, soak: 2, def: [0, 0],
       ranks: { "Computers (Hacking)": 2, "Computers (Sysops)": 1, Cool: 1, Perception: 1, Deception: 1, Skulduggery: 1 },
       wounds: 2, strain: 6, crits: [],
       ob: { type: "forbidden-knowledge", mag: 5, att: "Jinteki", why: "Pulled a clone-batch manifest off a Jinteki node that lists the Meridian's crew as 'returned'." },
-      s0: { q: "What did the gate show you that you've told no one?", a: "Their own face on a Jinteki intake form, dated next year.", act: "Act II · Shō" },
+      s0: { q: "Which corporation owns something that used to be part of you: a limb, a memory, a patent, a face?", a: "Jinteki. Krum's neural lace is Jinteki IP, and so is the face on a clone-batch intake form Krum pulled off a node: Krum's own, dated next year.", act: "Act II · Shō" },
       sig: [["Computers (Hacking)", "Slicing the dock's ICE"], ["Skulduggery", "Lifting the drone's access chip"], ["Deception", "Bluffing the dock AI"]] },
     { id: "behnsun", name: "Behnsun Payne", initials: "BP", arch: "clone", career: "tech", color: "var(--pc-3)",
       chars: { Br: 2, Ag: 2, Int: 3, Cun: 2, Will: 2, Pr: 2 }, soak: 2, def: [0, 0],
       ranks: { Medicine: 2, Mechanics: 1, Vigilance: 1, Perception: 1, "Computers (Sysops)": 1 },
       wounds: 0, strain: 1, crits: [],
       ob: { type: "family-duty", mag: 10, att: "Ama Payne, a sibling in Jinteki's Quinde crèche", why: "Ama's contract renews next year unless someone buys it out." },
-      s0: { q: "Who on the Concord would you trust with your life, and why are you wrong?", a: "Rook. Rook kept Ama's file off a Jinteki audit once.", act: "Act IV · Ketsu" },
+      s0: { q: "Who is the last person who trusted you completely, and what happened to them?", a: "Ama, Behnsun's sibling in Jinteki's Quinde crèche. Behnsun promised to buy out Ama's contract before it renews.", act: "Act IV · Ketsu" },
       sig: [["Medicine", "Patching Fizz's chassis"], ["Mechanics", "Bypassing the blast door"], ["Perception", "Reading the cryo logs"]] },
     { id: "fizz", name: "Fizz", initials: "FZ", arch: "bioroid", career: "roughneck", color: "var(--pc-4)",
       chars: { Br: 3, Ag: 2, Int: 1, Cun: 1, Will: 2, Pr: 1 }, soak: 4, def: [1, 1],
       ranks: { Athletics: 2, Gunnery: 1, "Ranged (Heavy)": 1, Vigilance: 2, Resilience: 1, Operating: 1 },
       wounds: 9, strain: 4, crits: [40],
       ob: { type: "corporate-contract", mag: 15, att: "Haas-Bioroid", why: "Fizz's chassis is Haas-Bioroid property on paper. The recall order is signed, just not served." },
-      s0: { q: "Which of the Three Directives have you already broken?", a: "The second. Fizz let a man drown in the Quinde pits because it was ordered to.", act: "Act III · Ten" },
+      s0: { q: "You once left someone behind in vacuum to save yourself. Who were they, and what do you tell people happened?", a: "A foreman on the Quinde pit line. Fizz sealed the bulkhead because it was ordered to, and tells people the foreman made it out.", act: "Act III · Ten" },
       sig: [["Athletics", "Hauling the cargo pod"], ["Ranged (Heavy)", "Covering fire on the guards"], ["Resilience", "Shrugging off the EMP"]] },
     { id: "adarius", name: "Adarius", initials: "AD", arch: "loonie", career: "con-artist", color: "var(--pc-5)",
       chars: { Br: 2, Ag: 3, Int: 2, Cun: 3, Will: 2, Pr: 3 }, soak: 2, def: [0, 0],
       ranks: { Deception: 2, Charm: 1, Cool: 2, Skulduggery: 1, Perception: 1, Negotiation: 1 },
       wounds: 3, strain: 7, crits: [],
       ob: { type: "betrayal", mag: 5, att: "Orgcrime: the Tsang family", why: "Sold the Tsangs' Heinlein route to the NAPD to get off the Moon." },
-      s0: { q: "Who is waiting for you at the end of this voyage?", a: "Nobody, Adarius says. Lien Tsang, actually.", act: "Act IV · Ketsu" },
+      s0: { q: "Someone back in the Core still holds a funeral for you every year. Why do they think you're dead?", a: "Lien Tsang. Adarius faked a death on the Heinlein route to get off the Moon, and Lien still lights a candle every year.", act: "Act IV · Ketsu" },
       sig: [["Charm", "Talking the clerk out of the manifest"], ["Deception", "Posing as a Weyland auditor"], ["Cool", "Holding the bluff"]] },
   ].map((p) => ({ ...p, archetype: find("archetypes", p.arch), careerE: find("careers", p.career), obType: find("obligation-types", p.ob.type),
     crits: p.crits.map((r) => ({ ...critAt(r), rolled: r })) }));
   const pcById = (id) => PARTY.find((p) => p.id === id);
   const isSecretOb = (p) => p.obType.kind === "secret";
 
-  // Sample campaign people and corps. The campaign manager (next prototype) owns these; here they're quick links.
+  // Sample campaign people and corps. The campaign manager owns these; here they're quick links.
   const NPCS = [
     { id: "rook", name: "Rook", role: "Haas-Bioroid dock chief, Concord cargo ring", pub: "Runs the cargo ring's docks. Owes no one, says everyone.",
       gm: "Skimming Haas-Bioroid salvage. Will sell the party out to keep it quiet." },
@@ -543,7 +543,7 @@
     return [esc(x.name), kind === "npc" ? esc(x.role) : `Corp ${cite(x.source)}`,
       `<div class="item"><span class="label">${kind === "npc" ? "What players know" : "Public role"}</span><p>${esc(x.pub)}</p></div>
        ${gmBlock(`<span class="label">${kind === "npc" ? "Truth" : "Secret agenda"}</span><p style="margin:0">${esc(x.gm)}</p>`)}
-       <p class="note">Sample text. The campaign manager (next prototype) is where you write these, with the betrayal ledger and Session 0 questions.</p>`];
+       <p class="note">Sample text. You write these in the <a href="campaign-manager.html">campaign manager</a>, with the betrayal ledger and Session 0 questions.</p>`];
   }
 
   // ---------- Live demo: players rolling and taking hits at the table ----------
