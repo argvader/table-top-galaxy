@@ -3,7 +3,9 @@
             [ttg.dice.odds :as odds]
             [ttg.roller.spend :as spend]))
 
+(rf/reg-sub ::mode (fn [db _] (:mode db)))
 (rf/reg-sub ::pool (fn [db _] (:pool db)))
+(rf/reg-sub ::plain-pool (fn [db _] (:plain-pool db)))
 (rf/reg-sub ::ladder (fn [db _] (:ladder db)))
 (rf/reg-sub ::reset-note? (fn [db _] (:reset-note? db)))
 (rf/reg-sub ::rolling (fn [db _] (:rolling db)))
@@ -12,6 +14,10 @@
 (rf/reg-sub ::rolls (fn [db _] (vec (remove #(= (:id %) (:rolling db)) (:rolls db)))))
 
 (rf/reg-sub ::pool-size :<- [::pool] (fn [pool _] (reduce + (vals pool))))
+
+;; The size of whichever pool the Roll button throws.
+(rf/reg-sub ::ready-size :<- [::mode] :<- [::pool-size] :<- [::plain-pool]
+  (fn [[mode size plain] _] (if (= :plain mode) (reduce + (vals plain)) size)))
 
 ;; The exact chance-of-success preview; recomputed only when the pool changes.
 (rf/reg-sub ::odds :<- [::pool] (fn [pool _] (odds/odds pool)))

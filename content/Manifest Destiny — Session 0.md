@@ -24,7 +24,7 @@ By the end of the night the table should have a crew, a ship, a debt that binds 
 
 Open with the read-aloud, then set the dials together so nobody is surprised by the campaign they signed up for.
 
-> Fifty years ago, a Weyland survey ship found a gate beyond Neptune that nobody built. Now there are dozens of them, and the megacorps are racing through like railroad barons. Past the Core, the charters are the law. Past the charters, there is none. You fly the ship nobody wants on their books. You owe someone. Everyone does. And out past the last claim, something in the old ruins has started to notice the noise.
+> Fifty years ago, a Weyland survey ship found a gate beyond Neptune that nobody built. Fifteen years ago the Meridian went through it and fell silent. Now the megacorps are following like railroad barons. Past the Core, the charters are the law. Past the charters, there is none. You fly the ship nobody wants on their books. You owe someone. Everyone does. And out past the last claim, something in the old ruins has started to notice the noise.
 
 **Touchstones:** *Firefly*, *The Expanse*, *Alien*, *Deadwood*, *Outland*, the Android: Netrunner card art.
 

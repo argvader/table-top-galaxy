@@ -1,0 +1,3 @@
+# Needed by bin/deepgram_async.py (async Deepgram transcription via S3).
+boto3
+requests

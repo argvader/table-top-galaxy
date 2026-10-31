@@ -1,0 +1,970 @@
+{
+ "v": 1,
+ "acts": [
+  {
+   "id": "ki",
+   "roman": "I",
+   "kanji": "起",
+   "name": "Ki",
+   "title": "The voyage",
+   "length": "about 4–6 sessions",
+   "pub": "Months crossing the solar system toward the gate beyond Neptune. A town of 3,000 in a sealed box.",
+   "gm": "Let the players know the town, the corp reps and the ship before anything goes wrong, so every later betrayal lands on people they know.",
+   "end": "The crossing: the ship shakes, the lights fail, and for eleven seconds everyone aboard dreams the same thing. The Meridian's beacon is already pinging. The clocks disagree about how long it took.",
+   "threads": [
+    [
+     "ki-cryo",
+     "A death in cryo"
+    ],
+    [
+     "ki-sab",
+     "The saboteur"
+    ],
+    [
+     "ki-bio",
+     "The bioroid who asks a question"
+    ],
+    [
+     "ki-nbn",
+     "NBN's story"
+    ],
+    [
+     "ki-town",
+     "Town life: a wedding, a still, an election, a kid"
+    ],
+    [
+     "ki-port",
+     "The last port"
+    ]
+   ]
+  },
+  {
+   "id": "sho",
+   "roman": "II",
+   "kanji": "承",
+   "name": "Shō",
+   "title": "The search",
+   "length": "",
+   "pub": "The Concord follows the Meridian's beacon into an unknown system.",
+   "gm": "The rescue slowly falls apart as each corp's agenda surfaces.",
+   "threads": [
+    [
+     "sho-empty",
+     "The empty Meridian"
+    ],
+    [
+     "sho-surv",
+     "The survivors by the ruins"
+    ],
+    [
+     "sho-leak",
+     "Agendas leak"
+    ],
+    [
+     "sho-split",
+     "Three factions pull apart: settle, strip, or leave"
+    ],
+    [
+     "sho-offers",
+     "Off-book offers to clear Debt"
+    ]
+   ]
+  },
+  {
+   "id": "ten",
+   "roman": "III",
+   "kanji": "転",
+   "name": "Ten",
+   "title": "The twist",
+   "length": "",
+   "pub": "",
+   "gm": "One reveal that changes what everything before it meant. Seed it from the first session.",
+   "threads": []
+  },
+  {
+   "id": "ketsu",
+   "roman": "IV",
+   "kanji": "結",
+   "name": "Ketsu",
+   "title": "Reconciliation",
+   "length": "",
+   "pub": "",
+   "gm": "Who does this new world belong to? Every earlier thread comes together.",
+   "threads": [
+    [
+     "ke-mutiny",
+     "A mutiny or emergency election aboard the Concord"
+    ],
+    [
+     "ke-gate",
+     "Keep the gate open, seal it, or hand it to one corp"
+    ],
+    [
+     "ke-broadcast",
+     "What NBN's last broadcast home will show"
+    ]
+   ]
+  }
+ ],
+ "twists": [
+  {
+   "n": 1,
+   "title": "The Meridian wasn't lost; it was abandoned.",
+   "text": "The consortium read the full transmission fifteen years ago and buried it. The rescue is a retrieval mission, and the survivors are witnesses."
+  },
+  {
+   "n": 2,
+   "title": "Time ran differently through the gate.",
+   "text": "For the survivors it's been 80 years. They're the original crew's grandchildren, and they see the Concord as an invasion."
+  },
+  {
+   "n": 3,
+   "title": "The Concord was never meant to go home.",
+   "text": "The gate is one-way, or about to close. The colonists are a second stage they were never told about; their indenture starts on arrival."
+  }
+ ],
+ "seeds": [
+  {
+   "ledger": "saboteur",
+   "text": "The saboteur knew the truth all along"
+  },
+  {
+   "ledger": "gate",
+   "text": "The shared dream at the crossing: first sign of the gate-builders"
+  },
+  {
+   "ledger": "clocks",
+   "text": "The mismatched clocks",
+   "for": 2
+  },
+  {
+   "ledger": "cryo",
+   "text": "The edited cryo log: what Jinteki is really storing"
+  },
+  {
+   "ledger": "transmission",
+   "text": "A few seconds of the real transmission, denied by every corp"
+  }
+ ],
+ "corps": [
+  {
+   "id": "weyland-consortium",
+   "name": "Weyland Consortium",
+   "source": {
+    "book": "sotb",
+    "page": 60
+   },
+   "short": "Weyland",
+   "share": "Built the hull and holds the charter, so it legally owns whatever the expedition claims.",
+   "pub": "Captain and charter holder",
+   "breaks": "Shō → Ten",
+   "ledger": "weyland"
+  },
+  {
+   "id": "haas-bioroid",
+   "name": "Haas-Bioroid",
+   "source": {
+    "book": "sotb",
+    "page": 58
+   },
+   "short": "Haas-Bioroid",
+   "share": "Supplies the bioroid workforce that keeps the ship running.",
+   "pub": "Labor and engineering",
+   "breaks": "Ki → Shō",
+   "ledger": "override"
+  },
+  {
+   "id": "jinteki",
+   "name": "Jinteki",
+   "source": {
+    "book": "sotb",
+    "page": 56
+   },
+   "short": "Jinteki",
+   "share": "Runs medical, life support, and the cryo and clone banks.",
+   "pub": "Medical and cryo",
+   "breaks": "Ten",
+   "ledger": "clones"
+  },
+  {
+   "id": "nbn",
+   "name": "NBN",
+   "source": {
+    "book": "sotb",
+    "page": 62
+   },
+   "short": "NBN",
+   "share": "Owns comms, sensors, and exclusive broadcast rights to the \"greatest rescue in history\".",
+   "pub": "Comms and broadcast",
+   "breaks": "Any act, above all Ketsu",
+   "ledger": "edit"
+  }
+ ],
+ "powers": [
+  {
+   "id": "town",
+   "name": "The town",
+   "pub": "3,000 colonists with an elected council. They want to settle here.",
+   "ledger": "council"
+  },
+  {
+   "id": "survivors",
+   "name": "The Meridian survivors",
+   "pub": "Living beside the gate-builder ruins they've been studying. They want everyone to leave.",
+   "ledger": "scientist"
+  },
+  {
+   "id": "human-first",
+   "name": "Human First",
+   "pub": "Anti-bioroid extremists. Blamed for the sabotage in Ki.",
+   "gm": "A red herring: the saboteur was a Concord officer.",
+   "src": "activist-and-terrorist-groups"
+  }
+ ],
+ "qsets": [
+  {
+   "id": "personal",
+   "name": "Personal",
+   "how": "Each player draws two and answers one. Answers become canon and the GM's hooks."
+  },
+  {
+   "id": "crew",
+   "name": "Crew",
+   "how": "Each player answers one about the player on their left."
+  },
+  {
+   "id": "world",
+   "name": "World",
+   "how": "Players define the frontier. The GM keeps what's true."
+  },
+  {
+   "id": "ship",
+   "name": "Ship",
+   "how": "One per player while building the ship."
+  }
+ ],
+ "questions": [
+  {
+   "id": "p1",
+   "set": "personal",
+   "text": "You've seen the inside of a corporate contract-labor camp. What number did they tattoo, stamp or chip into you, and why haven't you had it removed?"
+  },
+  {
+   "id": "p2",
+   "set": "personal",
+   "text": "Out past the last gate, you heard something on an empty comms channel. What did it say, and why did it use your name?",
+   "fit": "There's only one gate and nobody aboard has crossed it. Try \"On the voyage out\" or \"The night the Meridian went through\"."
+  },
+  {
+   "id": "p3",
+   "set": "personal",
+   "text": "You once left someone behind in vacuum to save yourself. Who were they, and what do you tell people happened?"
+  },
+  {
+   "id": "p4",
+   "set": "personal",
+   "text": "Which corporation owns something that used to be part of you: a limb, a memory, a patent, a face?"
+  },
+  {
+   "id": "p5",
+   "set": "personal",
+   "text": "What did the frontier promise you before you came out here, and when did you realize it was a lie?"
+  },
+  {
+   "id": "p6",
+   "set": "personal",
+   "text": "You keep a small object from a colony that no longer exists. What is it, and who erased the colony?"
+  },
+  {
+   "id": "p7",
+   "set": "personal",
+   "text": "What do you do with your hands when the ship is quiet, and what are you trying not to think about?"
+  },
+  {
+   "id": "p8",
+   "set": "personal",
+   "text": "Someone back in the Core still holds a funeral for you every year. Why do they think you're dead?"
+  },
+  {
+   "id": "p9",
+   "set": "personal",
+   "text": "You signed something you didn't read. What did it turn out to say?"
+  },
+  {
+   "id": "p10",
+   "set": "personal",
+   "text": "When you look at a bioroid, what do you feel that you'd never say out loud?"
+  },
+  {
+   "id": "p11",
+   "set": "personal",
+   "text": "You've touched gate-builder stone with your bare hand. What has been different about you since?",
+   "fit": "No one has reached the ruins before Shō. Try a fragment the Meridian sent home, or a relic on the black market."
+  },
+  {
+   "id": "p12",
+   "set": "personal",
+   "text": "Who is the last person who trusted you completely, and what happened to them?"
+  },
+  {
+   "id": "c1",
+   "set": "crew",
+   "text": "What did you see them do on their first job with this crew that you still haven't asked about?"
+  },
+  {
+   "id": "c2",
+   "set": "crew",
+   "text": "Which of their habits makes you sure they're hiding something?"
+  },
+  {
+   "id": "c3",
+   "set": "crew",
+   "text": "They saved your life once. What did it cost them, and have you paid it back?"
+  },
+  {
+   "id": "c4",
+   "set": "crew",
+   "text": "You've heard them talking in their sleep. What name do they say?"
+  },
+  {
+   "id": "c5",
+   "set": "crew",
+   "text": "If a corp offered you a bounty on them, what is the number where you'd hesitate?"
+  },
+  {
+   "id": "c6",
+   "set": "crew",
+   "text": "What do they cook, play or sing that makes the ship feel like home for an hour?"
+  },
+  {
+   "id": "w1",
+   "set": "world",
+   "text": "Name a frontier station where everyone goes to disappear. What rule is never broken there?"
+  },
+  {
+   "id": "w2",
+   "set": "world",
+   "text": "What does the Drift crime boss who holds the crew's Debt keep in a jar on their desk?",
+   "fit": "The arc has the corps hold the Debts. Reword for whichever corp or fixer holds the crew's."
+  },
+  {
+   "id": "w3",
+   "set": "world",
+   "text": "Describe a gate that doesn't open anymore. What's still waiting on the other side of it?",
+   "fit": "There's only one gate. Swap for a sealed lock or a dead station the Concord passes."
+  },
+  {
+   "id": "w4",
+   "set": "world",
+   "text": "Name a Free Claims colony the crew has drunk at. What did the corps do to the last colony nearby?"
+  },
+  {
+   "id": "w5",
+   "set": "world",
+   "text": "What do spacers leave on a derelict before stripping it, and what happens to people who forget?"
+  },
+  {
+   "id": "w6",
+   "set": "world",
+   "text": "Name a rumor about the gate-builders that every prospector has heard. Which part is true? (Only the GM knows.)"
+  },
+  {
+   "id": "h1",
+   "set": "ship",
+   "text": "Who owned this ship before you, and where did you find their last log entry?"
+  },
+  {
+   "id": "h2",
+   "set": "ship",
+   "text": "There's a sealed compartment none of you has opened. What do you hear from it during long burns?"
+  },
+  {
+   "id": "h3",
+   "set": "ship",
+   "text": "What corporation's paint is still visible under the current coat?"
+  },
+  {
+   "id": "h4",
+   "set": "ship",
+   "text": "Someone died aboard. Where, and what does the crew avoid doing in that spot?"
+  },
+  {
+   "id": "h5",
+   "set": "ship",
+   "text": "The ship has been through a gate that isn't on any chart. How do you know?",
+   "fit": "There's only one gate. Try a route or jump that isn't on any chart."
+  },
+  {
+   "id": "h6",
+   "set": "ship",
+   "text": "What part of the ship was salvaged from a vessel that was destroyed with all hands?"
+  }
+ ],
+ "truths": {
+  "w6": "Which part is true",
+  "h2": "What's actually in the compartment"
+ },
+ "dials": [
+  {
+   "id": "grit",
+   "name": "Grit",
+   "low": "Swashbuckling caper",
+   "high": "Every bullet and credit counts",
+   "start": 4
+  },
+  {
+   "id": "cruelty",
+   "name": "Corporate cruelty",
+   "low": "Cartoon villains",
+   "high": "Banal, believable atrocity",
+   "start": 3
+  },
+  {
+   "id": "weird",
+   "name": "Alien weirdness",
+   "low": "Background flavor",
+   "high": "Cosmic horror front and center",
+   "start": 2
+  },
+  {
+   "id": "conflict",
+   "name": "Crew conflict",
+   "low": "Found family",
+   "high": "Knives out, secrets kept",
+   "start": 2
+  },
+  {
+   "id": "moral",
+   "name": "Moral lines",
+   "low": "Clear heroes",
+   "high": "Everyone is compromised",
+   "start": 4
+  }
+ ],
+ "themes": [
+  "Indentured labor and debt bondage",
+  "Bioroids and clones treated as property",
+  "Body modification and losing parts of yourself",
+  "Corporate violence against colonists, including civilians and children",
+  "Isolation, vacuum death, being stranded",
+  "Alien body horror and parasitism",
+  "Addiction (stims, combat drugs)",
+  "Betrayal inside the crew"
+ ],
+ "wrapup": [
+  "Sort the index cards into NPCs, places, objects and rumors",
+  "Pick two personal answers to pay off in the first three sessions",
+  "Give each creditor a face, a want and a deadline",
+  "Decide what's in the ship's sealed compartment",
+  "Decide which gate-builder rumor is true",
+  "Type up lines and veils and share with the group",
+  "Finalize character sheets and ship stats before session 1"
+ ],
+ "groups": {
+  "officers": "Ship's officers",
+  "corp": "Corp reps",
+  "town": "Townsfolk",
+  "meridian": "Meridian"
+ },
+ "npcs": [
+  {
+   "id": "aldine",
+   "name": "Captain Marit Aldine",
+   "group": "officers",
+   "faction": "weyland-consortium",
+   "role": "Captain of the Concord",
+   "pub": "Runs the ship by the charter, to the letter.",
+   "gm": "Carries sealed orders to open on arrival: the colonists' contracts are void and the system is company property.",
+   "arc": {
+    "ki": "Distant, fair, by the book.",
+    "sho": "Opens the sealed orders.",
+    "ten": "Enforces them.",
+    "ketsu": "Target of the mutiny, or its last holdout."
+   }
+  },
+  {
+   "id": "vasko",
+   "name": "Imre Vasko",
+   "group": "officers",
+   "faction": "weyland-consortium",
+   "role": "Second officer, Concord bridge",
+   "pub": "Caught cutting the nav system before the gate. Says nobody should have come.",
+   "gm": "Read the Meridian's real transmission and tried to keep 3,000 people from reaching what's on the other side.",
+   "arc": {
+    "ki": "The saboteur: Ki's villain.",
+    "sho": "Hiding on the lower decks. Reaches out once the survivors are found.",
+    "ten": "The voice the crew dismissed, or the ally they protected.",
+    "ketsu": "Argues for sealing the gate."
+   }
+  },
+  {
+   "id": "quill",
+   "name": "Dana Quill",
+   "group": "officers",
+   "faction": null,
+   "role": "Consortium liaison and the outriders' handler",
+   "pub": "Hands out the jobs and the credit. Always has another one.",
+   "gm": "Works for NBN. A failed rescue is the better story.",
+   "arc": {
+    "ki": "Friendly employer.",
+    "sho": "Sends the crew on jobs that go wrong in camera-friendly ways.",
+    "ten": "Exposed, or never.",
+    "ketsu": "Pitches the crew to NBN's last broadcast as villains."
+   }
+  },
+  {
+   "id": "rook",
+   "name": "Rook",
+   "group": "corp",
+   "faction": "haas-bioroid",
+   "role": "Haas-Bioroid dock chief, cargo ring",
+   "pub": "Runs the cargo ring's docks. Owes no one, says everyone.",
+   "gm": "Skimming Haas-Bioroid salvage. Will sell the crew out to keep it quiet.",
+   "arc": {
+    "ki": "Useful fixer.",
+    "sho": "Stalls Weyland at Dock 9, for a price.",
+    "ten": "",
+    "ketsu": ""
+   }
+  },
+  {
+   "id": "mx7",
+   "name": "MX-7",
+   "group": "corp",
+   "faction": "haas-bioroid",
+   "role": "Bioroid maintenance unit",
+   "pub": "Keeps asking about death, ownership, and whether the gate counts as \"outside\".",
+   "gm": "Gone independent: someone patched its Directives. It will ask the crew for help when the override wakes.",
+   "arc": {
+    "ki": "The bioroid who asks a question.",
+    "sho": "Freezes mid-task with the others; asks for help.",
+    "ten": "",
+    "ketsu": "Speaks for the bioroids in the vote."
+   }
+  },
+  {
+   "id": "okafor",
+   "name": "Jules Okafor",
+   "group": "corp",
+   "faction": "nbn",
+   "role": "NBN camera crew",
+   "pub": "Friendly. Films everything the outriders do.",
+   "gm": "Streams the raw feed to an NBN buyer who pays for the crew's secrets.",
+   "arc": {
+    "ki": "The weekly segment.",
+    "sho": "Footage starts getting edited before it goes home.",
+    "ten": "",
+    "ketsu": "Holds the cut that decides heroes or terrorists."
+   }
+  },
+  {
+   "id": "ilves",
+   "name": "Dr. Hana Ilves",
+   "group": "corp",
+   "faction": "jinteki",
+   "role": "Jinteki chief of cryo medicine",
+   "pub": "Called the death in pod 14 a malfunction.",
+   "gm": "Edited the pod log on orders. Knows the clone stock is grown from Meridian samples.",
+   "arc": {
+    "ki": "The death in cryo.",
+    "sho": "Asks the crew to bring back tissue from the survivors.",
+    "ten": "The clones wake.",
+    "ketsu": ""
+   }
+  },
+  {
+   "id": "sato",
+   "name": "Agent Sato",
+   "group": "corp",
+   "faction": "weyland-consortium",
+   "role": "Weyland security",
+   "pub": "Wants the Meridian's black box.",
+   "gm": "Ordered to make the black box disappear, along with anyone who has heard it.",
+   "arc": {
+    "ki": "",
+    "sho": "Dock 9.",
+    "ten": "If the crew spared the drone at Dock 9, Sato remembers it.",
+    "ketsu": ""
+   }
+  },
+  {
+   "id": "reyes",
+   "name": "Councilor Teodora Reyes",
+   "group": "town",
+   "faction": "town",
+   "role": "Elected head of the colonists' council",
+   "pub": "Won the council election on a promise of land for every family.",
+   "gm": "Will trade the survivors to Weyland in exchange for land titles.",
+   "arc": {
+    "ki": "The election.",
+    "sho": "Pushes to settle.",
+    "ten": "",
+    "ketsu": "Cuts the deal with Weyland."
+   }
+  },
+  {
+   "id": "brandts",
+   "name": "Sami and Odette Brandt",
+   "group": "town",
+   "faction": "town",
+   "role": "Newlyweds, hydroponics crew",
+   "pub": "Married the night of the death in cryo. Half the ship came.",
+   "gm": "Odette is pregnant by Ketsu.",
+   "arc": {
+    "ki": "The wedding.",
+    "sho": "",
+    "ten": "",
+    "ketsu": "The stakes in the vote."
+   }
+  },
+  {
+   "id": "gus",
+   "name": "Gus Ferrante",
+   "group": "town",
+   "faction": "town",
+   "role": "Runs the black-market still in hydroponics",
+   "pub": "Everyone's friend at 0200.",
+   "gm": "Hears everything. Sells some of it to Rook.",
+   "arc": {
+    "ki": "The still.",
+    "sho": "",
+    "ten": "",
+    "ketsu": "The still becomes the mutineers' meeting room."
+   }
+  },
+  {
+   "id": "pip",
+   "name": "Pip Okonkwo",
+   "group": "town",
+   "faction": "town",
+   "role": "Fourteen. Wants to be an outrider.",
+   "pub": "Hid in the cargo ring to watch the outriders' ship.",
+   "gm": "Stows away on the outriders' ship in Shō.",
+   "arc": {
+    "ki": "The stowaway.",
+    "sho": "Stows away again, planetside.",
+    "ten": "",
+    "ketsu": "The kid who wanted to fly."
+   }
+  },
+  {
+   "id": "marten",
+   "name": "Ilse Marten",
+   "group": "town",
+   "faction": "town",
+   "role": "Colonist, cryo pod 14",
+   "pub": "Died in a sealed cryo pod.",
+   "gm": "Woke early and recognised a Meridian crew name on the clone-bank manifest.",
+   "arc": {
+    "ki": "The death in cryo.",
+    "sho": "",
+    "ten": "Her clone is aboard.",
+    "ketsu": ""
+   }
+  },
+  {
+   "id": "marr",
+   "name": "Dr. Ines Marr",
+   "group": "meridian",
+   "faction": "survivors",
+   "role": "Meridian xenoarchaeologist",
+   "pub": "The first Meridian survivor the crew will meet.",
+   "gm": "Sabotaged the Meridian to stop the crew taking what they'd found home.",
+   "arc": {
+    "ki": "",
+    "sho": "Rescued.",
+    "ten": "The rescued scientist.",
+    "ketsu": ""
+   }
+  },
+  {
+   "id": "calloway",
+   "name": "Wren Calloway",
+   "group": "meridian",
+   "faction": "survivors",
+   "role": "Speaker for the Meridian survivors",
+   "pub": "",
+   "gm": "Will do anything to make the Concord leave.",
+   "arc": {
+    "ki": "",
+    "sho": "Meets the crew at the ruins.",
+    "ten": "",
+    "ketsu": "Holds the ruins."
+   }
+  }
+ ],
+ "ledger": [
+  {
+   "id": "saboteur",
+   "owner": "vasko",
+   "act": "ki",
+   "title": "The saboteur",
+   "truth": "Vasko read the Meridian's real transmission and tried to stop the voyage. Introduced as Ki's villain, later revealed as the one person trying to save everyone.",
+   "clues": [
+    "A fuel line cut clean, not torn.",
+    "The nav hack used bridge-officer credentials.",
+    "Vasko asked the crew what they heard on the dead band."
+   ]
+  },
+  {
+   "id": "override",
+   "owner": "haas-bioroid",
+   "act": "ki",
+   "title": "The bioroid override",
+   "truth": "Every bioroid carries a dormant override and logs every conversation. MX-7 has gone independent and will ask the crew for help.",
+   "clues": [
+    "MX-7 asked one of the crew whether the gate counts as \"outside\".",
+    "Every bioroid aboard froze for two seconds during the crossing.",
+    "MX-7 didn't."
+   ]
+  },
+  {
+   "id": "transmission",
+   "owner": "consortium",
+   "act": "ten",
+   "title": "The Meridian's real transmission",
+   "truth": "The consortium got the full transmission fifteen years ago. Every corp denies it exists.",
+   "clues": [
+    "Four seconds of static and a voice on a dead band. Every corp says there was nothing."
+   ]
+  },
+  {
+   "id": "cryo",
+   "owner": "jinteki",
+   "act": "ki",
+   "title": "The edited cryo log",
+   "truth": "Ilse Marten woke early and recognised a Meridian crew name on the clone-bank manifest. The log was edited to hide it.",
+   "clues": [
+    "Pod 14's log was edited after Ilse Marten died.",
+    "Someone kept a copy of the original."
+   ]
+  },
+  {
+   "id": "clocks",
+   "owner": "gate",
+   "act": "ten",
+   "title": "The clocks disagree",
+   "truth": "Time runs differently through the gate. Only matters if the twist is option 2.",
+   "clues": [
+    "The bridge clock says the crossing took six minutes. The cryo bay's says three days."
+   ]
+  },
+  {
+   "id": "gate",
+   "owner": "gate",
+   "act": "ketsu",
+   "title": "Who controls the gate",
+   "truth": "The ruins respond to whoever controls the gate, and each corp is privately racing to be that someone.",
+   "clues": [
+    "Everyone aboard dreamed the same thing for eleven seconds during the crossing.",
+    "The ruins' carvings match the dream."
+   ]
+  },
+  {
+   "id": "weyland",
+   "owner": "weyland-consortium",
+   "act": "sho",
+   "title": "Contracts void on arrival",
+   "truth": "Weyland will nullify the colonists' contracts on arrival and claim the system as company property.",
+   "clues": [
+    "Agent Sato's men are guarding the Meridian's black box at Dock 9.",
+    "Captain Aldine's sealed orders."
+   ]
+  },
+  {
+   "id": "clones",
+   "owner": "jinteki",
+   "act": "ten",
+   "title": "The clone stock",
+   "truth": "Jinteki is cloning the Meridian crew from stored samples, including someone the crew knows, to rewrite what \"survivor\" means.",
+   "clues": [
+    "Jinteki has far more clone stock aboard than a colony ship needs."
+   ]
+  },
+  {
+   "id": "edit",
+   "owner": "nbn",
+   "act": "ketsu",
+   "title": "The edit",
+   "truth": "NBN controls the only link home and is selling the story. One edit makes the outriders heroes or terrorists.",
+   "clues": [
+    "The stowaway segment aired without Pip in it."
+   ]
+  },
+  {
+   "id": "handler",
+   "owner": "quill",
+   "act": "ten",
+   "title": "The handler",
+   "truth": "Dana Quill works for whichever corp benefits from the crew failing: NBN.",
+   "clues": [
+    "Quill knew about Dock 9 before the crew did."
+   ]
+  },
+  {
+   "id": "scientist",
+   "owner": "marr",
+   "act": "ten",
+   "title": "The rescued scientist",
+   "truth": "The first survivor the crew saves is the one who sabotaged the Meridian.",
+   "clues": [
+    "The Meridian's logs stop mid-sentence."
+   ]
+  },
+  {
+   "id": "council",
+   "owner": "reyes",
+   "act": "ketsu",
+   "title": "The council deal",
+   "truth": "Councilor Reyes trades the survivors to Weyland for land.",
+   "clues": [
+    "Reyes met Captain Aldine privately after the election."
+   ]
+  }
+ ],
+ "run": {
+  "summary": "By the end of the night the table should have a crew, a ship, a debt that binds them, and a frontier they helped invent. About four hours with a break.",
+  "bring": "Genesys Core Rulebook, Shadow of the Beanstalk, Expanded Player's Guide, Shattered Empire, narrative dice, index cards.",
+  "readAloud": "Fifty years ago, a Weyland survey ship found a gate beyond Neptune that nobody built. Fifteen years ago the Meridian went through it and fell silent. Now the megacorps are following like railroad barons. Past the Core, the charters are the law. Past the charters, there is none. You fly the ship nobody wants on their books. You owe someone. Everyone does. And out past the last claim, something in the old ruins has started to notice the noise.",
+  "touchstones": "Firefly, The Expanse, Alien, Deadwood, Outland, the Android: Netrunner card art.",
+  "looksLike": "A job, a complication, a choice about who gets hurt, and a payday that is never quite enough. The gate-builder mystery is a slow burn in the background, not the weekly plot.",
+  "expectations": [
+   "PvP: secrets between characters are fine; killing or robbing another PC needs that player's OK.",
+   "Character death: possible but telegraphed. A death will never come from a single unlucky roll without warning.",
+   "The crew stays together. Give your character a reason to keep flying with these people, even if they don't like them.",
+   "Spotlight: the GM will rotate jobs so each player's skills and debt come up.",
+   "Scheduling, snacks, phones, and what happens when someone misses a session."
+  ],
+  "roles": "Pilot, Mechanic, Face, Gun, Runner, Doc, Prospector. Aim for at least four covered across the crew.",
+  "buildRules": "No corp loyalists unless their loyalty is already cracking, and every character must have a reason they can't just go home to the Core.",
+  "questionsHow": "Go around the table. After each answer, any one player may ask a single follow-up, and the answering player may decline it. Write every name, place and object on an index card.",
+  "shipSteps": [
+   "Choose a hull. A light freighter or salvage tug is the default.",
+   "Each player picks one attachment that reflects their role.",
+   "Pick two quirks: one helpful, one troublesome.",
+   "Name it. The hull and the registry should say different things.",
+   "Answer the ship's questions, one per player.",
+   "Note who holds the title: the hull is financed or stolen."
+  ],
+  "debt": {
+   "how": "Each character owes someone, the crew's values add into one d100 range, and at the start of each session the GM rolls to see whose debt comes calling.",
+   "start": "House adaptation: 4 or 5 players start at 10 Debt each, 3 players at 15, 2 players at 20. Any player may take +5 or +10 more for extra starting XP or credits.",
+   "types": [
+    [
+     "Contract",
+     "Haas-Bioroid indenture office",
+     "Repo agents, legal seizure"
+    ],
+    [
+     "Loan",
+     "A fixer or crime boss",
+     "A job you can't refuse"
+    ],
+    [
+     "Title",
+     "Jinteki clone registry",
+     "Someone claims you as property"
+    ],
+    [
+     "Bounty",
+     "Argus Security",
+     "Hunters arrive at the worst moment"
+    ],
+    [
+     "Favor",
+     "A Free Claims colony elder",
+     "They need you, now"
+    ],
+    [
+     "Blood",
+     "Family of someone you got killed",
+     "Revenge"
+    ],
+    [
+     "Addiction",
+     "A stim dealer",
+     "Withdrawal, or a supplier wanting payment in kind"
+    ],
+    [
+     "Secret",
+     "NBN investigative stringer",
+     "Exposure"
+    ]
+   ],
+   "collateral": "Your creditor has something of yours as collateral. What is it, and what would they do with it if you stopped paying?"
+  },
+  "close": "Read back the crew's debts and the ship's name, then tease the first job: a salvage contract on a derelict that matches one player's answer.",
+  "agenda": [
+   {
+    "id": "record",
+    "time": "Before you start",
+    "title": "Recording",
+    "output": "Start the recording and confirm the levels",
+    "tool": "record"
+   },
+   {
+    "id": "pitch",
+    "time": "0:00 – 0:15",
+    "title": "Pitch and tone dials",
+    "output": "Shared picture of the campaign",
+    "tool": "pitch"
+   },
+   {
+    "id": "safety",
+    "time": "0:15 – 0:35",
+    "title": "Safety tools, lines and veils",
+    "output": "Agreed lines and veils list",
+    "tool": "safety"
+   },
+   {
+    "id": "characters",
+    "time": "0:35 – 1:30",
+    "title": "Character concepts and stats",
+    "output": "Archetype, career, rough build",
+    "tool": "characters"
+   },
+   {
+    "id": "questions",
+    "time": "1:30 – 2:10",
+    "title": "Unsettling questions",
+    "output": "Backstory hooks, crew bonds",
+    "tool": "questions"
+   },
+   {
+    "id": "break",
+    "time": "2:10 – 2:20",
+    "title": "Break",
+    "output": "",
+    "tool": ""
+   },
+   {
+    "id": "ship",
+    "time": "2:20 – 3:00",
+    "title": "Building the ship",
+    "output": "Ship stats, quirks, its history",
+    "tool": "ship"
+   },
+   {
+    "id": "debt",
+    "time": "3:00 – 3:30",
+    "title": "Debt: who you owe",
+    "output": "Individual and crew Debt values",
+    "tool": "debt"
+   },
+   {
+    "id": "world",
+    "time": "3:30 – 3:50",
+    "title": "World questions",
+    "output": "Player-made places, factions, rumors",
+    "tool": "world"
+   },
+   {
+    "id": "wrap",
+    "time": "3:50 – 4:00",
+    "title": "Wrap-up",
+    "output": "First job teased, open questions logged",
+    "tool": "wrap"
+   }
+  ]
+ }
+}

@@ -1,0 +1,74 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Table Top Galaxy database: Aurora PostgreSQL Serverless v2 for characters and campaigns. The Lambda reaches it through
+  the RDS Data API, so it needs no VPC, and the cluster takes no inbound connections. This is its own stack so an API
+  deploy can't touch it. The cluster refuses deletion, and a final snapshot is taken if that protection is ever removed.
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedPattern: "[a-z0-9-]+"
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: At least two availability zones; bb data:infra passes the default VPC's subnets
+  EngineVersion:
+    Type: String
+  MinCapacity:
+    Type: Number
+    Default: 0
+    Description: 0 pauses when idle (the first request then waits about 15s); 0.5 stays awake, for game night
+  MaxCapacity:
+    Type: Number
+    Default: 2
+
+Resources:
+  SubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupName: !Sub ttg-${Stage}
+      DBSubnetGroupDescription: !Sub Table Top Galaxy ${Stage}
+      SubnetIds: !Ref SubnetIds
+      Tags:
+        - { Key: app, Value: table-top-galaxy }
+
+  Cluster:
+    Type: AWS::RDS::DBCluster
+    DeletionPolicy: Snapshot
+    UpdateReplacePolicy: Snapshot
+    Properties:
+      DBClusterIdentifier: !Sub ttg-${Stage}
+      Engine: aurora-postgresql
+      EngineVersion: !Ref EngineVersion
+      DatabaseName: ttg
+      MasterUsername: ttg_admin
+      ManageMasterUserPassword: true
+      EnableHttpEndpoint: true
+      StorageEncrypted: true
+      BackupRetentionPeriod: 7
+      DeletionProtection: true
+      DBSubnetGroupName: !Ref SubnetGroup
+      ServerlessV2ScalingConfiguration:
+        MinCapacity: !Ref MinCapacity
+        MaxCapacity: !Ref MaxCapacity
+        SecondsUntilAutoPause: 3600
+      Tags:
+        - { Key: app, Value: table-top-galaxy }
+        - { Key: stage, Value: !Ref Stage }
+
+  Writer:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub ttg-${Stage}-writer
+      DBClusterIdentifier: !Ref Cluster
+      DBInstanceClass: db.serverless
+      Engine: aurora-postgresql
+      Tags:
+        - { Key: app, Value: table-top-galaxy }
+
+Outputs:
+  ClusterArn:
+    Value: !GetAtt Cluster.DBClusterArn
+  SecretArn:
+    Value: !GetAtt Cluster.MasterUserSecret.SecretArn
+  DatabaseName:
+    Value: ttg

@@ -84,7 +84,9 @@ We iterate on each prototype until the user signs off. That signed-off design be
   - A GSI handles "my characters" and "my campaigns."
 - **Auth:** Cognito with Hosted UI and Google sign-in. The GM shares a campaign invite link. Roles are `gm` and `player` per campaign.
 - **Visibility:** GM-only fields are stripped on the server, inside the Lambda, for player requests. They are never just hidden in the UI.
-- **IaC:** Serverless Framework, matching argvader-tools. `apps/serverless/serverless.yml` defines the Lambdas, the HTTP and WebSocket APIs, DynamoDB, Cognito, and the S3 bucket plus CloudFront distribution as CloudFormation resources. `serverless-offline` runs the API locally.
+- **IaC (decided 2026-10-27):** plain CloudFormation driven by bb and the AWS CLI, like the site (`infra/web.yml`), instead of the Serverless Framework (v4 needs an account). `infra/api.yml` holds the table, Cognito, the Lambda and the HTTP API; the WebSocket API joins it at M6. Locally, `bb dev` runs the same handler behind a small Node server.
+- **Persistence (2026-10-27):** characters (owner CRUD, GM of their campaign can read), campaigns (GM-only `:gm` data stripped server-side), membership, and 7-day invite links are in the API now. M4/M5 add the screens.
+- **Aurora (decided 2026-10-30, for Session 0):** characters and campaigns moved to Aurora PostgreSQL Serverless v2 through the RDS Data API (`infra/data.yml`, `apps/serverless/migrations`), so the Lambda stays outside the VPC. It pauses at 0 ACU when idle. Tests and `bb dev` run the same SQL on PGlite. The library stays on DynamoDB until after Session 0 (ttg-7b9). Saves use optimistic locking on `version`, and a stale save gets a 409.
 - **Client-side dice (decided 2026-10-24):** the table is a group of friends, so each browser rolls its own dice and posts the result to the shared feed. The server relays and stores rolls but doesn't make or verify them.
   - **The engine picks each face** using the platform's cryptographic RNG (exact 1/n odds per face, each roll independent). The 3D dice only act the result out: the throw is simulated offscreen (cannon-es) until every die rests flat, each die is repainted so the face it landed on carries the engine's face, then the recorded throw plays back (three.js, loaded lazily on the first roll). Physics is presentation, so a simulation quirk can never skew the odds. Reduced motion, no WebGL, or a load failure fall back to the 2D dice.
   - GM secret checks are rolled in the GM's browser. The server sends them only to the GM, so they're redacted server-side like other GM-only data.
@@ -144,26 +146,39 @@ bb orchestrates and shells out to `clojure -M:<alias>`, `npx shadow-cljs` and `s
 | `bb reset` | Stop and wipe local data | done |
 | `bb proto` | Serve `prototypes/` on :8090 | done |
 | `bb proto-build` | Assemble `prototypes/src` pages with the shared dice code | done |
-| `bb dev` | shadow watch for apps/web on :8280 now; `bb up` + serverless watch + `sls offline` join at M4 | partial |
+| `bb dev` | DynamoDB Local + the library API on :3000 (shadow watch + a Node server that feeds the Lambda handler API Gateway v2 events, no `sls`) + apps/web on :8280 | done (M3) |
+| `bb api` | Only the library API on :3000 | done (M3) |
 | `bb test` / `bb lint` | libs tests on the JVM and Node, clj-kondo | done |
-| `bb seed` | Load sample library and Manifest Destiny campaign into local DynamoDB | M3 |
-| `bb build` | Release builds for web (done) and Lambdas (M4) | partial |
-| `bb deploy [stage]` | `sls deploy --stage`, web to S3, CloudFront invalidation | Infra |
-| `bb logs fn` / `bb remove stage` | Tail Lambda logs, tear down a stage | Infra |
+| `bb seed` | Load a setting's book library into the running dev API (Manifest Destiny campaign joins at M7) | library done (M3) |
+| `bb library:export` | Write a setting's library as an importable JSON file in `.local/library/` | done (M3) |
+| `bb build` | Release builds for web and the library Lambda | done |
+| `bb api:deploy [stage]` | CloudFormation (`infra/api.yml`): table, Cognito, Lambda, HTTP API; no Serverless Framework | done, not yet run |
+| `bb web:deploy [stage]` | App to S3, CloudFront invalidation, plus the prototypes on dev only (prod's address opens the app); the app is built against the stage's API when it exists | done |
+| `bb api:logs` / `bb api:remove` / `bb user:add` | Tail the Lambda log, tear down the API (data kept), create an invite-only account | done |
 
 The re-frame app validates app-db with spec after each event when `goog.DEBUG` is on, following the `validate-spec` pattern in the user's CLAUDE.md.
 
-**Later tie-in:** argvader-tools `apps/ttrpg_session` records and summarizes Discord sessions. Its summaries could feed the campaign manager's session log in M7.
+**Session pipeline:** recording, transcription and summaries stay local Claude skills, in `campaigns/manifest-destiny/` and `.claude/skills/`. The results get published into the app as the campaign's Chronicle, one chronicle per campaign, read by all its members. This replaces the earlier idea of feeding argvader-tools `apps/ttrpg_session` summaries into the manager's session log.
 
 ## Milestones (vertical slices; each one gets a bd issue)
 1. **Phase 0 prototypes** approved: dice, sheet, builder, GM dashboard, campaign manager.
 2. **Dice engine (cljc) and a standalone roller page.** No backend yet. Fully tested.
 3. **Content library.** The GM creates and edits talents, items, qualities, archetypes and careers, with JSON/CSV import.
+   - Done 2026-10-27. The library lives in DynamoDB (`LIBRARY#owner` / `<TYPE>#id`, entry stored as EDN) behind `apps/serverless` (handler -> service -> gateway). Until Cognito (M4) the dev server alone may name the owner in an `x-ttg-owner` header.
+   - Book content reaches a library only through `bb library:export` + Import (or `bb seed`), so no book text ships in the bundle.
+   - One field schema (`ttg.library.fields`) drives the editor form, CSV import and CSV export; the browser and the Lambda validate with the same `ttg.library` code.
+   - The web app routes with hashes (`#/library/weapons/knife`) so it runs under `/roller/` on the prototype site without rewrites.
 4. **Character builder and sheet.** Saved locally first, then synced through the API with Cognito auth.
+   - Built 2026-10-30, not yet deployed. `ttg.genesys.rules` holds the rules, shared with the API. The builder keeps a browser draft until the character is created, and the sheet autosaves. Portraits go to their own retained bucket; the 8 palettes in `ttg.theme` have no picker for now, so every sheet uses the default (ttg-8ax).
+   - Encumbrance and defense follow the book in both screens: worn armor counts 3 less, and defense caps at 4. The two prototypes disagreed on this.
+   - Not ported for Session 0: sheet Crits and History tabs, the roll drawer (tap a skill to roll), story points. The Combat tab is read-only.
 5. **Campaigns.** Invites, roles, player sheets visible to the GM, and server-side redaction of GM-only data.
+   - Screens built 2026-10-30: campaign list and detail, invite links, `#/join/<code>`, and a read-only sheet for the GM.
 6. **Realtime table.** Shared roll feed, Story Point pool, initiative, and live wound/strain on the GM dashboard.
-7. **Campaign manager.** Acts and sessions, NPCs, factions, betrayal ledger, Session 0 questions, and session log.
+7. **Campaign manager.** Acts and sessions, NPCs, factions, betrayal ledger, Session 0 questions, and session log. Built into the app at `#/campaigns/<id>/manager` as a re-frame port of the prototype, GM only. Its written prep is seeded per campaign from `content/manifest-destiny/manager.json` and kept out of the web bundle, and its party comes from the campaign's members. Session 0 has a run sheet and a Debt step.
    - Manifest Destiny gets seeded as the first real campaign.
+   - A save that fails stays in the browser and sends on the next visit.
+   - The Chronicle (sessions and wiki pages, all members) is planned after Session 0: `ttg-5jb`.
 8. **Hardening.**
    - PWA/offline sheet viewing.
    - Accessibility: dice results announced, color plus symbol, never color alone.

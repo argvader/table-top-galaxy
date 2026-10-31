@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
   Table Top Galaxy web hosting: private S3 bucket served only through CloudFront (Origin Access Control),
-  HTTPS only, with a basic-auth gate until Cognito sign-in exists. The pages carry book content, so nothing
-  is served without the password.
+  HTTPS only. Cognito sign-in protects the app's data; the app itself carries no book content. The prototypes
+  do, so anything outside the app stays behind a basic-auth password.
 
 Parameters:
   Stage:
@@ -17,12 +17,48 @@ Parameters:
     Type: String
     NoEcho: true
     MinLength: 12
+  # All three stay empty until bb domain:infra has run; the site then answers on its cloudfront.net name only.
+  SiteDomain:
+    Type: String
+    Default: ""
+  HostedZoneId:
+    Type: String
+    Default: ""
+  CertificateArn:
+    Type: String
+    Default: ""
+
+Conditions:
+  HasDomain: !Not [!Equals [!Ref SiteDomain, ""]]
 
 Resources:
   SiteBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "ttg-web-${Stage}-${AWS::AccountId}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - { Key: app, Value: table-top-galaxy }
+        - { Key: stage, Value: !Ref Stage }
+
+  # Separate from the site bucket because bb web:deploy syncs that one with --delete, which would erase every portrait.
+  PortraitBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Sub "ttg-web-portraits-${Stage}-${AWS::AccountId}"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
@@ -48,20 +84,22 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
-  # Viewer-request gate: every request needs the Authorization header the browser sends after the password prompt.
+  # Viewer-request gate. The app, portraits and landing pages are open, because the app's data sits behind Cognito at
+  # the API. Everything else needs the password, so a new prototype page is covered without anyone remembering to add it.
   BasicAuthFunction:
     Type: AWS::CloudFront::Function
     Properties:
       Name: !Sub "ttg-web-${Stage}-basic-auth"
       AutoPublish: true
       FunctionConfig:
-        Comment: Password gate until Cognito sign-in replaces it
+        Comment: Password gate for anything outside the app
         Runtime: cloudfront-js-2.0
       FunctionCode: !Sub
         - |
           function handler(event) {
+            var open = /^\/(index\.html|404\.html|robots\.txt|roller\/.*|portraits\/.*)?$/;
             var auth = event.request.headers.authorization;
-            if (auth && auth.value === "Basic ${Token}") {
+            if (open.test(event.request.uri) || (auth && auth.value === "Basic ${Token}")) {
               return event.request;
             }
             return {
@@ -81,12 +119,31 @@ Resources:
         DefaultRootObject: index.html
         HttpVersion: http2and3
         PriceClass: PriceClass_100
+        Aliases: !If [HasDomain, [!Ref SiteDomain], !Ref AWS::NoValue]
+        ViewerCertificate: !If
+          - HasDomain
+          - { AcmCertificateArn: !Ref CertificateArn, SslSupportMethod: sni-only, MinimumProtocolVersion: TLSv1.2_2021 }
+          - !Ref AWS::NoValue
         Origins:
           - Id: site
             DomainName: !GetAtt SiteBucket.RegionalDomainName
             OriginAccessControlId: !GetAtt OriginAccessControl.Id
             S3OriginConfig:
               OriginAccessIdentity: ""
+          - Id: portraits
+            DomainName: !GetAtt PortraitBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt OriginAccessControl.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        CacheBehaviors:
+          - PathPattern: portraits/*
+            TargetOriginId: portraits
+            ViewerProtocolPolicy: redirect-to-https
+            Compress: false          # JPEGs are already compressed
+            AllowedMethods: [GET, HEAD]
+            CachedMethods: [GET, HEAD]
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6        # Managed-CachingOptimized
+            ResponseHeadersPolicyId: !Ref ResponseHeaders
         DefaultCacheBehavior:
           TargetOriginId: site
           ViewerProtocolPolicy: redirect-to-https
@@ -106,6 +163,17 @@ Resources:
       Tags:
         - { Key: app, Value: table-top-galaxy }
         - { Key: stage, Value: !Ref Stage }
+
+  SiteRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: HasDomain
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref SiteDomain
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt Distribution.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2        # CloudFront's fixed alias zone
 
   ResponseHeaders:
     Type: AWS::CloudFront::ResponseHeadersPolicy
@@ -137,10 +205,28 @@ Resources:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
 
+  PortraitBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref PortraitBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: CloudFrontReadOnly
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub "${PortraitBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${Distribution}"
+
 Outputs:
   BucketName:
     Value: !Ref SiteBucket
+  PortraitBucket:
+    Value: !Ref PortraitBucket
   DistributionId:
     Value: !Ref Distribution
   SiteUrl:
-    Value: !Sub "https://${Distribution.DomainName}"
+    Value: !If [HasDomain, !Sub "https://${SiteDomain}", !Sub "https://${Distribution.DomainName}"]

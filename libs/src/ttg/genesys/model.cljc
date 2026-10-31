@@ -8,11 +8,12 @@
 (s/def ::id keyword?)
 (s/def ::name (s/and string? seq))
 (s/def ::text string?)
-(s/def ::book #{"crb" "epg" "sotb" "sotb-guns" "woa" "house"})
+(s/def ::book #{"crb" "epg" "sotb" "sotb-guns" "woa" "house" "custom"})
 (s/def ::page pos-int?)
 (s/def ::doc string?)
 ;; Book entries cite a page; house rules cite the section of docs/house-rules.md they came from.
-(s/def ::source (s/and (s/keys :req-un [::book] :opt-un [::page ::doc]) #(or (:page %) (:doc %))))
+;; Entries a GM writes in the library editor are "custom" and cite nothing.
+(s/def ::source (s/and (s/keys :req-un [::book] :opt-un [::page ::doc]) #(or (:page %) (:doc %) (= "custom" (:book %)))))
 
 (s/def ::rating (s/int-in 1 7))
 (s/def ::characteristics (s/map-of (set characteristics) ::rating :count 6))

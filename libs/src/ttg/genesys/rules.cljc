@@ -1,0 +1,291 @@
+(ns ttg.genesys.rules
+  "Genesys character creation rules, ported from the approved builder prototype (prototypes/src/character-builder.js).
+   Pure functions of a character and an index of the library. Purchases are checked by the *-block functions, which
+   return nil when allowed and otherwise the reason to show. Page references are to the Genesys Core Rulebook.
+
+   The character (ttg.genesys.character) names library entries by string id, so it survives JSON. Skills are passed
+   around as library entries: careers list skills by name, and purchases are stored by id."
+  (:require [clojure.string :as str]))
+
+(def characteristics [:brawn :agility :intellect :cunning :willpower :presence])
+(def characteristic-names {:brawn "Brawn" :agility "Agility" :intellect "Intellect"
+                           :cunning "Cunning" :willpower "Willpower" :presence "Presence"})
+(def characteristic-short {:brawn "Br" :agility "Ag" :intellect "Int" :cunning "Cun" :willpower "Will" :presence "Pr"})
+(def skill-groups ["General" "Combat" "Social" "Knowledge"])
+(def motive-types ["Desire" "Fear" "Strength" "Flaw"])
+(def steps [{:id :archetype :label "Archetype"} {:id :career :label "Career"} {:id :obligation :label "Obligation"}
+            {:id :xp :label "Spend XP"} {:id :gear :label "Gear"} {:id :story :label "Motivations"} {:id :review :label "Review"}])
+(def magnitudes [5 10 15])
+(def career-picks-allowed 4)
+(def max-rank 2)        ; at creation, p.44
+(def max-characteristic 5)
+(def start-credits 500) ; p.51
+
+;; Talents whose effect is applied to derived stats.
+(def ^:private talent-mods {"toughened" {:wounds 2} "grit" {:strain 1}})
+
+(defn- by-id [entries] (into {} (map (juxt (comp name :id) identity)) entries))
+
+(defn index
+  "The parts of a {type [entry]} library the rules read, keyed by string id."
+  [{:keys [archetypes careers skills talents weapons armor gear motivations obligation-types]}]
+  {:archetypes (by-id archetypes) :careers (by-id careers) :talents (by-id talents)
+   :gear (by-id (concat weapons armor gear))
+   :skills (vec skills) :motivations (vec motivations) :obligations (vec obligation-types)})
+
+(defn blank-character []
+  {:name "" :tagline "" :archetype nil :career nil :career-picks [] :arch-picks []
+   :char-buy {} :skill-buy {} :talents [] :gear [] :free-item nil :pocket nil :s0 ""
+   :motives (into {} (map (fn [t] [(keyword (str/lower-case t)) {:name "" :text ""}])) motive-types)
+   :ob {:type nil :magnitude 10 :attachment "" :why ""}
+   :wounds-taken 0 :strain-taken 0 :earned-xp 0 :notes ""})
+
+(defn motive-key [type] (keyword (str/lower-case type)))
+
+(defn archetype [c ix] (get-in ix [:archetypes (:archetype c)]))
+(defn career [c ix] (get-in ix [:careers (:career c)]))
+(defn obligation [c ix] (first (filter #(= (some-> % :id name) (get-in c [:ob :type])) (:obligations ix))))
+(defn- skill-id [skill] (keyword (name (:id skill))))
+(defn- skill-characteristic [skill] (keyword (:characteristic skill)))
+
+(defn base-characteristic [c ix k] (if-let [a (archetype c ix)] (get-in a [:characteristics k]) 2))
+(defn characteristic [c ix k] (+ (base-characteristic c ix k) (get-in c [:char-buy k] 0)))
+(defn characteristics-of [c ix] (into {} (map (juxt identity #(characteristic c ix %))) characteristics))
+
+(defn career-skill? [c ix skill] (boolean (some #{(:name skill)} (:skills (career c ix)))))
+
+(defn- arch-free-ranks [c ix skill]
+  (let [{:keys [ranks skills choose]} (:free-skills (archetype c ix))]
+    (+ (if (some #{(:name skill)} skills) ranks 0)
+       (if (and choose (some #{(:name skill)} (:arch-picks c))) ranks 0))))
+
+(defn free-ranks [c ix skill]
+  (+ (if (some #{(:name skill)} (:career-picks c)) 1 0) (arch-free-ranks c ix skill)))
+
+(defn bought-ranks [c skill] (get-in c [:skill-buy (skill-id skill)] 0))
+(defn rank-of [c ix skill] (+ (free-ranks c ix skill) (bought-ranks c skill)))
+(defn rank-price [c ix skill rank] (+ (* 5 rank) (if (career-skill? c ix skill) 0 5)))
+
+(defn- sum-range [lo hi f] (reduce + (map f (range lo (inc hi)))))
+
+(defn characteristics-xp [c ix]
+  (reduce + (map #(sum-range (inc (base-characteristic c ix %)) (characteristic c ix %) (partial * 10)) characteristics)))
+
+(defn skills-xp [c ix]
+  (reduce + (map #(sum-range (inc (free-ranks c ix %)) (rank-of c ix %) (partial rank-price c ix %)) (:skills ix))))
+
+(defn- talent-def [ix t] (get-in ix [:talents (:id t)]))
+
+(defn slot-tiers
+  "A ranked talent buys each further rank one tier higher, capped at tier 5 (p.72)."
+  [ix t]
+  (mapv #(min 5 (+ (:tier (talent-def ix t)) %)) (range (:rank t))))
+
+(defn tier-counts [ix talents]
+  (reduce (fn [counts tier] (update counts tier inc)) [0 0 0 0 0 0] (mapcat #(slot-tiers ix %) talents)))
+
+(defn pyramid-ok? [counts]
+  (every? #(or (zero? (counts %)) (> (counts (dec %)) (counts %))) [2 3 4 5]))
+
+(defn talents-xp [c ix]
+  (reduce + (map #(* 5 %) (mapcat #(slot-tiers ix %) (:talents c)))))
+
+(defn obligation-xp [c] (if (get-in c [:ob :type]) (get-in c [:ob :magnitude]) 0))
+(defn budget [c ix] (+ (:xp (archetype c ix) 0) (obligation-xp c)))
+(defn spent-xp [c ix] (+ (characteristics-xp c ix) (skills-xp c ix) (talents-xp c ix)))
+(defn xp-left [c ix] (- (budget c ix) (spent-xp c ix)))
+
+(defn- talent-mod [c k]
+  (reduce + (map #(* (:rank %) (get-in talent-mods [(:id %) k] 0)) (:talents c))))
+
+(defn owned-gear [c ix]
+  (keep (fn [{:keys [id qty]}] (some-> (get-in ix [:gear id]) (assoc :qty qty))) (:gear c)))
+
+(defn carried
+  "Bought gear, plus the archetype's free item."
+  [c ix]
+  (cond-> (vec (owned-gear c ix))
+    (get-in ix [:gear (:free-item c)]) (conj (assoc (get-in ix [:gear (:free-item c)]) :qty 1 :free true))))
+
+(defn- kind [item] (some-> (:kind item) name))
+
+(defn best-armor [c ix]
+  (->> (carried c ix) (filter #(= "armor" (kind %))) (sort-by #(- (+ (:soak % 0) (:defense % 0)))) first))
+
+(defn credits-left [c ix]
+  (- start-credits (reduce + (map #(* (or (:price %) 0) (:qty %)) (owned-gear c ix)))))
+
+(defn- item-encumbrance
+  "Worn armor counts 3 less, never below 0 (p.92)."
+  [worn item]
+  (* (:qty item) (cond-> (or (:encumbrance item) 0)
+                   (= (:id item) (:id worn)) (-> (- 3) (max 0)))))
+
+(defn derived
+  "Thresholds, soak, defense (capped at 4, p.104) and encumbrance. The best armor carried is the one worn."
+  [c ix]
+  (let [a (archetype c ix) armor (best-armor c ix) items (carried c ix)
+        brawn (characteristic c ix :brawn)
+        bonus (reduce + (map #(or (:encumbrance-bonus %) 0) items))]
+    {:wounds (if a (+ (:wounds a) brawn (talent-mod c :wounds)) 0)
+     :strain (if a (+ (:strain a) (characteristic c ix :willpower) (talent-mod c :strain)) 0)
+     :soak (+ brawn (or (:soak armor) 0))
+     :defense (min 4 (or (:defense armor) 0))
+     :encumbrance (reduce + (map #(item-encumbrance armor %) items))
+     :encumbrance-max (+ 5 brawn bonus)
+     :encumbrance-bonus bonus}))
+
+(defn skill-pool
+  "The higher of characteristic and rank gives the dice; the lower number of them are upgraded to Proficiency."
+  [c ix skill]
+  (let [ch (characteristic c ix (skill-characteristic skill)) rk (rank-of c ix skill)]
+    {:proficiency (min ch rk) :ability (- (max ch rk) (min ch rk))}))
+
+;; ---------- Purchase checks: nil when allowed, otherwise the reason ----------
+
+(defn- short-of [c ix cost]
+  (when (> cost (xp-left c ix)) (str "Needs " cost " XP, you have " (max 0 (xp-left c ix)))))
+
+(defn characteristic-up-block [c ix k]
+  (cond (not (archetype c ix)) "Choose an archetype first"
+        (>= (characteristic c ix k) max-characteristic) (str max-characteristic " is the most")
+        :else (short-of c ix (* 10 (inc (characteristic c ix k))))))
+
+(defn skill-up-block [c ix skill]
+  (let [rk (rank-of c ix skill)]
+    (if (>= rk max-rank)
+      (str "Rank " max-rank " is the most at creation")
+      (short-of c ix (rank-price c ix skill (inc rk))))))
+
+(defn owned-talent [c id] (first (filter #(= id (:id %)) (:talents c))))
+
+(defn next-tier [talent owned] (if owned (min 5 (+ (:tier talent) (:rank owned))) (:tier talent)))
+
+(defn talent-buy-block [c ix talent]
+  (let [owned (owned-talent c (name (:id talent)))
+        tier (next-tier talent owned)
+        counts (tier-counts ix (:talents c))]
+    (cond (and owned (not (:ranked talent))) "Already owned"
+          (and (> tier 1) (not (> (counts (dec tier)) (inc (counts tier)))))
+          (str "Needs " (+ 2 (counts tier)) " tier " (dec tier) " talents first (you have " (counts (dec tier)) ")")
+          :else (short-of c ix (* 5 tier)))))
+
+(defn- without-rank [talents id]
+  (filterv #(pos? (:rank %)) (map #(if (= id (:id %)) (update % :rank dec) %) talents)))
+
+(defn talent-drop-block [c ix id]
+  (when-not (pyramid-ok? (tier-counts ix (without-rank (:talents c) id)))
+    (str "Remove a tier " (inc (peek (slot-tiers ix (owned-talent c id)))) " talent first")))
+
+(defn free-pick-block [c ix skill extra]
+  (when (> (+ (free-ranks c ix skill) extra) max-rank)
+    (str "Would put " (:name skill) " above rank " max-rank)))
+
+;; ---------- Changes ----------
+
+(defn choose-archetype
+  "Purchases stay and are repriced; picks tied to the old archetype go."
+  [c ix id]
+  (if (= id (:archetype c))
+    c
+    (let [c (assoc c :archetype id :arch-picks [])
+          group (get-in (archetype c ix) [:free-item :group])]
+      (cond-> c
+        (and (:free-item c) (or (nil? group) (not= group (get-in ix [:gear (:free-item c) :group]))))
+        (assoc :free-item nil)))))
+
+(defn choose-career [c ix id]
+  (if (= id (:career c))
+    c
+    (let [c (assoc c :career id :career-picks [])]
+      (cond-> c
+        (get-in (archetype c ix) [:free-skills :non-career])
+        (update :arch-picks (fn [picks] (filterv #(not (some #{%} (:skills (career c ix)))) picks)))))))
+
+(defn toggle [items x] (if (some #{x} items) (filterv #(not= x %) items) (conj (vec items) x)))
+
+(defn add-talent [c id]
+  (if (owned-talent c id)
+    (update c :talents (fn [ts] (mapv #(if (= id (:id %)) (update % :rank inc) %) ts)))
+    (update c :talents conj {:id id :rank 1})))
+
+(defn remove-talent [c id] (update c :talents without-rank id))
+
+(defn single-item?
+  "Weapons and armor are bought once; ordinary gear stacks."
+  [item]
+  (not= "gear" (kind item)))
+
+(defn gear-buy-block [c ix item]
+  (let [have (some #(= (name (:id item)) (:id %)) (:gear c))]
+    (cond (and have (single-item? item)) "Bought"
+          (> (or (:price item) 0) (credits-left c ix)) "Not enough credits")))
+
+(defn add-gear [c id]
+  (if (some #(= id (:id %)) (:gear c))
+    (update c :gear (fn [gs] (mapv #(if (= id (:id %)) (update % :qty inc) %) gs)))
+    (update c :gear conj {:id id :qty 1})))
+
+(defn remove-gear [c id]
+  (update c :gear (fn [gs] (filterv #(pos? (:qty %)) (map #(if (= id (:id %)) (update % :qty dec) %) gs)))))
+
+;; ---------- Validation ----------
+
+(defn- plural [n word] (str n " " word (when (not= 1 n) "s")))
+
+(defn- identity-issues [c ix]
+  (let [a (archetype c ix) picks (count (:career-picks c)) {:keys [choose]} (:free-skills a)
+        left (- (or choose 0) (count (:arch-picks c)))]
+    [(when-not a [0 :block "Choose an archetype"])
+     (cond (not (career c ix)) [1 :block "Choose a career"]
+           (< picks career-picks-allowed) [1 :block (str "Pick " (plural (- career-picks-allowed picks) "more career skill") " for a free rank")])
+     (when (pos? left) [1 :block (str "Pick " (plural left "more skill") " for your " (:name a) " free ranks")])]))
+
+(defn- obligation-issues [{:keys [ob]}]
+  [(cond (not (:type ob)) [2 :block "Pick or roll a Secret or Obligation"]
+         (str/blank? (:attachment ob)) [2 :block "Say who or what your Obligation ties you to"]
+         (str/blank? (:why ob)) [2 :warn "Say why your Obligation matters to your character"])])
+
+(defn- xp-issues [c ix]
+  (let [a (archetype c ix) left (xp-left c ix)]
+    (concat
+     [(when (and a (neg? left)) [3 :block (str "Over the XP budget by " (- left))])]
+     (for [k characteristics :let [v (characteristic c ix k)] :when (> v max-characteristic)]
+       [3 :block (str (characteristic-names k) " is " v ". The most is " max-characteristic) :chars])
+     (for [s (:skills ix) :let [r (rank-of c ix s)] :when (> r max-rank)]
+       [3 :block (str (:name s) " is rank " r ". The most at creation is " max-rank) :skills])
+     [(when-not (pyramid-ok? (tier-counts ix (:talents c))) [3 :block "Talent pyramid is broken" :talents])
+      (when (and a (pos? left)) [3 :warn (str left " XP unspent. You keep it, but characteristics can only be bought now")])])))
+
+(defn free-item-label [a] (if (= "G-Mods" (get-in a [:free-item :group])) "g-mod" "cybernetic"))
+
+(defn- gear-issues [c ix]
+  (let [a (archetype c ix) {:keys [encumbrance encumbrance-max]} (derived c ix) over (- encumbrance encumbrance-max)]
+    [(when (neg? (credits-left c ix)) [4 :block (str "Over budget by " (- (credits-left c ix)) " credits")])
+     (when (and (:free-item a) (not (:free-item c))) [4 :warn (str "Choose your free " (free-item-label a) " (" (:name a) ")")])
+     (when (empty? (:gear c)) [4 :warn "No gear bought yet"])
+     (when (nil? (:pocket c)) [4 :warn "Pocket money not rolled yet"])
+     (when (pos? over) [4 :warn (str "Encumbered by " over ": Brawn and Agility checks add " over " Setback")])]))
+
+(defn- story-issues [c]
+  (let [blank (count (filter #(str/blank? (:name %)) (vals (:motives c))))]
+    [(when (str/blank? (:name c)) [5 :block "Give your character a name"])
+     (when (pos? blank) [5 :warn (str (plural blank "motivation") " left blank")])
+     (when (str/blank? (:s0 c)) [5 :warn "Session 0 question not answered yet"])]))
+
+(defn issues
+  "Every problem as {:step :level :text :tab}: blocks first, then warnings, each in step order."
+  [c ix]
+  (->> (concat (identity-issues c ix) (obligation-issues c) (xp-issues c ix) (gear-issues c ix) (story-issues c))
+       (remove nil?)
+       (map (fn [[step level text tab]] (cond-> {:step step :level level :text text} tab (assoc :tab tab))))
+       (sort-by (juxt #(if (= :block (:level %)) 0 1) :step))
+       vec))
+
+(defn blocks [issues] (filterv #(= :block (:level %)) issues))
+
+(defn in-roll? [n [lo hi]] (<= (or lo 0) n (or hi 100)))
+
+(defn initials [character-name]
+  (let [letters (map first (remove str/blank? (str/split (str/trim (or character-name "")) #"\s+")))]
+    (if (seq letters) (str/upper-case (apply str (take 2 letters))) "?")))

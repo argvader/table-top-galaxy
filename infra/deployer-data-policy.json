@@ -1,0 +1,85 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ReadRds",
+      "Effect": "Allow",
+      "Action": [
+        "rds:Describe*",
+        "rds:ListTagsForResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ManageCluster",
+      "Effect": "Allow",
+      "Action": "rds:*",
+      "Resource": [
+        "arn:aws:rds:us-east-1:108359914472:cluster:ttg-*",
+        "arn:aws:rds:us-east-1:108359914472:db:ttg-*",
+        "arn:aws:rds:us-east-1:108359914472:subgrp:ttg-*",
+        "arn:aws:rds:us-east-1:108359914472:cluster-snapshot:*",
+        "arn:aws:rds:us-east-1:108359914472:cluster-pg:*",
+        "arn:aws:rds:us-east-1:108359914472:pg:*",
+        "arn:aws:rds:us-east-1:108359914472:og:*"
+      ]
+    },
+    {
+      "Sid": "RunMigrations",
+      "Effect": "Allow",
+      "Action": "rds-data:*",
+      "Resource": "arn:aws:rds:us-east-1:108359914472:cluster:ttg-*"
+    },
+    {
+      "Sid": "ClusterSecret",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:CreateSecret",
+        "secretsmanager:TagResource",
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:RotateSecret"
+      ],
+      "Resource": "arn:aws:secretsmanager:us-east-1:108359914472:secret:rds!cluster-*"
+    },
+    {
+      "Sid": "SecretKey",
+      "Effect": "Allow",
+      "Action": [
+        "kms:DescribeKey",
+        "kms:CreateGrant"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringLike": {
+          "kms:ViaService": [
+            "secretsmanager.us-east-1.amazonaws.com",
+            "rds.us-east-1.amazonaws.com"
+          ]
+        }
+      }
+    },
+    {
+      "Sid": "FindSubnets",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeVpcs",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeAvailabilityZones"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "RdsServiceRole",
+      "Effect": "Allow",
+      "Action": "iam:CreateServiceLinkedRole",
+      "Resource": "arn:aws:iam::108359914472:role/aws-service-role/rds.amazonaws.com/AWSServiceRoleForRDS",
+      "Condition": {
+        "StringEquals": {
+          "iam:AWSServiceName": "rds.amazonaws.com"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,272 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Table Top Galaxy API: one Lambda behind an HTTP API, the library's DynamoDB table, and a Cognito user pool.
+  API Gateway checks the Cognito JWT before the Lambda runs; the Lambda reads the user from its claims.
+  Characters and campaigns live in Aurora (infra/data.yml), portraits in the site stack's bucket (infra/web.yml).
+  The table and the user pool are retained if the stack is deleted: the library and accounts outlive it.
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedPattern: '[a-z0-9-]+'
+  CodeBucket:
+    Type: String
+  CodeKey:
+    Type: String
+  WebOrigin:
+    Type: String
+    Description: The site the app is served from, e.g. https://dev.tt-galaxy.com (no trailing slash)
+    AllowedPattern: 'https://[^/]+'
+  # Empty until the site answers on its custom domain: Cognito refuses a domain whose parent doesn't resolve.
+  AuthDomainName:
+    Type: String
+    Default: ''
+  HostedZoneId:
+    Type: String
+    Default: ''
+  CertificateArn:
+    Type: String
+    Default: ''
+
+  DbClusterArn:
+    Type: String
+  DbSecretArn:
+    Type: String
+  PortraitBucket:
+    Type: String
+
+Conditions:
+  HasAuthDomain: !Not [!Equals [!Ref AuthDomainName, '']]
+
+Resources:
+  # ---------- Data ----------
+  Table:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub ttg-${Stage}
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - {AttributeName: pk, AttributeType: S}
+        - {AttributeName: sk, AttributeType: S}
+        - {AttributeName: gsi1pk, AttributeType: S}
+        - {AttributeName: gsi1sk, AttributeType: S}
+      KeySchema:
+        - {AttributeName: pk, KeyType: HASH}
+        - {AttributeName: sk, KeyType: RANGE}
+      GlobalSecondaryIndexes:
+        - IndexName: gsi1
+          KeySchema:
+            - {AttributeName: gsi1pk, KeyType: HASH}
+            - {AttributeName: gsi1sk, KeyType: RANGE}
+          Projection: {ProjectionType: ALL}
+      TimeToLiveSpecification: {AttributeName: ttl, Enabled: true}   # invite links
+      PointInTimeRecoverySpecification: {PointInTimeRecoveryEnabled: true}
+      Tags:
+        - {Key: app, Value: table-top-galaxy}
+
+  # ---------- Sign-in ----------
+  # Friends-only: accounts are created by the GM (bb user:add), and Cognito emails each a temporary password.
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      UserPoolName: !Sub ttg-${Stage}
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+        InviteMessageTemplate:
+          EmailSubject: Your Table Top Galaxy account
+          EmailMessage: 'Your GM made you a Table Top Galaxy account. Sign in as {username} with the temporary password {####} and pick your own.'
+      Policies:
+        PasswordPolicy: {MinimumLength: 10, RequireLowercase: false, RequireUppercase: false, RequireNumbers: false, RequireSymbols: false}
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - {Name: verified_email, Priority: 1}
+      UserPoolTags: {app: table-top-galaxy}
+
+  UserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: !Sub ttg-${Stage}-${AWS::AccountId}
+      UserPoolId: !Ref UserPool
+
+  # Added beside the prefix domain, which stays: a pool can have one of each, and tokens keep the same issuer.
+  CustomUserPoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Condition: HasAuthDomain
+    Properties:
+      Domain: !Ref AuthDomainName
+      UserPoolId: !Ref UserPool
+      CustomDomainConfig: {CertificateArn: !Ref CertificateArn}
+
+  AuthRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: HasAuthDomain
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref AuthDomainName
+      Type: A
+      AliasTarget:
+        DNSName: !GetAtt CustomUserPoolDomain.CloudFrontDistribution
+        HostedZoneId: Z2FDTNDATAQYW2        # CloudFront's fixed alias zone
+
+  # A public client (no secret): the browser signs in with the authorization code flow and PKCE.
+  WebClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: !Sub ttg-${Stage}-web
+      GenerateSecret: false
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [code]
+      AllowedOAuthScopes: [openid, email, profile]
+      SupportedIdentityProviders: [COGNITO]
+      CallbackURLs: [!Sub '${WebOrigin}/roller/index.html', 'http://localhost:8280/']
+      LogoutURLs: [!Sub '${WebOrigin}/roller/index.html', 'http://localhost:8280/']
+      ExplicitAuthFlows: [ALLOW_REFRESH_TOKEN_AUTH]
+      PreventUserExistenceErrors: ENABLED
+      IdTokenValidity: 60
+      AccessTokenValidity: 60
+      RefreshTokenValidity: 30
+      TokenValidityUnits: {IdToken: minutes, AccessToken: minutes, RefreshToken: days}
+
+  # ---------- Lambda ----------
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ttg-api-${Stage}-lambda
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal: {Service: lambda.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: table-and-logs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: [dynamodb:GetItem, dynamodb:PutItem, dynamodb:Query, dynamodb:BatchWriteItem]
+                Resource: [!GetAtt Table.Arn, !Sub '${Table.Arn}/index/gsi1']
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !GetAtt LogGroup.Arn
+              - Effect: Allow
+                Action: [rds-data:ExecuteStatement, rds-data:BatchExecuteStatement]
+                Resource: !Ref DbClusterArn
+              - Effect: Allow
+                Action: secretsmanager:GetSecretValue
+                Resource: !Ref DbSecretArn
+              - Effect: Allow
+                Action: [s3:PutObject, s3:DeleteObject]
+                Resource: !Sub arn:aws:s3:::${PortraitBucket}/portraits/*
+      Tags:
+        - {Key: app, Value: table-top-galaxy}
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/ttg-api-${Stage}
+      RetentionInDays: 30
+
+  ApiFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ttg-api-${Stage}
+      Runtime: nodejs22.x        # ships @aws-sdk v3, so the bundle is just api.js
+      Architectures: [arm64]
+      Handler: api.handler
+      Code: {S3Bucket: !Ref CodeBucket, S3Key: !Ref CodeKey}
+      MemorySize: 512
+      Timeout: 29                # API Gateway's limit; the web app imports in 100-entry chunks
+      Role: !GetAtt LambdaRole.Arn
+      LoggingConfig: {LogGroup: !Ref LogGroup}
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref Table
+          DB_CLUSTER_ARN: !Ref DbClusterArn
+          DB_SECRET_ARN: !Ref DbSecretArn
+          DB_NAME: ttg
+          PORTRAIT_BUCKET: !Ref PortraitBucket
+      Tags:
+        - {Key: app, Value: table-top-galaxy}
+
+  # ---------- HTTP API ----------
+  HttpApi:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: !Sub ttg-api-${Stage}
+      ProtocolType: HTTP
+      # API Gateway answers CORS preflights itself; no OPTIONS route exists, so they never need a token.
+      CorsConfiguration:
+        AllowOrigins: [!Ref WebOrigin, 'http://localhost:8280']
+        AllowHeaders: [authorization, content-type]
+        AllowMethods: [GET, PUT, POST, DELETE]
+        MaxAge: 600
+      Tags: {app: table-top-galaxy}
+
+  JwtAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref HttpApi
+      Name: cognito
+      AuthorizerType: JWT
+      IdentitySource: [$request.header.Authorization]
+      JwtConfiguration:
+        Audience: [!Ref WebClient]
+        Issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
+
+  Integration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref HttpApi
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !GetAtt ApiFunction.Arn
+      PayloadFormatVersion: '2.0'
+
+  # The Lambda routes internally (ttg.api.handler/routes); API Gateway only insists on a valid token.
+  GetRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties: {ApiId: !Ref HttpApi, RouteKey: 'GET /{proxy+}', AuthorizationType: JWT, AuthorizerId: !Ref JwtAuthorizer, Target: !Sub 'integrations/${Integration}'}
+  PostRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties: {ApiId: !Ref HttpApi, RouteKey: 'POST /{proxy+}', AuthorizationType: JWT, AuthorizerId: !Ref JwtAuthorizer, Target: !Sub 'integrations/${Integration}'}
+  PutRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties: {ApiId: !Ref HttpApi, RouteKey: 'PUT /{proxy+}', AuthorizationType: JWT, AuthorizerId: !Ref JwtAuthorizer, Target: !Sub 'integrations/${Integration}'}
+  DeleteRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties: {ApiId: !Ref HttpApi, RouteKey: 'DELETE /{proxy+}', AuthorizationType: JWT, AuthorizerId: !Ref JwtAuthorizer, Target: !Sub 'integrations/${Integration}'}
+
+  DefaultStage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref HttpApi
+      StageName: $default
+      AutoDeploy: true
+      DefaultRouteSettings: {ThrottlingBurstLimit: 50, ThrottlingRateLimit: 20}   # a table of friends; caps a runaway bill
+
+  InvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref ApiFunction
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${HttpApi}/*
+
+Outputs:
+  ApiUrl:
+    Value: !GetAtt HttpApi.ApiEndpoint
+  UserPoolId:
+    Value: !Ref UserPool
+  ClientId:
+    Value: !Ref WebClient
+  AuthDomain:
+    Value: !If [HasAuthDomain, !Sub 'https://${AuthDomainName}', !Sub 'https://${UserPoolDomain}.auth.${AWS::Region}.amazoncognito.com']
+  TableName:
+    Value: !Ref Table

@@ -10,6 +10,22 @@
 
 ;; ---------- Faces: symbol totals per die, counted from Table I.1-2 (CRB p.10) ----------
 
+(deftest standard-dice-stay-on-their-faces
+  (doseq [seed (range 200)
+          {:keys [type value]} (:rolled (dice/roll-plain {:d4 3 :d10 3 :d100 3} (rng/seeded seed)))]
+    (is (<= 1 value (dice/plain-sides type)))))
+
+(deftest a-d100-is-thrown-as-tens-and-ones
+  (is (= [{:type :d100-tens :face 7} {:type :d100-ones :face 3}] (dice/thrown {:type :d100 :value 73})))
+  (is (= [{:type :d100-tens :face 1} {:type :d100-ones :face 0}] (dice/thrown {:type :d100 :value 10})) "reads 10 + 0")
+  (is (= [{:type :d100-tens :face 0} {:type :d100-ones :face 5}] (dice/thrown {:type :d100 :value 5})) "reads 00 + 5")
+  (is (= [{:type :d100-tens :face 0} {:type :d100-ones :face 0}] (dice/thrown {:type :d100 :value 100})) "00 + 0 is 100")
+  (is (= [{:type :d6 :face 3}] (dice/thrown {:type :d6 :value 4}))))
+
+(deftest labels-read-like-the-table-says-them
+  (is (= "2d6 + 1d20" (dice/plain-label {:d6 2 :d20 1 :d4 0})))
+  (is (= "1d100" (dice/plain-label {:d100 1}))))
+
 (deftest face-tables-match-the-book
   (let [totals (fn [t] (frequencies (mapcat identity (dice/faces t))))]
     (is (= [6 6 8 8 12 12] (map (comp count dice/faces) [:boost :setback :ability :difficulty :proficiency :challenge])))

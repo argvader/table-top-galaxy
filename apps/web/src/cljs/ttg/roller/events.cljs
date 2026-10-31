@@ -26,11 +26,19 @@
   [db]
   (assoc db :shown nil :reset-note? false))
 
+(defn set-mode [db [_ mode]]
+  (-> db (assoc :mode mode) edited))
+
+(defn- pool-key
+  "Which pool a die belongs to."
+  [type]
+  (if (dice/plain-sides type) :plain-pool :pool))
+
 (defn add-die [db [_ type]]
-  (-> db (update-in [:pool type] #(min db/max-per-type (inc %))) edited))
+  (-> db (update-in [(pool-key type) type] #(min db/max-per-type (inc %))) edited))
 
 (defn remove-die [db [_ type]]
-  (-> db (update-in [:pool type] #(max 0 (dec %))) edited))
+  (-> db (update-in [(pool-key type) type] #(max 0 (dec %))) edited))
 
 (defn- apply-ladder [db i]
   (-> db (assoc :ladder i) (update :pool assoc :difficulty (:n (db/ladder i)) :challenge 0)))
@@ -45,7 +53,9 @@
   (-> db (update :pool dice/downgrade side 1) edited))
 
 (defn clear-pool [db _]
-  (-> db (assoc :pool dice/empty-pool) (apply-ladder db/default-ladder) edited))
+  (edited (if (= :plain (:mode db))
+            (assoc db :plain-pool dice/empty-plain-pool)
+            (-> db (assoc :pool dice/empty-pool) (apply-ladder db/default-ladder)))))
 
 ;; ---------- Rolling ----------
 
@@ -59,16 +69,40 @@
 (defn- log-roll [db entry]
   (update db :rolls #(vec (take db/log-size (cons entry %)))))
 
+(defn- on-table
+  "The dice to act out. A bigger roll sends an even spread of its dice; every die still counts in the result."
+  [thrown]
+  (let [n (count thrown)]
+    (if (<= n db/max-on-table)
+      thrown
+      (mapv #(thrown (quot (* % n) db/max-on-table)) (range db/max-on-table)))))
+
+(defn- throw-dice
+  "Logs the roll and sends its physical dice to the table."
+  [db seed entry thrown]
+  (let [id (:next-id db)]
+    {:db (-> db (log-roll (assoc entry :id id :seed seed)) (assoc :shown nil :rolling id :next-id (inc id)))
+     :fx [[:ttg.roller.effects/act-out {:dice (on-table thrown) :on-done [::landed id]}]]}))
+
+(defn- roll-campaign [db seed]
+  (let [{:keys [dice] :as rolled} (dice/roll (:pool db) (rng/seeded seed))]
+    (-> (throw-dice db seed (merge rolled {:label "Custom pool" :spent {}}) (mapv #(select-keys % [:type :face]) dice))
+        (update :db reset-difficulty))))
+
+;; Standard dice stay in the pool, so the same roll is one tap away.
+(defn- roll-plain [db seed]
+  (let [{:keys [plain-pool]} db
+        {:keys [rolled] :as r} (dice/roll-plain plain-pool (rng/seeded seed))]
+    (throw-dice db seed (assoc r :label (dice/plain-label plain-pool)) (vec (mapcat dice/thrown rolled)))))
+
 (defn roll
   "Decides the roll now, but holds the result back (:rolling) until the 3D dice have acted it out.
    Ignored while the last roll is still on the table."
   [{:keys [db seed]} _]
-  (if (or (zero? (pool-size (:pool db))) (:rolling db))
-    {:db db}
-    (let [id (:next-id db)
-          entry (merge (dice/roll (:pool db) (rng/seeded seed)) {:id id :seed seed :label "Custom pool" :spent {}})]
-      {:db (-> db (log-roll entry) (assoc :shown nil :rolling id :next-id (inc id)) reset-difficulty)
-       :fx [[:ttg.roller.effects/act-out {:dice (mapv #(select-keys % [:type :face]) (:dice entry)) :on-done [::landed id]}]]})))
+  (let [plain? (= :plain (:mode db))]
+    (if (or (zero? (pool-size (if plain? (:plain-pool db) (:pool db)))) (:rolling db))
+      {:db db}
+      (if plain? (roll-plain db seed) (roll-campaign db seed)))))
 
 ;; :ttg.roller.effects/act-out is registered by ttg.roller.effects, which app requires; named by keyword here so
 ;; these handlers (and their tests) don't pull in the lazily loaded 3D module.
@@ -92,7 +126,9 @@
     (js/requestAnimationFrame
      #(some-> (js/document.getElementById id) (.scrollIntoView #js {:block "nearest" :behavior "smooth"})))))
 
-(rf/reg-event-db ::initialize (fn [_ _] db/default-db))
+;; The roller's keys sit at the top of app-db beside :route and :library, so initializing keeps the rest.
+(rf/reg-event-db ::initialize (fn [db _] (merge db db/default-db)))
+(rf/reg-event-db ::set-mode [validate-spec] set-mode)
 (rf/reg-event-db ::add-die [validate-spec] add-die)
 (rf/reg-event-db ::remove-die [validate-spec] remove-die)
 (rf/reg-event-db ::set-ladder [validate-spec] set-ladder)

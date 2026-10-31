@@ -116,7 +116,7 @@
       {:frames frames :landed (mapv :face rested)})))
 
 (defn simulate
-  "Throws dice of these kinds (:d6 :d8 :d12) inside walls at +-x and +-z. rand returns a number in [0, 1).
+  "Throws dice of these kinds (see ttg.ui.dice3d.geometry) inside walls at +-x and +-z. rand returns a number in [0, 1).
    Returns {:frames [Float32Array per step] :landed [face index per die]} for the first throw where every die
    rests flat, trying up to max-throws times; nil if none does."
   [kinds bounds rand]

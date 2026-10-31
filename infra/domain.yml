@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Table Top Galaxy custom domain: one certificate shared by every stage's site and sign-in page, in us-east-1 because
+  CloudFront and Cognito only take certificates from there. The hosted zone itself is made by an admin (infra/README.md),
+  so deleting this stack leaves DNS and the domain's nameservers alone.
+
+Parameters:
+  ZoneName:
+    Type: String
+  HostedZoneId:
+    Type: AWS::Route53::HostedZone::Id
+
+Resources:
+  # A wildcard covers one label only, so *.tt-galaxy.com doesn't reach auth.dev.tt-galaxy.com: that name is listed itself.
+  # ACM validates the apex and the wildcard with the same DNS record, so the apex's entry covers both.
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref ZoneName
+      SubjectAlternativeNames:
+        - !Sub "*.${ZoneName}"
+        - !Sub "auth.dev.${ZoneName}"
+      ValidationMethod: DNS
+      DomainValidationOptions:
+        - { DomainName: !Ref ZoneName, HostedZoneId: !Ref HostedZoneId }
+        - { DomainName: !Sub "auth.dev.${ZoneName}", HostedZoneId: !Ref HostedZoneId }
+      Tags:
+        - { Key: app, Value: table-top-galaxy }
+
+Outputs:
+  CertificateArn:
+    Value: !Ref Certificate
+  HostedZoneId:
+    Value: !Ref HostedZoneId

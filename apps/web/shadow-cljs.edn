@@ -1,4 +1,5 @@
 ;; bb dev watches :app on http://localhost:8280; bb build makes the release bundle; bb test runs :test under Node.
+;; Release builds get their API and sign-in settings from bb (ttg.quality/build-web!), never the dev defaults.
 ;; :dice3d (three + cannon-es) loads on the first roll. asset-path is relative so it also loads under /roller/.
 {:deps {:aliases [:test]}
  :dev-http {8280 "public"}

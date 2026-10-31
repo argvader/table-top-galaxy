@@ -1,28 +1,146 @@
 (ns ttg.app
-  "Web entry point. Today it hosts the standalone roller; routing arrives with the sheet (M4)."
+  "Web entry point: the app shell (top bar + page nav) and hash routing between the pages."
   (:require [re-frame.core :as rf]
+            [re-frame.db]
             [reagent.dom.client :as rdc]
+            [ttg.auth :as auth]
+            [ttg.builder.events :as builder-ev]
+            [ttg.builder.views :as builder]
+            [ttg.campaign.events :as campaign-ev]
+            [ttg.campaign.subscriptions :as campaign-sub]
+            [ttg.campaign.views :as campaign]
+            [ttg.config :as config]
+            [ttg.content :as content]
+            [ttg.http]
+            [ttg.library.events :as lib-ev]
+            [ttg.library.views :as library]
+            [ttg.manager.events :as manager-ev]
+            [ttg.manager.views :as manager]
             [ttg.roller.effects]
             [ttg.roller.events :as ev]
-            [ttg.roller.views :as views]))
+            [ttg.roller.views :as roller]
+            [ttg.routes :as routes]
+            [ttg.sheet.events :as sheet-ev]
+            [ttg.sheet.views :as sheet]
+            [ttg.theme :as theme]
+            [ttg.ui.dice :as ui]))
+
+(defn- page-load
+  "What each page loads as it opens."
+  [{:keys [page id code campaign-id character-id]}]
+  (case page
+    :campaigns [::campaign-ev/load-home]
+    :campaign [::campaign-ev/load-campaign id]
+    :manager [::manager-ev/open id]
+    :join [::campaign-ev/load-invite code]
+    :builder (if character-id [::builder-ev/open-existing character-id] [::builder-ev/open-new campaign-id])
+    :sheet [::sheet-ev/open id]
+    nil))
+
+(defn route-changed
+  "Stores the route and opens the page. A sheet or manager being left saves first; the first visit to the library loads it, and
+   the editor follows the route."
+  [{:keys [db]} [_ route]]
+  (let [db (assoc db :route route)
+        library? (= :library (:page route))
+        load-event (page-load route)]
+    {:db db
+     :fx [[:dispatch [::sheet-ev/flush-now]]
+          [:dispatch [::manager-ev/flush-now]]
+          (when load-event [:dispatch load-event])
+          (when (and library? (= :idle (get-in db [:library :status]))) [:dispatch [::lib-ev/load]])
+          (when library? [:dispatch [::lib-ev/route-changed]])]}))
+
+(rf/reg-event-fx ::route-changed route-changed)
+(rf/reg-sub ::route (fn [db _] (:route db)))
+
+;; :session mirrors ttg.auth for the views: nil when sign-in is off (bb dev) or signed out.
+(defn- current-session []
+  (when (auth/signed-in?)
+    (let [claims (auth/claims)] {:id (:sub claims) :name (some claims [:name :email])})))
+
+(rf/reg-event-fx ::signed-in
+  (fn [{:keys [db]} _]
+    (let [route (:route db)]
+      {:db (assoc db :session (current-session))
+       :fx [[:dispatch [::campaign-ev/load-roles]]
+            (when (= :library (:page route)) [:dispatch [::lib-ev/load]])
+            (when-let [load-event (page-load route)] [:dispatch load-event])]})))
+
+(rf/reg-sub ::session (fn [db _] (:session db)))
+
+(defn- account []
+  (when (auth/enabled?)
+    (if-let [{:keys [name]} @(rf/subscribe [::session])]
+      [:div.account [:span.who name]
+       [:button.linkbtn {:type "button" :on-click auth/sign-out!} "Sign out"]]
+      [:button.btn.primary {:type "button" :on-click auth/sign-in!} "Sign in"])))
+
+(def ^:private pages
+  [{:page :campaigns :label "Your table"} {:page :roller :label "Dice roller"} {:page :library :label "Library" :gm-only? true}])
+
+;; Library is for GMs. With sign-in off (bb dev) there are no roles to go on, so it stays.
+(defn- top-bar [current]
+  (let [gm? (or (not (auth/enabled?)) @(rf/subscribe [::campaign-sub/gm?]))]
+    [:header.top
+     [:div.brand "Table Top Galaxy"]
+     [:nav.pages {:aria-label "Pages"}
+      (for [{:keys [page label]} (remove #(and (:gm-only? %) (not gm?)) pages)]
+        ^{:key page} [:a {:href (routes/href {:page page}) :aria-current (when (= page current) "page")} label])]
+     [:div.spacer]
+     [account]]))
+
+(defn- shell []
+  (let [{:keys [page]} @(rf/subscribe [::route])]
+    [:<>
+     [ui/symbol-defs]
+     [:style (theme/css)]
+     [top-bar page]
+     (case page
+       :library [library/page]
+       :campaigns [campaign/home]
+       :campaign [campaign/campaign-page]
+       :manager [manager/page]
+       :join [campaign/join-page]
+       :builder [builder/page]
+       :sheet [sheet/page]
+       [roller/page])]))
 
 (defonce ^:private root (delay (rdc/create-root (js/document.getElementById "app"))))
 
 (defn mount! []
   (rf/clear-subscription-cache!)
-  (rdc/render @root [views/page]))
+  (rdc/render @root [shell]))
 
 (defn- typing? [] (re-matches #"INPUT|TEXTAREA|SELECT" (.-tagName js/document.activeElement)))
 
-;; R rolls, as in the prototype, unless a modifier is held or focus is in a text field.
+;; R rolls, as in the prototype, unless a modifier is held, focus is in a text field, or another page is open.
 (defn- on-key [e]
-  (when (and (= "r" (.toLowerCase (.-key e))) (not (or (.-metaKey e) (.-ctrlKey e) (.-altKey e))) (not (typing?)))
+  (when (and (= "r" (.toLowerCase (.-key e))) (not (or (.-metaKey e) (.-ctrlKey e) (.-altKey e))) (not (typing?))
+             (= :roller (:page @(rf/subscribe [::route]))))
     (.preventDefault e)
     (rf/dispatch [::ev/roll])))
 
 (defonce ^:private keys-bound (delay (.addEventListener js/document "keydown" on-key)))
 
 (defn init []
+  ;; The campaign manager is a separate page on this origin; this tells it where the API is.
+  (.setItem js/localStorage "ttg.api-url" config/api-url)
   (rf/dispatch-sync [::ev/initialize])
+  (rf/dispatch-sync [::lib-ev/initialize])
+  (rf/dispatch-sync [::campaign-ev/initialize])
+  (rf/dispatch-sync [::content/initialize])
+  (rf/dispatch-sync [::builder-ev/initialize])
+  (rf/dispatch-sync [::sheet-ev/initialize])
+  (rf/dispatch-sync [::manager-ev/initialize])
+  (swap! re-frame.db/app-db assoc :session (current-session))
+  ;; Back from the hosted sign-in page: complete! puts the page's hash back at once (so the route below is the
+  ;; one the user left from), then trades the code for tokens and lets the open page load its data.
+  (-> (auth/complete!)
+      (.then #(when % (rf/dispatch [::signed-in])))
+      (.catch #(js/console.error "Sign-in didn't complete" %)))
+  (rf/dispatch-sync [::route-changed (routes/parse (.-hash js/location))])
+  (rf/dispatch [::campaign-ev/load-roles])
   @keys-bound
+  (routes/start!)
   (mount!))

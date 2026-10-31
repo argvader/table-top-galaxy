@@ -543,7 +543,7 @@
     return [esc(x.name), kind === "npc" ? esc(x.role) : `Corp ${cite(x.source)}`,
       `<div class="item"><span class="label">${kind === "npc" ? "What players know" : "Public role"}</span><p>${esc(x.pub)}</p></div>
        ${gmBlock(`<span class="label">${kind === "npc" ? "Truth" : "Secret agenda"}</span><p style="margin:0">${esc(x.gm)}</p>`)}
-       <p class="note">Sample text. You write these in the <a href="campaign-manager.html">campaign manager</a>, with the betrayal ledger and Session 0 questions.</p>`];
+       <p class="note">Sample text. You write these in the campaign manager, with the betrayal ledger and Session 0 questions.</p>`];
   }
 
   // ---------- Live demo: players rolling and taking hits at the table ----------

@@ -6,7 +6,11 @@
              [ttg.proto :as proto]
              [ttg.ingest :as ingest]
              [ttg.deploy :as deploy]
-             [ttg.quality :as quality])
+             [ttg.quality :as quality]
+             [ttg.library-tasks :as library]
+             [ttg.api-deploy :as api-deploy]
+             [ttg.data-deploy :as data-deploy]
+             [ttg.chronicle :as chronicle])
 
   setup  {:doc  "Check required tools (java, node, clojure, aws, sls)"
           :task (check/report!)}
@@ -32,11 +36,20 @@
   lint   {:doc  "clj-kondo over libs, apps/web and tools/bb"
           :task (quality/lint!)}
 
-  dev    {:doc  "Watch apps/web with hot reload on http://localhost:8280 (API + DynamoDB join at M4)"
+  dev    {:doc  "DynamoDB Local + library API on :3000 + apps/web on http://localhost:8280, all hot-reloading"
           :task (quality/dev!)}
 
-  build  {:doc  "Release build of apps/web into apps/web/public/js"
+  api    {:doc  "Only the library API on http://localhost:3000 (DynamoDB Local started if needed)"
+          :task (quality/api!)}
+
+  build  {:doc  "Release builds: apps/web into apps/web/public/js, the library Lambda into apps/serverless/serverless"
           :task (quality/build!)}
+
+  seed   {:doc  "Load a setting's book library into the running dev API: bb seed [android] [owner]"
+          :task (apply library/seed! *command-line-args*)}
+
+  library:export {:doc  "Write a setting's library as an importable JSON file: bb library:export [android] [out.json]"
+                  :task (apply library/export! *command-line-args*)}
 
   proto-build {:doc  "Assemble prototypes/src pages with the shared dice code"
                :task (proto/build!)}
@@ -59,6 +72,24 @@
   ingest:library {:doc  "Merge all books and show what a setting gets: bb ingest:library [android]"
                   :task (apply ingest/library! *command-line-args*)}
 
+  data:infra {:doc  "Create or update the Aurora cluster: bb data:infra [dev|prod] [--min-capacity 0.5] [--profile p]"
+              :task (apply data-deploy/infra! *command-line-args*)}
+
+  db:migrate {:doc  "Apply new SQL files from apps/serverless/migrations: bb db:migrate [dev|prod] [--profile p]"
+              :task (apply data-deploy/migrate! *command-line-args*)}
+
+  manager:seed {:doc  "Load Manifest Destiny's written prep into a campaign: bb manager:seed [local|dev|prod] <campaign-id>"
+                :task (apply data-deploy/seed-manager! *command-line-args*)}
+
+  chronicle:roster {:doc  "Write campaigns/manifest-destiny/roster.json from the campaign's members: bb chronicle:roster [local|dev|prod] <campaign-id>"
+                    :task (apply chronicle/roster! *command-line-args*)}
+
+  chronicle:manager {:doc  "Copy the manager document into the newest session folder: bb chronicle:manager [local|dev|prod] <campaign-id> [--date D]"
+                     :task (apply chronicle/manager! *command-line-args*)}
+
+  domain:infra {:doc  "Create or update the tt-galaxy.com certificate all stages share: bb domain:infra [--profile p]"
+                :task (apply deploy/domain-infra! *command-line-args*)}
+
   web:infra  {:doc  "Create or update the S3 bucket, CloudFront distribution and password gate: bb web:infra [dev|prod] [--profile p]"
               :task (apply deploy/infra! *command-line-args*)}
 
@@ -70,6 +101,21 @@
 
   web:whoami {:doc  "Show which AWS identity the web tasks use: bb web:whoami [--profile p]"
               :task (apply deploy/whoami! *command-line-args*)}
+
+  api:deploy {:doc  "Build the Lambda and create or update the API stack (table, Cognito, HTTP API): bb api:deploy [dev|prod] [--profile p]"
+              :task (apply api-deploy/deploy! *command-line-args*)}
+
+  api:url    {:doc  "Print the API stack's outputs (API URL, sign-in domain, client id): bb api:url [dev|prod]"
+              :task (apply api-deploy/outputs! *command-line-args*)}
+
+  api:logs   {:doc  "Follow the API Lambda's log: bb api:logs [dev|prod]"
+              :task (apply api-deploy/logs! *command-line-args*)}
+
+  api:remove {:doc  "Delete the API stacks, keeping the table and user pool: bb api:remove dev"
+              :task (apply api-deploy/remove! *command-line-args*)}
+
+  user:add   {:doc  "Create a player's account; Cognito emails a temporary password: bb user:add a@b.com [dev|prod] [--name N]"
+              :task (apply api-deploy/add-user! *command-line-args*)}
 
   web:remove {:doc  "Empty the bucket and delete the stack: bb web:remove dev"
               :task (apply deploy/remove! *command-line-args*)}}}

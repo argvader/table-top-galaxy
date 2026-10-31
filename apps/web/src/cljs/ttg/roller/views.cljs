@@ -1,6 +1,8 @@
 (ns ttg.roller.views
-  "The standalone dice roller (M2): build a pool, see the exact chances, roll, spend the results, keep a log."
-  (:require [re-frame.core :as rf]
+  "The standalone dice roller (M2): build a pool, see the exact chances, roll, spend the results, keep a log.
+   Standard dice share the page: steppers, Roll, the 3D dice and the log all work the same, with a total as the result."
+  (:require [clojure.string :as str]
+            [re-frame.core :as rf]
             [ttg.dice :as dice]
             [ttg.roller.db :as db]
             [ttg.roller.events :as ev]
@@ -31,18 +33,27 @@
 
 ;; ---------- Pool ----------
 
+(defn- tray-die [i t]
+  ^{:key (str (name t) i)}
+  [:button.die {:type "button" :title (str "Remove a " (:name (ui/die-info t)) " die")
+                :on-click #(rf/dispatch [::ev/remove-die t])}
+   [ui/die t nil (str "Remove " (:name (ui/die-info t)) " die")]])
+
 (defn- tray []
   (let [pool @(rf/subscribe [::sub/pool])
         side (fn [pred] (filter pred (dice/dice-list pool)))
-        btn (fn [i t] ^{:key (str (name t) i)}
-              [:button.die {:type "button" :title (str "Remove a " (:name (ui/die-info t)) " die")
-                            :on-click #(rf/dispatch [::ev/remove-die t])}
-               [ui/die t nil (str "Remove " (:name (ui/die-info t)) " die")]])
         pos (side positive?) neg (side (complement positive?))]
     [:div.tray {:aria-label "Current pool. Tap a die to remove it."}
      (if (empty? (concat pos neg))
        [:span.empty "Your pool is empty. Add dice below."]
-       [:<> (map-indexed btn pos) (when (and (seq pos) (seq neg)) [:span.vs "VS"]) (map-indexed btn neg)])]))
+       [:<> (map-indexed tray-die pos) (when (and (seq pos) (seq neg)) [:span.vs "VS"]) (map-indexed tray-die neg)])]))
+
+(defn- plain-tray []
+  (let [dice (dice/plain-list @(rf/subscribe [::sub/plain-pool]))]
+    [:div.tray {:aria-label "Current pool. Tap a die to remove it."}
+     (if (empty? dice)
+       [:span.empty "Your pool is empty. Add dice below."]
+       [:<> (map-indexed tray-die dice)])]))
 
 (defn- stepper [pool t]
   (let [{:keys [name sides]} (ui/die-info t)]
@@ -56,6 +67,16 @@
 (defn- steppers []
   (let [pool @(rf/subscribe [::sub/pool])]
     (into [:div.steps] (for [t dice/die-types] ^{:key t} [stepper pool t]))))
+
+(defn- plain-steppers []
+  (let [pool @(rf/subscribe [::sub/plain-pool])]
+    (into [:div.steps] (for [t dice/plain-types] ^{:key t} [stepper pool t]))))
+
+(defn- mode-chips []
+  (let [mode @(rf/subscribe [::sub/mode])
+        chip (fn [m label] [:button.chip {:type "button" :aria-pressed (= m mode) :on-click #(rf/dispatch [::ev/set-mode m])} label])]
+    [:div.chips.modes {:role "group" :aria-label "Kind of dice"}
+     [chip :campaign "Campaign dice"] [chip :plain "Standard dice"]]))
 
 (defn- ladder-chips []
   (let [current @(rf/subscribe [::sub/ladder])
@@ -124,20 +145,36 @@
       [:<> [:div.spend {:class (when (and adv? thr?) "two")}
             (when adv? [spend-block :advantage (:advantage spent)])
             (when thr? [spend-block :threat (:threat spent)])]
-       [:p.note "The roller spends Advantage; the GM spends Threat. Options are short samples until the content library lands."]])))
+       [:p.note "The roller spends Advantage; the GM spends Threat. Options are short samples until the sheet reads them from your library (M4)."]])))
+
+(defn- table-note
+  "Says so when a roll was too big for all its dice to fit on the table."
+  [n]
+  (when (> n db/max-on-table)
+    (str "The table showed " db/max-on-table " of these " n " dice; all of them count. ")))
+
+(defn- plain-result [{:keys [id seed label rolled total]}]
+  [:div#result.result
+   [:div.verdict [:h3 total] [:p label]]
+   ^{:key id} [:div.rolled.tumble {:aria-label "Dice rolled"}
+               (for [[i {:keys [type value]}] (map-indexed vector rolled)] ^{:key i} [ui/numbered-die type (str value)])]
+   [:p.note (table-note (count (mapcat dice/thrown rolled))) [:span.seed "Seed " seed]]])
+
+(defn- narrative-result [{:keys [id seed dice result] :as roll}]
+  (let [raw (frequencies (mapcat :symbols dice)) c #(get raw % 0)]
+    [:div#result.result
+     [:div.verdict [:h3 {:class (if (:success? result) "ok" "no")} (verdict result)] [:p (flavor result)]]
+     [net-line result]
+     ^{:key id} [:div.rolled.tumble {:aria-label "Dice rolled"}
+                 (for [[i d] (map-indexed vector dice)] ^{:key i} [ui/die (:type d) (:symbols d)])]
+     [:p.note (+ (c :success) (c :triumph)) " success symbols vs " (+ (c :failure) (c :despair)) " failure, "
+      (c :advantage) " advantage vs " (c :threat) " threat. Triumph counts as a success; Despair counts as a failure. "
+      (table-note (count dice)) [:span.seed "Seed " seed]]
+       [spends roll]]))
 
 (defn- result-card []
-  (when-let [{:keys [id seed dice result] :as roll} @(rf/subscribe [::sub/shown])]
-    (let [raw (frequencies (mapcat :symbols dice)) c #(get raw % 0)]
-      [:div#result.result
-       [:div.verdict [:h3 {:class (if (:success? result) "ok" "no")} (verdict result)] [:p (flavor result)]]
-       [net-line result]
-       ^{:key id} [:div.rolled.tumble {:aria-label "Dice rolled"}
-                   (for [[i d] (map-indexed vector dice)] ^{:key i} [ui/die (:type d) (:symbols d)])]
-       [:p.note (+ (c :success) (c :triumph)) " success symbols vs " (+ (c :failure) (c :despair)) " failure, "
-        (c :advantage) " advantage vs " (c :threat) " threat. Triumph counts as a success; Despair counts as a failure. "
-        [:span.seed "Seed " seed]]
-       [spends roll]])))
+  (when-let [roll @(rf/subscribe [::sub/shown])]
+    (if (:total roll) [plain-result roll] [narrative-result roll])))
 
 ;; ---------- Log ----------
 
@@ -148,13 +185,21 @@
    (when (pos? triumph) [:span.sym [ui/sym :triumph triumph]])
    (when (pos? despair) [:span.sym [ui/sym :despair despair]])])
 
-(defn- log-item [{:keys [label seed result spent]}]
+(defn- plain-log-item [{:keys [label seed rolled total]}]
+  [:div
+   [:div.t [:b label] [:span.seed "#" seed]]
+   [:div.r [:b.total total] (when (next rolled) [:span (str/join ", " (map :value rolled))])]])
+
+(defn- narrative-log-item [{:keys [label seed result spent]}]
   [:div
    [:div.t [:b label] [:span.seed "#" seed]]
    [:div.r [:span {:class (if (:success? result) "ok" "no")} (verdict result)] [log-symbols result]]
    (for [[i s] (map-indexed vector (concat (map #(str "Spent: " (:label %)) (:advantage spent))
                                             (map #(str "GM spent: " (:label %)) (:threat spent))))]
      ^{:key i} [:div.note s])])
+
+(defn- log-item [{:keys [total] :as roll}]
+  (if total [plain-log-item roll] [narrative-log-item roll]))
 
 (defn- roll-log []
   (let [rolls @(rf/subscribe [::sub/rolls])]
@@ -168,13 +213,14 @@
 
 (defn- go-bar []
   [:div.go
-   [:button.rollbtn {:type "button" :disabled (or (zero? @(rf/subscribe [::sub/pool-size])) (some? @(rf/subscribe [::sub/rolling])))
+   [:button.rollbtn {:type "button" :disabled (or (zero? @(rf/subscribe [::sub/ready-size])) (some? @(rf/subscribe [::sub/rolling])))
                      :on-click #(rf/dispatch [::ev/roll])}
     "Roll" [:kbd "R"]]])
 
 (defn- live-region []
   (let [roll @(rf/subscribe [::sub/shown])]
     [:div.sr {:aria-live "polite"}
+     (when-let [total (:total roll)] (str (:label roll) ": " total "."))
      (when-let [{:keys [triumph despair] :as r} (:result roll)]
        (str (verdict r) "." (when (pos? triumph) (str " " triumph " Triumph.")) (when (pos? despair) (str " " despair " Despair."))))]))
 
@@ -182,13 +228,15 @@
   [:section.panel {:aria-labelledby "h-roll"}
    [:header [:h2#h-roll "Dice pool"]
     [:button.linkbtn {:type "button" :on-click #(rf/dispatch [::ev/clear-pool])} "Clear pool"]]
-   [tray] [steppers] [ladder-chips] [upgrade-chips] [odds-strip]
-   (when @(rf/subscribe [::sub/reset-note?])
-     [:div.reset-note "Difficulty reset to Average for your next check."])
+   [mode-chips]
+   (if (= :plain @(rf/subscribe [::sub/mode]))
+     [:<> [plain-tray] [plain-steppers]]
+     [:<> [tray] [steppers] [ladder-chips] [upgrade-chips] [odds-strip]
+      (when @(rf/subscribe [::sub/reset-note?])
+        [:div.reset-note "Difficulty reset to Average for your next check."])])
    [go-bar] [result-card] [live-region]])
 
-(defn page []
-  [:<>
-   [ui/symbol-defs]
-   [:header.top [:div.brand "Table Top Galaxy" [:small "Dice roller"]] [:div.spacer]]
-   [:main.app [roll-panel] [roll-log]]])
+(defn page
+  "The roller page; ttg.app supplies the top bar and the dice symbol defs."
+  []
+  [:main.app [roll-panel] [roll-log]])

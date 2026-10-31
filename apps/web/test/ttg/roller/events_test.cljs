@@ -10,7 +10,7 @@
   "Applies db events in order, checking the spec after each, as the validate-spec interceptor does in dev."
   [db & events]
   (reduce (fn [db [id & _ :as e]]
-            (let [db' ((case id :add ev/add-die :remove ev/remove-die :ladder ev/set-ladder :up ev/upgrade
+            (let [db' ((case id :mode ev/set-mode :add ev/add-die :remove ev/remove-die :ladder ev/set-ladder :up ev/upgrade
                              :down ev/downgrade :clear ev/clear-pool :spend ev/spend-option :undo ev/undo-spend) db e)]
               (is (s/valid? ::db/app-db db') (s/explain-str ::db/app-db db'))
               db'))
@@ -77,6 +77,40 @@
 (deftest empty-pool-does-not-roll
   (let [db (run db/default-db [:clear] [:ladder 0])]
     (is (= db (roll-with db 1)))))
+
+(deftest standard-dice
+  (let [db (run db/default-db [:mode :plain] [:add :d6] [:add :d6] [:add :d20] [:add :d100])
+        {rolling :db fx :fx} (ev/roll {:db db :seed 9} [::ev/roll])
+        entry (first (:rolls rolling))
+        expected (dice/roll-plain (:plain-pool db) (rng/seeded 9))]
+    (is (= {:d4 0 :d6 2 :d8 0 :d10 0 :d20 1 :d100 1} (:plain-pool db)))
+    (is (= (:pool db/default-db) (:pool db)) "the campaign pool isn't touched")
+    (is (s/valid? ::db/app-db rolling) (s/explain-str ::db/app-db rolling))
+    (testing "the entry is the engine's roll for that seed"
+      (is (= (:rolled expected) (:rolled entry)))
+      (is (= (reduce + (map :value (:rolled entry))) (:total entry)))
+      (is (= "2d6 + 1d20 + 1d100" (:label entry))))
+    (testing "the d100 goes to the table as two dice"
+      (is (= 5 (count (get-in fx [0 1 :dice])))))
+    (testing "the dice stay in the pool for the next roll"
+      (is (= (:plain-pool db) (:plain-pool (land rolling)))))
+    (testing "steppers stay between 0 and 9, and clear only empties the standard pool"
+      (is (= 9 (get-in (apply run db (repeat 12 [:add :d4])) [:plain-pool :d4])))
+      (let [cleared (run db [:clear])]
+        (is (= dice/empty-plain-pool (:plain-pool cleared)))
+        (is (= (:pool db) (:pool cleared)))))
+    (testing "an empty standard pool doesn't roll, whatever the campaign pool holds"
+      (let [empty-pool (run db/default-db [:add :ability] [:mode :plain])]
+        (is (= empty-pool (:db (ev/roll {:db empty-pool :seed 1} [::ev/roll]))))))
+    (testing "a bigger roll than the table holds still counts every die"
+      (let [big (apply run db (mapcat #(repeat 9 [:add %]) [:d4 :d10 :d100]))
+            {after :db fx :fx} (ev/roll {:db big :seed 3} [::ev/roll])
+            shown (get-in fx [0 1 :dice])]
+        (is (= db/max-on-table (count shown)))
+        (is (every? (set (map :type shown)) [:d4 :d10 :d100-tens]) "the spread reaches the whole roll")
+        (is (= 30 (count (:rolled (first (:rolls after))))))))
+    (testing "switching hides the last result"
+      (is (nil? (:shown (run (land rolling) [:mode :campaign])))))))
 
 (deftest log-keeps-the-newest-rolls
   (let [db (reduce roll-with (run db/default-db [:add :ability]) (range 30))]

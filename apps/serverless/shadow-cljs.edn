@@ -1,0 +1,16 @@
+;; :api is the Lambda bundle serverless.yml deploys (one handler, routed inside).
+;; :dev runs that handler behind a plain Node HTTP server on :3000 against DynamoDB Local (bb dev / bb api).
+;; :test runs the service and handler tests on Node with an in-memory store (bb test).
+{:deps {:aliases [:test]}
+ :builds {:api {:target :node-library
+                :output-to "serverless/api.js"
+                :output-dir "serverless/cljs-runtime"
+                :exports {:handler ttg.api.handler/handler}}
+          :dev {:target :node-script
+                :main ttg.api.dev/main
+                :output-to ".shadow-cljs/dev/server.js"
+                :devtools {:after-load ttg.api.dev/reloaded!}}
+          :test {:target :node-test
+                 :output-to ".shadow-cljs/test/node-tests.js"
+                 :ns-regexp "-test$"
+                 :autorun true}}}

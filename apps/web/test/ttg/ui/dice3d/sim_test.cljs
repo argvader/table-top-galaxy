@@ -37,6 +37,17 @@
         (is (= landed face))
         (is (>= flatness sim/flat))))))
 
+(deftest standard-dice-come-to-rest-too
+  (doseq [seed (range 4)
+          :let [kinds [:d4 :d4 :d6 :d8 :d10 :d10 :d20 :d20 :d10 :d10]
+                throw (sim/simulate kinds bounds (seeded-rand (+ 500 seed)))]]
+    (is (some? throw) (str "seed " seed " never came to rest flat"))
+    (when throw
+      (doseq [[kind q landed] (map vector kinds (final-quaternions throw (count kinds)) (:landed throw))
+              :let [{:keys [face flatness]} (geo/up-face (geo/shape kind) q)]]
+        (is (= landed face) (name kind))
+        (is (>= flatness sim/flat) (name kind))))))
+
 (deftest acting-out-shows-exactly-the-engine's-roll
   (testing "repainting each die by face-layout puts the engine's chosen face on the face that landed up"
     (let [pool (dice/pool {:proficiency 2 :ability 1 :challenge 2 :difficulty 1 :boost 1 :setback 1})

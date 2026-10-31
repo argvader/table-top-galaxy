@@ -27,9 +27,9 @@ Layout follows the argvader-tools monorepo: `apps/` (web, serverless), `libs/` (
 
 ## Deploying the prototypes (S3 + CloudFront)
 
-The three prototypes, plus a landing page, are served from a private S3 bucket through CloudFront (`infra/web.yml`).
-They contain book content, so every request needs a password (HTTP basic auth, done in a CloudFront Function) until
-Cognito sign-in replaces it.
+The app is served from a private S3 bucket through CloudFront (`infra/web.yml`). Dev also carries the prototypes and a
+landing page; on prod the address opens the app. The app signs in through Cognito and carries no book content. The
+prototypes do, so anything outside the app needs a password (HTTP basic auth, done in a CloudFront Function).
 
 One-time setup:
 
@@ -43,7 +43,7 @@ One-time setup:
 Then:
 
 ```bash
-bb web:infra          # create/update bucket, distribution, password gate (first run takes ~5-10 min)
+bb web:infra          # create/update bucket, distribution, prototype password (first run takes ~5-10 min)
 bb web:deploy         # proto-build + apps/web release build (at /roller/index.html), upload, invalidate the CloudFront cache
 bb web:url            # print https://dxxxx.cloudfront.net
 bb web:remove dev     # empty the bucket and delete everything

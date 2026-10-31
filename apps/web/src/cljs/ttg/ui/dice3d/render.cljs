@@ -114,32 +114,85 @@
   (.fill g (js/Path2D. d))
   (.restore g))
 
-(defn- build-texture
-  "A 256px face: the die colour with its symbols in ink, one centred or two side by side."
-  [type face inset]
-  (let [size 256 cv (doto (js/document.createElement "canvas") (-> .-width (set! size)) (-> .-height (set! size)))
+(def ^:private size 256)
+
+(defn- paint-face!
+  "A 256px face in the die's colour, handed to paint for its ink."
+  [type paint]
+  (let [cv (doto (js/document.createElement "canvas") (-> .-width (set! size)) (-> .-height (set! size)))
         ^js g (.getContext cv "2d")
-        {:keys [hex ink]} (ui/die-info type)
-        syms (get-in dice/faces [type face])
+        {:keys [hex ink]} (ui/die-info type)]
+    (set! (.-fillStyle g) hex) (.fillRect g 0 0 size size)
+    (paint g ink)
+    (doto (three/CanvasTexture. cv) (-> .-anisotropy (set! 4)) (-> .-colorSpace (set! three/SRGBColorSpace)))))
+
+(defn- build-texture
+  "A face of a narrative die: its symbols in ink, one centred or two side by side."
+  [type face inset]
+  (let [syms (get-in dice/faces [type face])
         room (* size 0.5 inset 0.8)
         s (if (> (count syms) 1) (* room 0.95) (* room 1.35))]
-    (set! (.-fillStyle g) hex) (.fillRect g 0 0 size size)
-    (doseq [[i sym] (map-indexed vector syms)
-            :let [dx (if (> (count syms) 1) (if (zero? i) (- (/ s 2)) (/ s 2)) 0)]]
-      (paint-glyph! g (ui/glyph-paths sym) (+ (/ size 2) dx) (/ size 2) s ink))
-    (doto (three/CanvasTexture. cv) (-> .-anisotropy (set! 4)) (-> .-colorSpace (set! three/SRGBColorSpace)))))
+    (paint-face! type
+                 (fn [g ink]
+                   (doseq [[i sym] (map-indexed vector syms)
+                           :let [dx (if (> (count syms) 1) (if (zero? i) (- (/ s 2)) (/ s 2)) 0)]]
+                     (paint-glyph! g (ui/glyph-paths sym) (+ (/ size 2) dx) (/ size 2) s ink))))))
 
 (def ^:private texture (memoize build-texture))
 
-(defn- material [type face inset]
-  (three/MeshStandardMaterial. #js {:map (texture type face inset) :roughness 0.42 :metalness 0.05}))
+(defn- paint-number!
+  "A number centred on x y, turned so its top points along angle. 6 and 9 are underlined so they can be told apart."
+  [^js g text x y px angle ink]
+  (.save g)
+  (.translate g x y)
+  (.rotate g angle)
+  (set! (.-font g) (str "700 " px "px sans-serif"))
+  (set! (.-textAlign g) "center") (set! (.-textBaseline g) "middle")
+  (set! (.-fillStyle g) ink)
+  (.fillText g text 0 0)
+  (when (#{"6" "9"} text) (.fillRect g (* px -0.28) (* px 0.46) (* px 0.56) (* px 0.08)))
+  (.restore g))
+
+(defn- build-number-texture [type text inset]
+  (let [centre (/ size 2)]
+    (paint-face! type (fn [g ink] (paint-number! g text centre centre (* size inset 0.62) 0 ink)))))
+
+(def ^:private number-texture (memoize build-number-texture))
+
+(defn- build-corner-texture
+  "A d4 face: a number in each corner with its top towards the corner, which is how a d4 reads from above."
+  [type corners]
+  (paint-face! type
+               (fn [g ink]
+                 (doseq [[text dx dy] corners
+                         :let [x (+ (/ size 2) (* dx size 0.3)) y (+ (/ size 2) (* dy size 0.3))]]
+                   (paint-number! g text x y 58 (js/Math.atan2 dx (- dy)) ink)))))
+
+(def ^:private corner-texture (memoize build-corner-texture))
+
+(defn- corners
+  "Each corner of a d4 face as [text dx dy]: its vertex's number and the way to it from the middle of the texture."
+  [{:keys [verts]} {:keys [idx c u w r]} type layout]
+  (for [vi idx :let [p (mapv - (verts vi) c)]]
+    [(ui/face-text type (layout vi)) (/ (geo/dot p u) r) (- (/ (geo/dot p w) r))]))
+
+(defn- face-texture
+  "The texture for physical face i, or on a d4, for the three vertices around it."
+  [type kind layout i]
+  (let [{:keys [inset faces] :as s} (geo/shape kind)]
+    (cond
+      (= kind :d4) (corner-texture type (vec (corners s (faces i) type layout)))
+      (:mark (ui/die-info type)) (number-texture type (ui/face-text type (layout i)) inset)
+      :else (texture type (layout i) inset))))
+
+(defn- material [tex]
+  (three/MeshStandardMaterial. #js {:map tex :roughness 0.42 :metalness 0.05}))
 
 (defn- mesh
   "A die whose physical face i shows engine face (layout i)."
   [type kind layout]
-  (let [{:keys [inset]} (geo/shape kind)]
-    (doto (three/Mesh. (geometry kind) (into-array (map #(material type % inset) layout)))
-      (-> .-castShadow (set! true)))))
+  (doto (three/Mesh. (geometry kind) (into-array (map #(material (face-texture type kind layout %)) (range (count layout)))))
+    (-> .-castShadow (set! true))))
 
 ;; ---------- Playback ----------
 

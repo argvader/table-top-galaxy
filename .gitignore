@@ -2,7 +2,9 @@ node_modules/
 .shadow-cljs/
 .cpcache/
 **/public/js/
-serverless/
+# Lambda bundles (apps/serverless/serverless/) and sls packaging, not the app itself
+/apps/*/serverless/
+.serverless/
 .nrepl-port
 cdk.out/
 .local/
@@ -12,3 +14,10 @@ secrets.edn
 
 # clj-kondo cache
 .clj-kondo/.cache/
+apps/web/public/portraits/
+
+# A campaign's keys, generated roster, and raw session material (audio, transcripts, and manager.json with GM secrets)
+campaigns/*/.env
+campaigns/*/roster.json
+campaigns/*/sessions-raw/*/
+campaigns/*/bin/__pycache__/

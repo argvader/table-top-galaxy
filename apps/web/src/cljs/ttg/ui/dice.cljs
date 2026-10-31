@@ -1,6 +1,13 @@
 (ns ttg.ui.dice
   "SVG dice and symbols, drawn from the same shapes and glyphs as the approved prototypes.
-   Custom glyphs only: the FFG dice font can't be used.")
+   Custom glyphs only: the FFG dice font can't be used."
+  (:require [ttg.dice :as dice]))
+
+(defn- standard
+  "A numbered die. :mark is what its icon shows, and :faces how many faces the 3D die has."
+  [sides shape mark]
+  {:name (str "d" sides) :sides (str "1 to " sides) :shape shape :mark mark :faces (min sides 10) :hex "#e9e3d3"
+   :color "var(--d-plain)" :ink "#1b1b1d"})
 
 ;; :hex is the same colour as the CSS variable, for the 3D face textures (canvas can't read CSS variables).
 (def die-info
@@ -9,7 +16,29 @@
    :boost       {:name "Boost" :sides "d6" :shape :d6 :color "var(--d-boost)" :hex "#8fd0ea" :ink "#10222b"}
    :challenge   {:name "Challenge" :sides "d12" :shape :d12 :color "var(--d-chal)" :hex "#b8262f" :ink "#ffffff"}
    :difficulty  {:name "Difficulty" :sides "d8" :shape :d8 :color "var(--d-diff)" :hex "#5b3c8f" :ink "#ffffff"}
-   :setback     {:name "Setback" :sides "d6" :shape :d6 :color "var(--d-set)" :hex "#1b1b1d" :ink "#ffffff"}})
+   :setback     {:name "Setback" :sides "d6" :shape :d6 :color "var(--d-set)" :hex "#1b1b1d" :ink "#ffffff"}
+   :d4 (standard 4 :d4 "4")
+   :d6 (standard 6 :d6 "6")
+   :d8 (standard 8 :d8 "8")
+   :d10 (standard 10 :d10 "10")
+   :d20 (assoc (standard 20 :d20 "20") :faces 20)
+   :d100 (standard 100 :d10 "%")
+   ;; The two dice a d100 is thrown as.
+   :d100-tens (assoc (standard 100 :d10 "%") :hex "#2f5d8a" :ink "#ffffff")
+   :d100-ones (standard 100 :d10 "%")})
+
+(defn face-count
+  "How many faces the 3D die for this type has."
+  [type]
+  (or (:faces (die-info type)) (count (dice/faces type))))
+
+(defn face-text
+  "What a numbered 3D die shows on a face: 00 to 90 on the tens die, 0 to 9 on the ones die, otherwise 1 up."
+  [type face]
+  (case type
+    :d100-tens (if (zero? face) "00" (str (* 10 face)))
+    :d100-ones (str face)
+    (str (inc face))))
 
 (def symbol-name
   {:success "Success" :failure "Failure" :advantage "Advantage" :threat "Threat" :triumph "Triumph" :despair "Despair"})
@@ -39,7 +68,20 @@
 (def ^:private shapes
   {:d6 [:rect {:x 4 :y 4 :width 40 :height 40 :rx 7}]
    :d8 [:polygon {:points "24,1.5 46.5,24 24,46.5 1.5,24"}]
-   :d12 [:polygon {:points "24,2 43.5,13 43.5,35 24,46 4.5,35 4.5,13"}]})
+   :d12 [:polygon {:points "24,2 43.5,13 43.5,35 24,46 4.5,35 4.5,13"}]
+   :d4 [:polygon {:points "24,3 45,43 3,43"}]
+   :d10 [:polygon {:points "24,2 45,23 24,46 3,23"}]
+   :d20 [:polygon {:points "24,1.5 44,12.75 44,35.25 24,46.5 4,35.25 4,12.75"}]})
+
+(defn numbered-die
+  "A standard die showing text."
+  [type text]
+  (let [{:keys [shape color ink name]} (die-info type)]
+    [:svg {:view-box "0 0 48 48" :role "img" :aria-label (str name ": " text)}
+     [:g {:fill color :stroke "var(--die-stroke)" :stroke-width 1.5} (shapes shape)]
+     [:text {:x 24 :y (if (= shape :d4) 31 25) :text-anchor "middle" :dominant-baseline "central" :fill ink :font-weight 700
+             :font-size (if (> (count text) 2) 15 19)}
+      text]]))
 
 (defn- face-label [type symbols]
   (str (:name (die-info type)) " die"
@@ -52,14 +94,16 @@
   ([type] (die type nil nil))
   ([type symbols] (die type symbols nil))
   ([type symbols label]
-   (let [{:keys [shape color ink]} (die-info type)
+   (let [{:keys [shape color ink mark]} (die-info type)
          size (if (> (count symbols) 1) 15 20)
          xs (if (> (count symbols) 1) [(- 24 size 0.5) 24.5] [(- 24 (/ size 2))])]
-     [:svg {:view-box "0 0 48 48" :role "img" :aria-label (or label (face-label type symbols))}
-      [:g {:fill color :stroke "var(--die-stroke)" :stroke-width 1.5} (shapes shape)]
-      (into [:g {:style {:color ink}}]
-            (map-indexed (fn [i s] [:use {:href (str "#sym-" (name s)) :x (xs i) :y (- 24 (/ size 2)) :width size :height size}])
-                         symbols))])))
+     (if mark
+       [numbered-die type mark]
+       [:svg {:view-box "0 0 48 48" :role "img" :aria-label (or label (face-label type symbols))}
+        [:g {:fill color :stroke "var(--die-stroke)" :stroke-width 1.5} (shapes shape)]
+        (into [:g {:style {:color ink}}]
+              (map-indexed (fn [i s] [:use {:href (str "#sym-" (name s)) :x (xs i) :y (- 24 (/ size 2)) :width size :height size}])
+                           symbols))]))))
 
 (defn sym
   "n copies of a result symbol, decorative (the surrounding text says what they are)."

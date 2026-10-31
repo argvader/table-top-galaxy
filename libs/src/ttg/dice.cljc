@@ -1,7 +1,8 @@
 (ns ttg.dice
-  "The Genesys narrative dice: faces, pool modification, rolling and cancellation (CRB p.10-25).
-   Pure data in, data out. Randomness comes in as a seq of uint32s (see ttg.dice.rng), so rolls are replayable."
-  (:require [ttg.dice.rng :as rng]))
+  "The Genesys narrative dice: faces, pool modification, rolling and cancellation (CRB p.10-25), and standard
+   numbered dice for everything else. Pure data in, data out. Randomness comes in as a seq of uint32s (see ttg.dice.rng), so rolls are replayable."
+  (:require [clojure.string :as str]
+            [ttg.dice.rng :as rng]))
 
 ;; Table I.1-2 (CRB p.10), face 1 first. Checked cell by cell against the book; see docs/rules/dice-and-checks.md.
 (def faces
@@ -102,3 +103,38 @@
   ([p ints]
    (let [dice (mapv roll-die (dice-list p) ints)]
      {:pool (pool p) :dice dice :result (result dice)})))
+
+;; ---------- Standard dice ----------
+
+(def plain-types [:d4 :d6 :d8 :d10 :d20 :d100])
+
+(def plain-sides {:d4 4 :d6 6 :d8 8 :d10 10 :d20 20 :d100 100})
+
+(def empty-plain-pool (zipmap plain-types (repeat 0)))
+
+(defn plain-list
+  "The pool as a seq of die types, smallest die first."
+  [p]
+  (mapcat #(repeat (get p % 0) %) plain-types))
+
+(defn plain-label
+  "How the table says it: \"2d6 + 1d20\"."
+  [p]
+  (->> plain-types
+       (filter #(pos? (get p % 0)))
+       (map #(str (p %) (name %)))
+       (str/join " + ")))
+
+(defn roll-plain
+  "Rolls standard dice from a seq of uint32s. Each die shows 1 to its sides; a d100 is one number."
+  [p ints]
+  (let [rolled (mapv (fn [type u] {:type type :value (inc (rng/pick u (plain-sides type)))}) (plain-list p) ints)]
+    {:plain-pool p :rolled rolled :total (reduce + (map :value rolled))}))
+
+(defn thrown
+  "The physical dice for a rolled die, as [{:type :face}]. A d100 is thrown as a tens die and a ones die, and
+   showing 00 and 0 together reads 100."
+  [{:keys [type value]}]
+  (if (= type :d100)
+    [{:type :d100-tens :face (quot (mod value 100) 10)} {:type :d100-ones :face (mod value 10)}]
+    [{:type type :face (dec value)}]))

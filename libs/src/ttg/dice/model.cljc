@@ -22,3 +22,11 @@
 (s/def ::result (s/keys :req-un [::success? ::net-success ::net-advantage ::triumph ::despair]))
 
 (s/def ::roll (s/keys :req-un [::pool ::dice ::result]))
+
+(s/def ::plain-type (set dice/plain-types))
+(s/def ::plain-pool (s/map-of ::plain-type nat-int?))
+(s/def ::value pos-int?)
+(s/def ::rolled-die (s/and (s/keys :req-un [::value]) #(<= (:value %) (dice/plain-sides (:type %)))))
+(s/def ::rolled (s/coll-of ::rolled-die :kind vector?))
+(s/def ::total nat-int?)
+(s/def ::plain-roll (s/keys :req-un [::plain-pool ::rolled ::total]))

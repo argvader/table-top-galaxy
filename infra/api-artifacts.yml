@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: >-
+  Table Top Galaxy: private bucket for the API Lambda's code bundles (bb api:deploy uploads api-<hash>.zip).
+  Separate from the API stack because the Lambda needs its code in S3 before that stack can create it.
+
+Parameters:
+  Stage:
+    Type: String
+    AllowedPattern: '[a-z0-9-]+'
+
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ttg-api-${Stage}-artifacts-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: {SSEAlgorithm: AES256}
+      # Bundles are named by content hash; the Lambda keeps its own copy, so old ones can go.
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-bundles
+            Status: Enabled
+            ExpirationInDays: 90
+      Tags:
+        - {Key: app, Value: table-top-galaxy}
+
+Outputs:
+  ArtifactBucket:
+    Value: !Ref ArtifactBucket
