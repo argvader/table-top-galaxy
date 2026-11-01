@@ -38,6 +38,50 @@
   (testing "clear empties the pool back to Average"
     (is (= (:pool db/default-db) (:pool (run db/default-db [:add :ability] [:add :setback] [:clear]))))))
 
+(def stealth {:label "Stealth" :detail "Agility 3 · Rank 1" :pool {:proficiency 1 :ability 2 :setback 1}})
+
+(defn- open-check [db] (ev/open-check db [::ev/open-check stealth]))
+(defn- valid [db] (is (s/valid? ::db/app-db db) (s/explain-str ::db/app-db db)) db)
+
+(deftest the-drawer-holds-a-check
+  (let [before (run db/default-db [:mode :plain] [:add :d6] [:mode :campaign] [:add :boost] [:ladder 3])
+        db (valid (open-check (assoc before :mode :plain :shown 1)))]
+    (is (= :campaign (:mode db)))
+    (is (nil? (:shown db)))
+    (testing "the pool replaces what was there, at Average"
+      (is (= (dice/pool {:proficiency 1 :ability 2 :setback 1 :difficulty 2}) (:pool db))))
+    (testing "the log says what was rolled"
+      (is (= "Stealth" (:label (first (:rolls (roll-with db 42)))))))
+    (testing "the result shows, then Roll again starts from the check, keeping its Setback and dropping what was added"
+      (let [after (roll-with (run db [:add :boost] [:ladder 3]) 42)]
+        (is (some? (:shown after)))
+        (is (nil? (:shown (valid (ev/roll-again after [::ev/roll-again])))))
+        (is (= (dice/pool {:proficiency 1 :ability 2 :setback 1 :difficulty 2}) (:pool after)))))
+    (testing "closing leaves the Dice roller page as it was, keeping the log"
+      (let [after (roll-with db 42)
+            closed (valid (ev/close-check after [::ev/close-check]))]
+        (is (nil? (:check closed)))
+        (is (nil? (:shown closed)))
+        (is (= :plain (:mode closed)))
+        (is (= (:pool before) (:pool closed)))
+        (is (= 3 (:ladder closed)))
+        (is (= 1 (count (:rolls closed))))))
+    (testing "closing mid-roll: the late landing shows nothing, and the roll is in the log"
+      (let [{rolling :db} (ev/roll {:db db :seed 7} [::ev/roll])
+            closed (valid (ev/close-check rolling [::ev/close-check]))
+            landed (:db (ev/landed {:db closed} [::ev/landed (:rolling rolling)]))]
+        (is (nil? (:rolling closed)))
+        (is (nil? (:shown landed)))
+        (is (= 1 (count (:rolls landed))))))))
+
+(deftest only-ranged-attacks-show-range-bands
+  (is (db/ranged? {:range "Short"}))
+  (is (not (db/ranged? {:range "Engaged"})))
+  (is (not (db/ranged? nil))))
+
+(deftest closing-with-no-check-changes-nothing
+  (is (= db/default-db (ev/close-check db/default-db [::ev/close-check]))))
+
 (deftest rolling
   (let [db (run db/default-db [:add :ability] [:add :ability] [:add :boost])
         after (roll-with db 42)

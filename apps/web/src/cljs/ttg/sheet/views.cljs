@@ -5,6 +5,8 @@
             [re-frame.core :as rf]
             [ttg.content :as content]
             [ttg.genesys.rules :as r]
+            [ttg.roller.drawer :as roller]
+            [ttg.roller.events :as roller-ev]
             [ttg.routes :as routes]
             [ttg.sheet.events :as ev]
             [ttg.sheet.subscriptions :as subs]
@@ -14,6 +16,7 @@
 
 (defn- change! [& args] (rf/dispatch (into [::ev/change] args)))
 (defn- ui! [k v] (rf/dispatch [::ev/set-ui k v]))
+(defn- roll! [check] (rf/dispatch [::roller-ev/open-check check]))
 (defn- value [e] (.. e -target -value))
 (defn- kind-of [item] (some-> (:kind item) name))
 (defn- raise [n] (fn [v] (max 0 (+ (or v 0) n))))
@@ -50,7 +53,11 @@
 (defn- stats [c ix]
   (into [:section.stats {:aria-label "Characteristics"}]
         (for [k r/characteristics]
-          ^{:key k} [:div.stat [:b (r/characteristic c ix k)] [:span (r/characteristic-names k)]])))
+          (let [n (r/characteristic c ix k) stat (r/characteristic-names k)]
+            ^{:key k}
+            [:button.stat {:type "button" :aria-label (str "Roll " stat " " n)
+                           :on-click #(roll! (r/characteristic-check c ix k))}
+             [:b n] [:span stat]]))))
 
 ;; ---------- Vitals ----------
 
@@ -97,7 +104,8 @@
 
 (defn- skill-row [c ix skill]
   (let [rk (r/rank-of c ix skill) career? (r/career-skill? c ix skill)]
-    [:div.srow
+    [:button.srow {:type "button" :aria-label (str "Roll " (:name skill) ", rank " rk (when career? ", career skill"))
+                   :on-click #(roll! (r/skill-check c ix skill))}
      [:span.nm [:span.dot {:class (when-not career? "off") :title (if career? "Career skill" "Non-career skill")}]
       (:name skill) [:i (r/characteristic-short (keyword (:characteristic skill)))]]
      (into [:span.ranks {:aria-label (str "Rank " rk)}] (for [i (range 5)] [:i {:class (when (< i rk) "on")}]))
@@ -119,15 +127,17 @@
   (map #(str (:name %) (when (:rating %) (str " " (:rating %)))) qualities))
 
 (defn- weapon-card [c ix w]
-  (let [brawn (r/characteristic c ix :brawn)]
+  (let [attack (r/weapon-check c ix w)]
     [:div.item.weap
      [:div
       [:div.row1 [:h3 (:name w)] [:span.meta (:skill w)] [text/cite (:source w)]]
       [:div.stats-row
-       [:span "Dmg " [:b (if (:adds-brawn w) (+ brawn (:damage-bonus w 0)) (:damage w))]
+       [:span "Dmg " [:b (r/weapon-damage c ix w)]
         (when (:adds-brawn w) (str " (Br+" (:damage-bonus w 0) ")"))]
        [:span "Crit " [:b (:crit w)]] [:span "Range " [:b (:range w)]]
-       (for [q (quality-text w)] ^{:key q} [:span q])]]]))
+       (for [q (quality-text w)] ^{:key q} [:span q])]]
+     (when attack
+       [:button.btn.primary {:type "button" :aria-label (str "Roll " (:label attack)) :on-click #(roll! attack)} "Attack"])]))
 
 (defn- by-kind [c ix kind] (filter #(= kind (kind-of %)) (r/carried c ix)))
 
@@ -245,4 +255,5 @@
              [header character ix read-only? uploading? state]
              [stats character ix]
              [vitals character ix hit read-only?]
-             [:main.main [tabbed character ix sheet read-only?]]])]]))
+             [:main.main [tabbed character ix sheet read-only?]]
+             [roller/drawer]])]]))

@@ -7,6 +7,7 @@
 (rf/reg-sub ::pool (fn [db _] (:pool db)))
 (rf/reg-sub ::plain-pool (fn [db _] (:plain-pool db)))
 (rf/reg-sub ::ladder (fn [db _] (:ladder db)))
+(rf/reg-sub ::check (fn [db _] (:check db)))
 (rf/reg-sub ::reset-note? (fn [db _] (:reset-note? db)))
 (rf/reg-sub ::rolling (fn [db _] (:rolling db)))
 
@@ -24,6 +25,9 @@
 
 (rf/reg-sub ::shown
   (fn [db _] (some #(when (= (:id %) (:shown db)) %) (:rolls db))))
+
+;; In the drawer, R rolls until there's a result to read.
+(rf/reg-sub ::drawer-rolls? :<- [::check] :<- [::shown] (fn [[check shown] _] (and (some? check) (nil? shown))))
 
 (rf/reg-sub ::remaining :<- [::shown]
   (fn [roll [_ side]]

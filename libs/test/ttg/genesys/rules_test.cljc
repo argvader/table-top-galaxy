@@ -65,6 +65,27 @@
     (is (= {:wounds 17 :strain 13 :soak 5 :defense 1 :encumbrance 3 :encumbrance-max 12 :encumbrance-bonus 4}
            (r/derived c ix)) "the best armor is worn and weighs 3 less; a second pack adds no more carry")))
 
+(deftest checks-carry-their-pool
+  (let [c (assoc fizz :skill-buy {:brawl 1})]
+    (is (= {:label "Brawl" :detail "Brawn 2 · Rank 2" :pool {:proficiency 2 :ability 0 :setback 0}}
+           (r/skill-check c ix (s "Brawl"))))
+    (is (= {:label "Brawn check" :detail "Brawn 2, no skill" :pool {:ability 2 :setback 0}}
+           (r/characteristic-check c ix :brawn)))
+    (is (= {:label "Baton attack" :detail "Brawl · Brawn 2 · Rank 2" :pool {:proficiency 2 :ability 0 :setback 0}
+            :weapon {:range "Engaged" :crit 4 :damage 3}}
+           (r/weapon-check c ix {:name "Baton" :skill "Brawl" :range "Engaged" :crit 4 :adds-brawn true :damage-bonus 1})))
+    (is (= 6 (r/weapon-damage c ix {:damage 6})))
+    (is (nil? (r/weapon-check c ix {:name "Baton" :skill "Nothing"})))))
+
+(deftest being-encumbered-adds-setback
+  (let [heavy (r/index (assoc library :gear [{:id :crate :name "Crate" :kind :gear :price 1 :encumbrance 9 :group "Other"}]))
+        c (assoc fizz :gear [{:id "crate" :qty 1}])]
+    (testing "two over the threshold, on Brawn and Agility only"
+      (is (= 2 (r/encumbrance-setback c heavy :brawn) (r/encumbrance-setback c heavy :agility)))
+      (is (zero? (r/encumbrance-setback c heavy :presence))))
+    (is (= {:label "Brawn check" :detail "Brawn 2, no skill · Encumbered +2 setback" :pool {:ability 2 :setback 2}}
+           (r/characteristic-check c heavy :brawn)))))
+
 (deftest defense-is-capped
   (let [lib (assoc library :armor [{:id :fort :name "Fort" :kind :armor :soak 0 :defense 6 :price 1 :encumbrance 2}])
         ix (r/index lib)]

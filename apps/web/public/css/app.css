@@ -80,9 +80,9 @@ button:focus-visible, input:focus-visible, [tabindex]:focus-visible { outline: 2
 .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
 .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 5px 11px; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
-.chip .pips { display: inline-flex; gap: 2px; }
-.chip .pips i { width: 7px; height: 7px; transform: rotate(45deg); background: var(--d-diff); display: inline-block; }
-.chip[aria-pressed="true"] .pips i { outline: 1px solid var(--surface); }
+.chip .dp { display: inline-flex; gap: 2px; }
+.chip .dp i { width: 7px; height: 7px; transform: rotate(45deg); background: var(--d-diff); display: inline-block; }
+.chip[aria-pressed="true"] .dp i { outline: 1px solid var(--surface); }
 .chip small { color: var(--muted); }
 .chip[aria-pressed="true"] small { color: inherit; opacity: .75; }
 .upg { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px 0; }

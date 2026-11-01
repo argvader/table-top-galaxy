@@ -57,14 +57,36 @@
             (assoc db :plain-pool dice/empty-plain-pool)
             (-> db (assoc :pool dice/empty-pool) (apply-ladder db/default-ladder)))))
 
+;; ---------- The roll drawer on a sheet ----------
+
+(defn open-check
+  "A check tapped on a sheet: {:label :detail :pool :weapon}. Its pool goes in at Average."
+  [db [_ check]]
+  (let [check (-> check (update :pool dice/pool) (assoc :before (select-keys db [:mode :pool :ladder])))]
+    (-> db (assoc :mode :campaign :check check :pool (:pool check)) (apply-ladder db/default-ladder) edited)))
+
+(defn close-check
+  "Gives the Dice roller page its pool back. A roll still on the table stays in the log; replaying dice clears any others."
+  [db _]
+  (if-let [{:keys [before]} (:check db)]
+    (-> db (merge before) (assoc :check nil :rolling nil) edited)
+    db))
+
+(defn roll-again [db _] (edited db))
+
 ;; ---------- Rolling ----------
 
 (defn- pool-size [pool] (reduce + (vals pool)))
 
 (defn- reset-difficulty
-  "After a roll the next check starts fresh: Average, with no situational Boost or Setback."
+  "After a roll the next check starts fresh: Average, with no situational Boost or Setback. A check from a sheet goes back
+   to the pool it came with, which keeps any Setback from being encumbered."
   [db]
-  (-> db (update :pool assoc :boost 0 :setback 0) (apply-ladder db/default-ladder) (assoc :reset-note? true)))
+  (-> (if-let [check (:check db)]
+        (assoc db :pool (:pool check))
+        (update db :pool assoc :boost 0 :setback 0))
+      (apply-ladder db/default-ladder)
+      (assoc :reset-note? true)))
 
 (defn- log-roll [db entry]
   (update db :rolls #(vec (take db/log-size (cons entry %)))))
@@ -86,7 +108,7 @@
 
 (defn- roll-campaign [db seed]
   (let [{:keys [dice] :as rolled} (dice/roll (:pool db) (rng/seeded seed))]
-    (-> (throw-dice db seed (merge rolled {:label "Custom pool" :spent {}}) (mapv #(select-keys % [:type :face]) dice))
+    (-> (throw-dice db seed (merge rolled {:label (get-in db [:check :label] "Custom pool") :spent {}}) (mapv #(select-keys % [:type :face]) dice))
         (update :db reset-difficulty))))
 
 ;; Standard dice stay in the pool, so the same roll is one tap away.
@@ -135,6 +157,9 @@
 (rf/reg-event-db ::upgrade [validate-spec] upgrade)
 (rf/reg-event-db ::downgrade [validate-spec] downgrade)
 (rf/reg-event-db ::clear-pool [validate-spec] clear-pool)
+(rf/reg-event-db ::open-check [validate-spec] open-check)
+(rf/reg-event-db ::close-check [validate-spec] close-check)
+(rf/reg-event-db ::roll-again [validate-spec] roll-again)
 (rf/reg-event-fx ::roll [(rf/inject-cofx ::seed) validate-spec] roll)
 (rf/reg-event-fx ::landed [validate-spec] landed)
 (rf/reg-event-db ::spend [validate-spec] spend-option)

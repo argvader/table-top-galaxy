@@ -39,7 +39,7 @@
                 :on-click #(rf/dispatch [::ev/remove-die t])}
    [ui/die t nil (str "Remove " (:name (ui/die-info t)) " die")]])
 
-(defn- tray []
+(defn tray []
   (let [pool @(rf/subscribe [::sub/pool])
         side (fn [pred] (filter pred (dice/dice-list pool)))
         pos (side positive?) neg (side (complement positive?))]
@@ -78,25 +78,27 @@
     [:div.chips.modes {:role "group" :aria-label "Kind of dice"}
      [chip :campaign "Campaign dice"] [chip :plain "Standard dice"]]))
 
-(defn- ladder-chips []
+(defn ladder-chips
+  "attack? shows the range band each step stands for."
+  [attack?]
   (let [current @(rf/subscribe [::sub/ladder])
         pool @(rf/subscribe [::sub/pool])]
-    [:div.ladder [:span#ladder-label.label "Difficulty"]
+    [:div.ladder [:span#ladder-label.label (if attack? "Difficulty · range to target" "Difficulty")]
      (into [:div.chips {:role "group" :aria-labelledby "ladder-label"}]
-           (map-indexed (fn [i {:keys [name n]}]
+           (map-indexed (fn [i {:keys [name n range]}]
                           [:button.chip {:type "button" :on-click #(rf/dispatch [::ev/set-ladder i])
                                          :aria-pressed (and (= i current) (= n (+ (:difficulty pool) (:challenge pool))))}
-                           name (into [:span.pips] (repeat n [:i]))])
+                           name (into [:span.dp] (repeat n [:i])) (when (and attack? range) [:small range])])
                         db/ladder))]))
 
-(defn- upgrade-chips []
+(defn upgrade-chips []
   [:div.upg
    [:button.chip {:type "button" :on-click #(rf/dispatch [::ev/upgrade :ability])} "Upgrade ability"]
    [:button.chip {:type "button" :on-click #(rf/dispatch [::ev/upgrade :difficulty])} "Upgrade difficulty"]
    [:button.chip {:type "button" :on-click #(rf/dispatch [::ev/downgrade :ability])} "Downgrade ability"]
    [:button.chip {:type "button" :on-click #(rf/dispatch [::ev/downgrade :difficulty])} "Downgrade difficulty"]])
 
-(defn- odds-strip []
+(defn odds-strip []
   (when (pos? @(rf/subscribe [::sub/pool-size]))
     (let [{:keys [success advantage threat triumph despair]} @(rf/subscribe [::sub/odds])]
       [:div.odds {:aria-label "Chances for this pool"}
@@ -160,13 +162,16 @@
                (for [[i {:keys [type value]}] (map-indexed vector rolled)] ^{:key i} [ui/numbered-die type (str value)])]
    [:p.note (table-note (count (mapcat dice/thrown rolled))) [:span.seed "Seed " seed]]])
 
-(defn- narrative-result [{:keys [id seed dice result] :as roll}]
+(defn narrative-result
+  "extra goes between the dice and the spending: the drawer's damage line."
+  [{:keys [id seed dice result] :as roll} & [extra]]
   (let [raw (frequencies (mapcat :symbols dice)) c #(get raw % 0)]
     [:div#result.result
      [:div.verdict [:h3 {:class (if (:success? result) "ok" "no")} (verdict result)] [:p (flavor result)]]
      [net-line result]
      ^{:key id} [:div.rolled.tumble {:aria-label "Dice rolled"}
                  (for [[i d] (map-indexed vector dice)] ^{:key i} [ui/die (:type d) (:symbols d)])]
+     extra
      [:p.note (+ (c :success) (c :triumph)) " success symbols vs " (+ (c :failure) (c :despair)) " failure, "
       (c :advantage) " advantage vs " (c :threat) " threat. Triumph counts as a success; Despair counts as a failure. "
       (table-note (count dice)) [:span.seed "Seed " seed]]
@@ -217,7 +222,7 @@
                      :on-click #(rf/dispatch [::ev/roll])}
     "Roll" [:kbd "R"]]])
 
-(defn- live-region []
+(defn live-region []
   (let [roll @(rf/subscribe [::sub/shown])]
     [:div.sr {:aria-live "polite"}
      (when-let [total (:total roll)] (str (:label roll) ": " total "."))
@@ -231,7 +236,7 @@
    [mode-chips]
    (if (= :plain @(rf/subscribe [::sub/mode]))
      [:<> [plain-tray] [plain-steppers]]
-     [:<> [tray] [steppers] [ladder-chips] [upgrade-chips] [odds-strip]
+     [:<> [tray] [steppers] [ladder-chips false] [upgrade-chips] [odds-strip]
       (when @(rf/subscribe [::sub/reset-note?])
         [:div.reset-note "Difficulty reset to Average for your next check."])])
    [go-bar] [result-card] [live-region]])

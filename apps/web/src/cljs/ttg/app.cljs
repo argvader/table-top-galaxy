@@ -18,6 +18,7 @@
             [ttg.manager.views :as manager]
             [ttg.roller.effects]
             [ttg.roller.events :as ev]
+            [ttg.roller.subscriptions :as roller-sub]
             [ttg.roller.views :as roller]
             [ttg.routes :as routes]
             [ttg.sheet.events :as sheet-ev]
@@ -47,6 +48,7 @@
     {:db db
      :fx [[:dispatch [::sheet-ev/flush-now]]
           [:dispatch [::manager-ev/flush-now]]
+          [:dispatch [::ev/close-check]]
           (when load-event [:dispatch load-event])
           (when (and library? (= :idle (get-in db [:library :status]))) [:dispatch [::lib-ev/load]])
           (when library? [:dispatch [::lib-ev/route-changed]])]}))
@@ -114,12 +116,14 @@
 
 (defn- typing? [] (re-matches #"INPUT|TEXTAREA|SELECT" (.-tagName js/document.activeElement)))
 
-;; R rolls, as in the prototype, unless a modifier is held, focus is in a text field, or another page is open.
+;; R rolls, as in the prototype, unless a modifier is held, focus is in a text field, or nothing's open to roll.
+(defn- roll-key? [e]
+  (and (= "r" (.toLowerCase (.-key e))) (not (or (.-metaKey e) (.-ctrlKey e) (.-altKey e))) (not (typing?))
+       (or (= :roller (:page @(rf/subscribe [::route]))) @(rf/subscribe [::roller-sub/drawer-rolls?]))))
+
 (defn- on-key [e]
-  (when (and (= "r" (.toLowerCase (.-key e))) (not (or (.-metaKey e) (.-ctrlKey e) (.-altKey e))) (not (typing?))
-             (= :roller (:page @(rf/subscribe [::route]))))
-    (.preventDefault e)
-    (rf/dispatch [::ev/roll])))
+  (cond (= "Escape" (.-key e)) (rf/dispatch [::ev/close-check])
+        (roll-key? e) (do (.preventDefault e) (rf/dispatch [::ev/roll]))))
 
 (defonce ^:private keys-bound (delay (.addEventListener js/document "keydown" on-key)))
 

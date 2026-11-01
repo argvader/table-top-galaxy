@@ -141,6 +141,42 @@
   (let [ch (characteristic c ix (skill-characteristic skill)) rk (rank-of c ix skill)]
     {:proficiency (min ch rk) :ability (- (max ch rk) (min ch rk))}))
 
+;; ---------- Checks: what the sheet hands the roller ----------
+
+(defn encumbrance-setback
+  "One Setback per point over the threshold, on Agility and Brawn checks (p.85)."
+  [c ix k]
+  (let [{:keys [encumbrance encumbrance-max]} (derived c ix)]
+    (if (#{:agility :brawn} k) (max 0 (- encumbrance encumbrance-max)) 0)))
+
+(defn- check [c ix k label detail pool]
+  (let [setback (encumbrance-setback c ix k)]
+    {:label label
+     :detail (cond-> detail (pos? setback) (str " · Encumbered +" setback " setback"))
+     :pool (assoc pool :setback setback)}))
+
+(defn- skill-detail [c ix skill]
+  (let [k (skill-characteristic skill)]
+    (str (characteristic-names k) " " (characteristic c ix k) " · Rank " (rank-of c ix skill))))
+
+(defn characteristic-check [c ix k]
+  (let [n (characteristic c ix k) stat (characteristic-names k)]
+    (check c ix k (str stat " check") (str stat " " n ", no skill") {:ability n})))
+
+(defn skill-check [c ix skill]
+  (check c ix (skill-characteristic skill) (:name skill) (skill-detail c ix skill) (skill-pool c ix skill)))
+
+(defn weapon-damage [c ix w]
+  (if (:adds-brawn w) (+ (characteristic c ix :brawn) (:damage-bonus w 0)) (:damage w)))
+
+(defn weapon-check
+  "nil when the library has no skill by the weapon's name."
+  [c ix w]
+  (when-let [skill (first (filter #(= (:skill w) (:name %)) (:skills ix)))]
+    (-> (check c ix (skill-characteristic skill) (str (:name w) " attack")
+               (str (:name skill) " · " (skill-detail c ix skill)) (skill-pool c ix skill))
+        (assoc :weapon {:range (:range w) :crit (:crit w) :damage (weapon-damage c ix w)}))))
+
 ;; ---------- Purchase checks: nil when allowed, otherwise the reason ----------
 
 (defn- short-of [c ix cost]

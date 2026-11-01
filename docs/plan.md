@@ -171,7 +171,8 @@ The re-frame app validates app-db with spec after each event when `goog.DEBUG` i
 4. **Character builder and sheet.** Saved locally first, then synced through the API with Cognito auth.
    - Built 2026-10-30, not yet deployed. `ttg.genesys.rules` holds the rules, shared with the API. The builder keeps a browser draft until the character is created, and the sheet autosaves. Portraits go to their own retained bucket; the 8 palettes in `ttg.theme` have no picker for now, so every sheet uses the default (ttg-8ax).
    - Encumbrance and defense follow the book in both screens: worn armor counts 3 less, and defense caps at 4. The two prototypes disagreed on this.
-   - Not ported for Session 0: sheet Crits and History tabs, the roll drawer (tap a skill to roll), story points. The Combat tab is read-only.
+   - The roll drawer: tapping a skill, characteristic or weapon opens it on the sheet, a side panel on desktop and a bottom sheet on a phone. It shares the Dice roller's pool, spending and log, shows damage on a hit, and adds any Setback from encumbrance.
+   - Not ported for Session 0: sheet Crits and History tabs, story points, and spends that change the sheet (Recover 1 strain).
 5. **Campaigns.** Invites, roles, player sheets visible to the GM, and server-side redaction of GM-only data.
    - Screens built 2026-10-30: campaign list and detail, invite links, `#/join/<code>`, and a read-only sheet for the GM.
 6. **Realtime table.** Shared roll feed, Story Point pool, initiative, and live wound/strain on the GM dashboard.

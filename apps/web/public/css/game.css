@@ -387,6 +387,10 @@ textarea { width: 100%; min-height: 220px; padding: 10px 12px; border-radius: 10
 .drawer h2 { margin: 0; font-family: var(--f-display); font-size: 26px; line-height: 1.05; font-weight: 700; }
 .drawer .meta { font-size: 13px; color: var(--muted); }
 .drawer .body { overflow: auto; padding: 0 16px 16px; display: grid; gap: 12px; }
+.drawer .tray, .drawer .result { margin: 0; }
+.drawer .result { border-top: 0; padding-top: 0; }
+.drawer .ladder, .drawer .upg, .drawer .odds { padding: 0; }
+.drawer .chip small { margin-left: 2px; }
 .x { border: 0; background: var(--surface-2); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: none; }
 .tray { border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); padding: 12px; min-height: 76px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .tray .vs { font-family: var(--f-display); color: var(--muted); padding: 0 4px; font-size: 13px; letter-spacing: .1em; }
