@@ -28,17 +28,35 @@
 
 (defn index
   "The parts of a {type [entry]} library the rules read, keyed by string id."
-  [{:keys [archetypes careers skills talents weapons armor gear motivations obligation-types]}]
+  [{:keys [archetypes careers skills talents weapons armor gear motivations obligation-types crits]}]
   {:archetypes (by-id archetypes) :careers (by-id careers) :talents (by-id talents)
    :gear (by-id (concat weapons armor gear))
-   :skills (vec skills) :motivations (vec motivations) :obligations (vec obligation-types)})
+   :skills (vec skills) :motivations (vec motivations) :obligations (vec obligation-types)
+   :crits (vec (sort-by (comp first :roll) crits))})
 
 (defn blank-character []
   {:name "" :tagline "" :archetype nil :career nil :career-picks [] :arch-picks []
    :char-buy {} :skill-buy {} :talents [] :gear [] :free-item nil :pocket nil :s0 ""
    :motives (into {} (map (fn [t] [(keyword (str/lower-case t)) {:name "" :text ""}])) motive-types)
    :ob {:type nil :magnitude 10 :attachment "" :why ""}
-   :wounds-taken 0 :strain-taken 0 :earned-xp 0 :notes ""})
+   :wounds-taken 0 :strain-taken 0 :earned-xp 0 :notes "" :crits []})
+
+;; ---------- Critical injuries (Table I.6-10, CRB p.115) ----------
+
+(defn crit-bonus
+  "Each critical injury a character already has adds 10 to the next roll."
+  [c]
+  (* 10 (count (:crits c))))
+
+(defn crit-for
+  "The injury a d100 total lands on. The table's last row has no upper end."
+  [ix total]
+  (some (fn [{[lo hi] :roll :as crit}] (when (and (>= total lo) (or (nil? hi) (<= total hi))) crit)) (:crits ix)))
+
+(defn crit-entry
+  "The library's entry for an injury on a character, keeping what the character recorded (the total rolled, the date)."
+  [ix {:keys [id] :as injury}]
+  (merge (some #(when (= (name id) (name (:id %))) %) (:crits ix)) injury))
 
 (defn motive-key [type] (keyword (str/lower-case type)))
 

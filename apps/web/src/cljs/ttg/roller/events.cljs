@@ -60,10 +60,21 @@
 ;; ---------- The roll drawer on a sheet ----------
 
 (defn open-check
-  "A check tapped on a sheet: {:label :detail :pool :weapon}. Its pool goes in at Average."
+  "A check tapped on a sheet: {:label :detail :pool :weapon}. Its pool goes in at Average. Ignored while the last drawer
+   is still leaving: that check's close is on its way and would take this one with it."
   [db [_ check]]
-  (let [check (-> check (update :pool dice/pool) (assoc :before (select-keys db [:mode :pool :ladder])))]
-    (-> db (assoc :mode :campaign :check check :pool (:pool check)) (apply-ladder db/default-ladder) edited)))
+  (if (get-in db [:check :closing?])
+    db
+    (let [check (-> check (update :pool dice/pool) (assoc :before (select-keys db [:mode :pool :ladder])))]
+      (-> db (assoc :mode :campaign :check check :pool (:pool check)) (apply-ladder db/default-ladder) edited))))
+
+(defn dismiss-check
+  "Slides the drawer away, and closes the check once it's gone so its contents hold still on the way out."
+  [{:keys [db]} _]
+  (when-let [{:keys [closing?]} (:check db)]
+    (when-not closing?
+      {:db (assoc-in db [:check :closing?] true)
+       :fx [[:dispatch-later {:ms db/drawer-out-ms :dispatch [::close-check]}]]})))
 
 (defn close-check
   "Gives the Dice roller page its pool back. A roll still on the table stays in the log; replaying dice clears any others."
@@ -158,6 +169,7 @@
 (rf/reg-event-db ::downgrade [validate-spec] downgrade)
 (rf/reg-event-db ::clear-pool [validate-spec] clear-pool)
 (rf/reg-event-db ::open-check [validate-spec] open-check)
+(rf/reg-event-fx ::dismiss-check [validate-spec] dismiss-check)
 (rf/reg-event-db ::close-check [validate-spec] close-check)
 (rf/reg-event-db ::roll-again [validate-spec] roll-again)
 (rf/reg-event-fx ::roll [(rf/inject-cofx ::seed) validate-spec] roll)

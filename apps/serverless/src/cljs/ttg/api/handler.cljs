@@ -12,6 +12,7 @@
             [ttg.api.async :refer [go-try <?]]
             [ttg.api.aurora :as aurora]
             [ttg.api.campaigns :as campaigns]
+            [ttg.api.chronicle :as chronicle]
             [ttg.api.characters :as characters]
             [ttg.api.gateway :as gateway]
             [ttg.api.images :as images]
@@ -90,6 +91,8 @@
    ["PUT" "/campaigns/:id" :campaigns/put]
    ["DELETE" "/campaigns/:id" :campaigns/delete]
    ["GET" "/campaigns/:id/library" :campaigns/library]
+   ["GET" "/campaigns/:id/chronicle" :campaigns/chronicle]
+   ["GET" "/campaigns/:id/chronicle/:kind/:slug" :campaigns/chronicle-entry]
    ["GET" "/campaigns/:id/manager" :campaigns/manager]
    ["PUT" "/campaigns/:id/manager" :campaigns/save-manager]
    ["GET" "/campaigns/:id/manager/content" :campaigns/manager-content]
@@ -141,6 +144,10 @@
       :campaigns/delete (campaigns/delete! db (:id u) (id))
       :campaigns/invite (campaigns/invite! db (:id u) (id))
       :campaigns/library (campaign-library stores (:id u) (id))
+      :campaigns/chronicle (chronicle/index db (:id u) (id))
+      :campaigns/chronicle-entry (chronicle/entry db (:id u) (id)
+                                                  (check! ::model/chronicle-kind (:kind params) "No such kind of page")
+                                                  (check! ::model/chronicle-slug (:slug params) "Not a valid page"))
       :campaigns/manager (campaigns/manager db (:id u) (id))
       :campaigns/save-manager (campaigns/save-manager! db (:id u) (id) (json-text! req))
       :campaigns/manager-content (campaigns/manager-content db (:id u) (id))

@@ -1,8 +1,10 @@
 (ns ttg.sheet.views
   "The character sheet, with the prototype's markup and classes (css/game.css). Vitals, notes and portrait are
-   edited here and save themselves; everything bought goes through the builder."
+   edited here and save themselves; everything bought goes through the builder. On a desktop Skills is its own panel
+   beside the tabs; on a tablet or phone it's the first tab."
   (:require [clojure.string :as str]
             [re-frame.core :as rf]
+            [reagent.core :as reagent]
             [ttg.content :as content]
             [ttg.genesys.rules :as r]
             [ttg.roller.drawer :as roller]
@@ -20,6 +22,14 @@
 (defn- value [e] (.. e -target -value))
 (defn- kind-of [item] (some-> (:kind item) name))
 (defn- raise [n] (fn [v] (max 0 (+ (or v 0) n))))
+(defn- day [at] (when at (.toLocaleDateString (js/Date. at))))
+
+;; The window's width, which decides whether Skills is a panel or a tab. Same breakpoint as .main in css/game.css.
+(defonce ^:private desk?
+  (let [query (js/window.matchMedia "(min-width: 1000px)")
+        desk (reagent/atom (.-matches query))]
+    (.addEventListener query "change" #(reset! desk (.-matches %)))
+    desk))
 
 ;; ---------- Header ----------
 
@@ -183,6 +193,30 @@
       #(str (when (= (:id %) worn) "Worn · ") "Soak +" (:soak % 0) " · Defense " (:defense % 0) " · " (enc %))]
      [gear-section "Gear" (by-kind c ix "gear") #(str "×" (:qty %) " · " (enc %))]]))
 
+(def ^:private heal-difficulty ["Can't be healed" "Easy to heal" "Average to heal" "Hard to heal" "Daunting to heal"])
+
+(defn- crit-card [ix i injury read-only?]
+  (let [{:keys [name severity roll at source text]} (r/crit-entry ix injury)]
+    [:div.item
+     [:div.row1 [:h3 name] (when severity [:span.tag (heal-difficulty severity)])
+      [:span.meta "rolled " roll (when at (str " · " (day at)))] (when source [text/cite source])]
+     (when text [:p [text/rich text]])
+     (when-not read-only?
+       [:div.acts [:button.btn {:type "button" :on-click #(rf/dispatch [::ev/heal-crit i])} "Mark healed"]])]))
+
+(defn- crit-roller [c {:keys [raw bonus total name]}]
+  [:div.critroll
+   [:button.btn.danger {:type "button" :on-click #(rf/dispatch [::ev/roll-crit (inc (rand-int 100))])} "Roll critical injury"]
+   [:span.meta "d100 + " (r/crit-bonus c) " for " (count (:crits c)) " active"]
+   (when name [:span {:role "status"} "Rolled " [:b raw] " + " bonus " = " [:b total] ": " [:strong name]])])
+
+(defn- tab-crits [c ix last-crit read-only?]
+  [:<>
+   (when-not read-only? [crit-roller c last-crit])
+   (if (seq (:crits c))
+     (into [:div.list] (map-indexed (fn [i injury] ^{:key i} [crit-card ix i injury read-only?])) (:crits c))
+     [:p.note "No active critical injuries."])])
+
 (defn- obligation-box [c ix]
   (let [ob (r/obligation c ix) {:keys [magnitude attachment why]} (:ob c)
         title (if (= "secret" (some-> ob :kind name)) "Secret" "Obligation")]
@@ -211,24 +245,47 @@
    [:textarea {:id "notes" :value (:notes c) :read-only read-only? :on-change #(change! assoc :notes (value %))}]
    (when-not read-only? [:p.note "Saves as you type."])])
 
-(def ^:private tabs [[:skills "Skills"] [:combat "Combat"] [:talents "Talents"] [:gear "Gear"]
+(def ^:private tabs [[:skills "Skills"] [:combat "Combat"] [:talents "Talents"] [:gear "Gear"] [:crits "Crits"]
                      [:story "Obligation & story"] [:notes "Notes"]])
 
-(defn- tab-body [c ix {:keys [tab q]} read-only?]
+(defn- shown-tab
+  "Skills is the phone's first tab. A desktop has it in its own panel, so it opens on Combat."
+  [tab desk]
+  (if (and desk (= :skills tab)) :combat tab))
+
+(defn- tab-count [c ix id]
+  (let [n (case id :talents (count (:talents c)) :gear (count (r/carried c ix)) :crits (count (:crits c)) 0)]
+    (when (pos? n) [:span.count n])))
+
+(defn- tab-body [c ix {:keys [q last-crit]} tab read-only?]
   (case tab
     :combat [tab-combat c ix]
     :talents [tab-talents c ix]
     :gear [tab-gear c ix]
+    :crits [tab-crits c ix last-crit read-only?]
     :story [tab-story c ix]
     :notes [tab-notes c read-only?]
     [tab-skills c ix q]))
 
-(defn- tabbed [c ix {:keys [tab] :as sheet} read-only?]
-  [:section.card
-   (into [:nav.tabs.sticky {:role "tablist" :aria-label "Sheet sections"}]
-         (for [[id label] tabs]
-           ^{:key id} [:button {:type "button" :role "tab" :aria-selected (= tab id) :on-click #(ui! :tab id)} label]))
-   [:div.tabbody {:role "tabpanel"} [tab-body c ix sheet read-only?]]])
+(defn- tabbed [c ix sheet desk read-only?]
+  (let [tab (shown-tab (:tab sheet) desk)]
+    [:section.card
+     (into [:nav.tabs.sticky {:role "tablist" :aria-label "Sheet sections"}]
+           (for [[id label] tabs :when (not (and desk (= :skills id)))]
+             ^{:key id} [:button {:type "button" :role "tab" :aria-selected (= tab id) :on-click #(ui! :tab id)}
+                         label [tab-count c ix id]]))
+     [:div.tabbody {:role "tabpanel" :class (when (= :skills tab) "flush")} [tab-body c ix sheet tab read-only?]]]))
+
+(defn- skills-panel [c ix q]
+  [:section.card.panel {:aria-labelledby "h-skills"}
+   [:header [:h2#h-skills "Skills"] [:span.label "Tap to roll"]]
+   [tab-skills c ix q]])
+
+(defn- panels [c ix sheet read-only?]
+  (let [desk @desk?]
+    [:main.main
+     (when desk [skills-panel c ix (:q sheet)])
+     [tabbed c ix sheet desk read-only?]]))
 
 (defn- banners [{:keys [conflict? error character]}]
   [:<>
@@ -255,5 +312,5 @@
              [header character ix read-only? uploading? state]
              [stats character ix]
              [vitals character ix hit read-only?]
-             [:main.main [tabbed character ix sheet read-only?]]
+             [panels character ix sheet read-only?]
              [roller/drawer]])]]))

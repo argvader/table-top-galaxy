@@ -463,9 +463,35 @@ h4 .left svg { width: 13px; height: 13px; vertical-align: -2px; }
 .page-sheet .ident .portrait .face { width: 64px; height: 64px; }
 /* The single column has to be told it can shrink, or the scrolling step list sets the page's width. */
 @media (max-width: 999px) { .page-builder .shell { grid-template-columns: minmax(0, 1fr); } }
-/* The prototype's side Skills panel became a tab, so the tabs take the full width. */
-.page-sheet .main { grid-template-columns: minmax(0, 1fr); }
+/* Skills sits edge to edge, in its panel and in its tab on a phone. */
+.tabbody.flush { padding: 8px 0; }
+/* The roll drawer slides in from the side, or up from the bottom on a phone. Its exit matches roller.db/drawer-out-ms. */
+@keyframes scrim-in { from { opacity: 0; } }
+@keyframes scrim-out { to { opacity: 0; } }
+@keyframes drawer-in-side { from { transform: translateX(100%); } }
+@keyframes drawer-out-side { to { transform: translateX(100%); } }
+@keyframes drawer-in-up { from { transform: translateY(100%); } }
+@keyframes drawer-out-down { to { transform: translateY(100%); } }
+.page-sheet .scrim { animation: scrim-in 280ms ease-out; }
+.page-sheet .scrim.closing { animation: scrim-out 220ms ease-in forwards; }
+.page-sheet .drawer { animation: drawer-in-side 280ms cubic-bezier(.2, .8, .2, 1); }
+.page-sheet .drawer.closing { animation: drawer-out-side 220ms ease-in forwards; }
+@media (max-width: 759px) {
+  .page-sheet .drawer { animation-name: drawer-in-up; }
+  .page-sheet .drawer.closing { animation-name: drawer-out-down; }
+}
+@media (prefers-reduced-motion: reduce) { .page-sheet .scrim, .page-sheet .drawer { animation: none; } }
 a.btn { text-decoration: none; }
+/* The Chronicle's pages. */
+.table-page .prose { display: grid; gap: 12px; font-size: 16px; line-height: 1.55; min-width: 0; }
+.table-page .prose > * { margin: 0; }
+.table-page .prose h3, .table-page .prose h4 { font-family: var(--f-display); margin: 8px 0 0; }
+.table-page .prose h2 { margin: 8px 0 0; }
+.table-page .prose ul, .table-page .prose ol { padding-left: 22px; display: grid; gap: 4px; }
+.table-page .prose blockquote { border-left: 3px solid var(--accent); padding-left: 12px; color: var(--muted); }
+.table-page .prose hr { width: 100%; border: 0; border-top: 1px solid var(--line); }
+.table-page .prose img, .chronicle-card { display: block; width: 100%; height: auto; border-radius: 10px; }
+.chronicle-sub { color: var(--muted); font-size: 13px; }
 /* Room for the fixed bottom bar, so the last thing on the page (Create character) can scroll clear of it. */
 @media (max-width: 999px) { .page-builder { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); } }
 

@@ -124,3 +124,23 @@
     (is (contains? (messages (assoc fizz :char-buy {:brawn 4})) "Brawn is 6. The most is 5"))
     (is (contains? (messages (assoc fizz :ob {:type "debt" :magnitude 5 :attachment "" :why ""})) "Say who or what your Obligation ties you to"))
     (is (= :warn (:level (first (filter #(= "No gear bought yet" (:text %)) (r/issues fizz ix))))))))
+
+(deftest critical-injuries
+  (let [crits {:crits [{:id :top :name "Top" :roll [151 nil] :severity 0}
+                       {:id :low :name "Low" :roll [1 5] :severity 1 :text "Sting."}
+                       {:id :mid :name "Mid" :roll [6 150] :severity 2}]}
+        ix (r/index crits)]
+    (testing "each injury already carried adds 10"
+      (is (zero? (r/crit-bonus {:crits []})))
+      (is (= 20 (r/crit-bonus {:crits [{} {}]}))))
+    (testing "a total lands on its row, and the last row has no top"
+      (is (= "Low" (:name (r/crit-for ix 5))))
+      (is (= "Mid" (:name (r/crit-for ix 6))))
+      (is (= "Top" (:name (r/crit-for ix 400)))))
+    (testing "no table, no injury"
+      (is (nil? (r/crit-for (r/index {}) 50))))
+    (testing "an injury reads its text from the library and keeps the total rolled"
+      (is (= {:id "low" :name "Low" :roll 4 :severity 1 :text "Sting."}
+             (r/crit-entry ix {:id "low" :name "Low" :roll 4}))))
+    (testing "an injury the library has lost still shows"
+      (is (= {:id "gone" :name "Gone" :roll 4} (r/crit-entry ix {:id "gone" :name "Gone" :roll 4}))))))

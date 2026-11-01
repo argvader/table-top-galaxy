@@ -43,5 +43,8 @@
 (s/def ::campaign (s/and (s/keys :req-un [::name] :opt-un [::gm]) ::fits))
 (s/def ::campaign-body (s/keys :req-un [::campaign]))
 
+(s/def ::chronicle-kind #{"session" "pc" "npc" "faction" "location"})
+(s/def ::chronicle-slug (s/and string? #(re-matches #"[a-z0-9-]{1,120}" %)))
+
 (s/def ::campaign-id (s/nilable ::uuid))
 (s/def ::link-body (s/keys :req-un [::campaign-id]))

@@ -6,7 +6,8 @@
   (doseq [r [{:page :roller} {:page :library} {:page :library :type :weapons} {:page :library :type :talents :id :new}
              {:page :campaigns} {:page :campaign :id "c1"} {:page :join :code "ab12"}
              {:page :builder} {:page :builder :campaign-id "c1"} {:page :builder :character-id "x1"}
-             {:page :sheet :id "x1"}]]
+             {:page :sheet :id "x1"} {:page :chronicle :id "c1"}
+             {:page :chronicle :id "c1" :kind "npc" :slug "imre-vasko"}]]
     (is (= r (routes/parse (routes/href r))))))
 
 (deftest no-hash-lands-on-your-campaigns

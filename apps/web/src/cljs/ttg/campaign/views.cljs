@@ -94,6 +94,7 @@
         (when gm? [invites invite-code copied?])
         (when gm?
           [:p [:a.btn {:href (routes/href {:page :manager :id (:id campaign)})} "Campaign manager"]])
+        [:p [:a.btn {:href (routes/href {:page :chronicle :id (:id campaign)})} "Chronicle"]]
         [:section.box
          [:h2 "Characters"]
          (if (seq roster)

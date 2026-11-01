@@ -84,6 +84,9 @@
   chronicle:roster {:doc  "Write campaigns/manifest-destiny/roster.json from the campaign's members: bb chronicle:roster [local|dev|prod] <campaign-id>"
                     :task (apply chronicle/roster! *command-line-args*)}
 
+  chronicle:publish {:doc  "Publish campaigns/manifest-destiny/chronicle to a campaign's members: bb chronicle:publish [dev|prod] <campaign-id> [--yes] [--unpublish <slug>]"
+                     :task (apply chronicle/publish-chronicle! *command-line-args*)}
+
   chronicle:manager {:doc  "Copy the manager document into the newest session folder: bb chronicle:manager [local|dev|prod] <campaign-id> [--date D]"
                      :task (apply chronicle/manager! *command-line-args*)}
 

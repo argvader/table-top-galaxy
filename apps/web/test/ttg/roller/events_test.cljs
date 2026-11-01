@@ -43,6 +43,23 @@
 (defn- open-check [db] (ev/open-check db [::ev/open-check stealth]))
 (defn- valid [db] (is (s/valid? ::db/app-db db) (s/explain-str ::db/app-db db)) db)
 
+(deftest the-drawer-slides-away-before-it-closes
+  (let [db (open-check db/default-db)
+        fx (ev/dismiss-check {:db db} [::ev/dismiss-check])
+        leaving (valid (:db fx))]
+    (testing "what's in the drawer holds still while it leaves"
+      (is (= (:pool db) (:pool leaving)))
+      (is (= "Stealth" (get-in leaving [:check :label])))
+      (is (true? (get-in leaving [:check :closing?]))))
+    (testing "the close comes once it's gone"
+      (is (= [[:dispatch-later {:ms db/drawer-out-ms :dispatch [::ev/close-check]}]] (:fx fx))))
+    (testing "a second dismiss doesn't schedule another close"
+      (is (nil? (ev/dismiss-check {:db leaving} [::ev/dismiss-check]))))
+    (testing "nothing's open"
+      (is (nil? (ev/dismiss-check {:db db/default-db} [::ev/dismiss-check]))))
+    (testing "a check tapped while it leaves is ignored"
+      (is (= leaving (ev/open-check leaving [::ev/open-check (assoc stealth :label "Cool")]))))))
+
 (deftest the-drawer-holds-a-check
   (let [before (run db/default-db [:mode :plain] [:add :d6] [:mode :campaign] [:add :boost] [:ladder 3])
         db (valid (open-check (assoc before :mode :plain :shown 1)))]

@@ -18,7 +18,7 @@
 
 (defn- body [campaign] (db/->json (dissoc campaign :id :name :role)))
 
-(defn- role! [d user-id campaign-id]
+(defn role! [d user-id campaign-id]
   (go-try
     (or (<? (characters/role-in d user-id campaign-id))
         (reject! 404 "No such campaign" {:id campaign-id}))))

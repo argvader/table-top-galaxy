@@ -176,6 +176,18 @@ bb manager:seed dev <campaign-id>     # the id is in the campaign page's address
 campaign's members, and each edit is kept in the browser until the server has it, so a failed save shows a banner and
 arrives on the next visit.
 
+### The Chronicle
+
+Session recaps and wiki pages every member of a campaign can read, from a link on the campaign's page. The pipeline in
+`campaigns/manifest-destiny` writes them, and publishing puts them in the database and their images in the portrait bucket:
+
+```bash
+bb db:migrate dev                                  # once, for 003_chronicle.sql
+bb api:deploy dev && bb web:deploy dev
+bb chronicle:publish dev <campaign-id>             # lists what will change, then asks
+bb chronicle:publish dev <campaign-id> --unpublish <slug>
+```
+
 ### Going live for a game
 
 ```bash

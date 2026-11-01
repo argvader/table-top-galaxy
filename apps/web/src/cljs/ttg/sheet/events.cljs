@@ -20,6 +20,8 @@
     (rf/after (partial check-and-throw ::db/app-db))
     []))
 
+(rf/reg-cofx ::now (fn [cofx _] (assoc cofx :now (.toISOString (js/Date.)))))
+
 (rf/reg-fx ::prepare-portrait
   (fn [file]
     (-> (portrait/prepare file)
@@ -98,6 +100,26 @@
       (let [taken (max 0 (- n soak))]
         (change {:db (assoc-in db [:sheet :hit] "")} [::change update :wounds-taken + taken])))))
 
+(defn roll-crit
+  "raw is the d100. A library with no injury table for the total does nothing."
+  [{:keys [db now]} [_ raw]]
+  (let [c (get-in db [:sheet :character])
+        bonus (rules/crit-bonus c)
+        total (+ raw bonus)]
+    (when-let [crit (rules/crit-for (get-in db [:content :ix]) total)]
+      (let [title (:name crit)
+            injury {:id (name (:id crit)) :name title :roll total :at now}]
+        (change {:db (assoc-in db [:sheet :last-crit] {:raw raw :bonus bonus :total total :name title})}
+                [::change update :crits (fnil conj []) injury])))))
+
+(defn- without [v i] (vec (concat (subvec v 0 i) (subvec v (inc i)))))
+
+(defn heal-crit
+  "i is the injury's place on the sheet: a character can carry the same injury twice."
+  [{:keys [db]} [_ i]]
+  (when (get-in db [:sheet :character :crits i])
+    (change {:db db} [::change update :crits without i])))
+
 (defn upload [{:keys [db]} [_ file]]
   {:db (update db :sheet assoc :uploading? true :error nil)
    ::prepare-portrait file})
@@ -128,6 +150,8 @@
 (rf/reg-event-fx ::retry [validate-spec] retry)
 (rf/reg-event-db ::set-ui [validate-spec] set-ui)
 (rf/reg-event-fx ::take-hit [validate-spec] take-hit)
+(rf/reg-event-fx ::roll-crit [(rf/inject-cofx ::now) validate-spec] roll-crit)
+(rf/reg-event-fx ::heal-crit [validate-spec] heal-crit)
 (rf/reg-event-fx ::upload [validate-spec] upload)
 (rf/reg-event-fx ::portrait-ready [validate-spec] portrait-ready)
 (rf/reg-event-db ::portrait-saved [validate-spec] portrait-saved)

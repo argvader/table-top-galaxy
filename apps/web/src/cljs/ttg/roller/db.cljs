@@ -1,7 +1,8 @@
 (ns ttg.roller.db
   "The roller's slice of app-db: the pools being built and the log of rolls (newest first). :mode says which pool
    the Roll button throws: the campaign's narrative dice, or standard numbered dice. :check is the check open in a
-   character sheet's roll drawer, which uses the same pool and log; :before is what the Dice roller page gets back."
+   character sheet's roll drawer, which uses the same pool and log; :before is what the Dice roller page gets back,
+   and :closing? means the drawer is on its way off screen."
   (:require [clojure.spec.alpha :as s]
             [ttg.dice :as dice]
             [ttg.dice.model :as dm]))
@@ -43,13 +44,18 @@
 (s/def ::detail string?)
 (s/def ::weapon map?)
 (s/def ::before (s/keys :req-un [::mode ::pool ::ladder]))
-(s/def ::check (s/nilable (s/keys :req-un [::label ::detail ::pool ::before] :opt-un [::weapon])))
+(s/def ::closing? boolean?)
+(s/def ::check (s/nilable (s/keys :req-un [::label ::detail ::pool ::before] :opt-un [::weapon ::closing?])))
 (s/def ::campaign-roll (s/merge ::dm/roll (s/keys :req-un [::id ::seed ::label ::spent])))
 (s/def ::plain-roll (s/merge ::dm/plain-roll (s/keys :req-un [::id ::seed ::label])))
 (s/def ::roll (s/or :campaign ::campaign-roll :plain ::plain-roll))
 (s/def ::rolls (s/coll-of ::roll :kind vector? :max-count log-size))
 
 (s/def ::app-db (s/keys :req-un [::mode ::pool ::plain-pool ::ladder ::check ::reset-note? ::next-id ::shown ::rolling ::rolls]))
+
+(def drawer-out-ms
+  "How long the drawer takes to leave. Matches the drawer-out animations in css/game.css."
+  220)
 
 (def default-db
   {:mode :campaign

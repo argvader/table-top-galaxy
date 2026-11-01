@@ -4,6 +4,8 @@
             [cljs.test :refer [deftest is async]]
             [ttg.api.campaigns :as campaigns]
             [ttg.api.characters :as characters]
+            [ttg.api.chronicle :as chronicle]
+            [ttg.api.db :as db]
             [ttg.api.images :as images]
             [ttg.api.pglite :as pglite]))
 
@@ -169,4 +171,33 @@
           (is (= 404 (status (<! (campaigns/manager t (:id krum) cid)))) "nor can a stranger")
           (is (= (:id gm) (<! (campaigns/library-owner t (:id prance) cid))) "a player builds from the GM's library")
           (is (= 404 (status (<! (campaigns/library-owner t (:id krum) cid)))))
+          (done)))))
+
+(defn- publish [t id kind slug title body & [number]]
+  (db/query t "INSERT INTO chronicle_entries (campaign_id, kind, slug, title, body, number)
+               VALUES (CAST(:id AS uuid), :kind, :slug, :title, :body, CAST(:number AS integer))"
+            {:id id :kind kind :slug slug :title title :body body :number number}))
+
+(deftest the-chronicle-is-for-members
+  (async done
+    (go (let [t (<! (pglite/pglite {}))
+              id (get-in (<! (campaigns/create! t gm {:name "Manifest Destiny"})) [:campaign :id])
+              code (:code (<! (campaigns/invite! t (:id gm) id)))
+              _ (<! (campaigns/join! t prance code))
+              _ (<! (publish t id "session" "2026-11-04" "A Debt" "# A Debt" 0))
+              _ (<! (publish t id "session" "2026-11-11" "The Gate" "# The Gate" 1))
+              _ (<! (publish t id "npc" "rook" "Rook" "# Rook"))
+              _ (<! (publish t id "pc" "prance" "Prance Galavent" "# Prance"))
+              c (:character (<! (characters/create! t (:id prance) {:name "Prance Galavent"})))
+              _ (<! (characters/set-campaign! t (:id prance) (:id c) id))
+              listed (:entries (<! (chronicle/index t (:id prance) id)))]
+          (is (= ["The Gate" "A Debt" "Prance Galavent" "Rook"] (map :title listed)) "sessions newest first, then the wiki")
+          (is (not-any? :body listed) "the list has no bodies")
+          (is (= "# Rook" (get-in (<! (chronicle/entry t (:id prance) id "npc" "rook")) [:entry :body])))
+          (is (= {:name "Prance Galavent"} (get-in (<! (chronicle/entry t (:id gm) id "pc" "prance")) [:entry :character])))
+          (is (= 404 (status (<! (chronicle/index t (:id krum) id)))) "strangers can't see it exists")
+          (is (= 404 (status (<! (chronicle/entry t (:id krum) id "npc" "rook")))))
+          (is (= 404 (status (<! (chronicle/entry t (:id prance) id "npc" "nobody")))))
+          (<! (db/query t "DELETE FROM chronicle_entries WHERE campaign_id = CAST(:id AS uuid) AND slug = 'rook'" {:id id}))
+          (is (= 404 (status (<! (chronicle/entry t (:id prance) id "npc" "rook")))) "an unpublished page is gone")
           (done)))))

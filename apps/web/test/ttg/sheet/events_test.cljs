@@ -7,7 +7,9 @@
             [ttg.sheet.events :as ev]))
 
 (def krum (assoc (rules/blank-character) :id "x1" :version 2 :name "Krum" :wounds-taken 1))
-(def ix {:archetypes {} :careers {} :talents {} :gear {} :skills [] :motivations [] :obligations []})
+(def ix {:archetypes {} :careers {} :talents {} :gear {} :skills [] :motivations [] :obligations []
+         :crits [{:id :minor-nick :name "Minor Nick" :roll [1 50] :severity 1}
+                 {:id :bad-one :name "Bad One" :roll [51 nil] :severity 3}]})
 (defn- state [& kvs]
   {:content {:ix ix} :sheet (apply assoc db/default-sheet :status :ready :character krum kvs)})
 
@@ -57,6 +59,29 @@
       (is (= 1 (get-in (ev/take-hit {:db (state :hit "2")} [::ev/take-hit]) [:db :sheet :character :wounds-taken]))))
     (testing "not a number"
       (is (nil? (ev/take-hit {:db (state :hit "")} [::ev/take-hit]))))))
+
+(deftest critical-injuries-go-on-the-character
+  (let [fx (ev/roll-crit {:db (state) :now "t1"} [::ev/roll-crit 12])
+        sheet (get-in fx [:db :sheet])
+        c (:character sheet)]
+    (is (= [{:id "minor-nick" :name "Minor Nick" :roll 12 :at "t1"}] (:crits c)))
+    (is (= {:raw 12 :bonus 0 :total 12 :name "Minor Nick"} (:last-crit sheet)))
+    (is (= [::ev/flush 1] (get-in fx [:dispatch-later :dispatch])) "it saves")
+    (testing "the next roll is 10 higher for each one already carried"
+      (let [next-fx (ev/roll-crit {:db (:db fx) :now "t2"} [::ev/roll-crit 45])]
+        (is (= ["Minor Nick" "Bad One"] (map :name (get-in next-fx [:db :sheet :character :crits]))))
+        (is (= 55 (get-in next-fx [:db :sheet :last-crit :total])))))
+    (testing "a library with no injury table does nothing"
+      (is (nil? (ev/roll-crit {:db (assoc-in (state) [:content :ix :crits] [])} [::ev/roll-crit 12]))))))
+
+(deftest healing-removes-only-that-injury
+  (let [nick {:id "minor-nick" :name "Minor Nick" :roll 12}
+        bad {:id "bad-one" :name "Bad One" :roll 60}
+        db (state :character (assoc krum :crits [nick bad nick]))
+        c (get-in (ev/heal-crit {:db db} [::ev/heal-crit 1]) [:db :sheet :character])]
+    (is (= [nick nick] (:crits c)))
+    (testing "an injury that isn't there"
+      (is (nil? (ev/heal-crit {:db db} [::ev/heal-crit 3]))))))
 
 (deftest a-portrait-changes-only-the-portrait
   (let [db (ev/portrait-saved (state :uploading? true :dirty 2)

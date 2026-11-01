@@ -41,12 +41,13 @@
    [:button.btn {:type "button" :on-click #(rf/dispatch [::ev/roll-again])} "Roll again"]])
 
 (defn drawer []
-  (when-let [{:keys [label detail weapon]} @(rf/subscribe [::sub/check])]
-    (let [close #(rf/dispatch [::ev/close-check])
-          roll @(rf/subscribe [::sub/shown])]
+  (when-let [{:keys [label detail weapon closing?]} @(rf/subscribe [::sub/check])]
+    (let [close #(rf/dispatch [::ev/dismiss-check])
+          roll @(rf/subscribe [::sub/shown])
+          leaving (when closing? "closing")]
       [:<>
-       [:div.scrim {:on-click close}]
-       [:aside.drawer {:aria-modal "true" :role "dialog" :aria-labelledby "d-title"}
+       [:div.scrim {:class leaving :on-click close}]
+       [:aside.drawer {:class leaving :inert (when closing? "") :aria-modal "true" :role "dialog" :aria-labelledby "d-title"}
         [:div.grab {:aria-hidden true}]
         [:header [:div [:h2#d-title label] [:div.meta detail]]
          [:button.x {:type "button" :aria-label "Close roll" :on-click close} "×"]]

@@ -14,6 +14,8 @@
             [ttg.http]
             [ttg.library.events :as lib-ev]
             [ttg.library.views :as library]
+            [ttg.chronicle.events :as chronicle-ev]
+            [ttg.chronicle.views :as chronicle]
             [ttg.manager.events :as manager-ev]
             [ttg.manager.views :as manager]
             [ttg.roller.effects]
@@ -28,11 +30,12 @@
 
 (defn- page-load
   "What each page loads as it opens."
-  [{:keys [page id code campaign-id character-id]}]
+  [{:keys [page id code campaign-id character-id kind slug]}]
   (case page
     :campaigns [::campaign-ev/load-home]
     :campaign [::campaign-ev/load-campaign id]
     :manager [::manager-ev/open id]
+    :chronicle [::chronicle-ev/open id kind slug]
     :join [::campaign-ev/load-invite code]
     :builder (if character-id [::builder-ev/open-existing character-id] [::builder-ev/open-new campaign-id])
     :sheet [::sheet-ev/open id]
@@ -103,6 +106,7 @@
        :campaigns [campaign/home]
        :campaign [campaign/campaign-page]
        :manager [manager/page]
+       :chronicle [chronicle/page]
        :join [campaign/join-page]
        :builder [builder/page]
        :sheet [sheet/page]
@@ -122,7 +126,7 @@
        (or (= :roller (:page @(rf/subscribe [::route]))) @(rf/subscribe [::roller-sub/drawer-rolls?]))))
 
 (defn- on-key [e]
-  (cond (= "Escape" (.-key e)) (rf/dispatch [::ev/close-check])
+  (cond (= "Escape" (.-key e)) (rf/dispatch [::ev/dismiss-check])
         (roll-key? e) (do (.preventDefault e) (rf/dispatch [::ev/roll]))))
 
 (defonce ^:private keys-bound (delay (.addEventListener js/document "keydown" on-key)))
@@ -137,6 +141,7 @@
   (rf/dispatch-sync [::builder-ev/initialize])
   (rf/dispatch-sync [::sheet-ev/initialize])
   (rf/dispatch-sync [::manager-ev/initialize])
+  (rf/dispatch-sync [::chronicle-ev/initialize])
   (swap! re-frame.db/app-db assoc :session (current-session))
   ;; Back from the hosted sign-in page: complete! puts the page's hash back at once (so the route below is the
   ;; one the user left from), then trades the code for tokens and lets the open page load its data.

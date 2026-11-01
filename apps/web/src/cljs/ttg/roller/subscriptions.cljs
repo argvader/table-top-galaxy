@@ -27,7 +27,7 @@
   (fn [db _] (some #(when (= (:id %) (:shown db)) %) (:rolls db))))
 
 ;; In the drawer, R rolls until there's a result to read.
-(rf/reg-sub ::drawer-rolls? :<- [::check] :<- [::shown] (fn [[check shown] _] (and (some? check) (nil? shown))))
+(rf/reg-sub ::drawer-rolls? :<- [::check] :<- [::shown] (fn [[check shown] _] (and (some? check) (not (:closing? check)) (nil? shown))))
 
 (rf/reg-sub ::remaining :<- [::shown]
   (fn [roll [_ side]]

@@ -172,14 +172,15 @@ The re-frame app validates app-db with spec after each event when `goog.DEBUG` i
    - Built 2026-10-30, not yet deployed. `ttg.genesys.rules` holds the rules, shared with the API. The builder keeps a browser draft until the character is created, and the sheet autosaves. Portraits go to their own retained bucket; the 8 palettes in `ttg.theme` have no picker for now, so every sheet uses the default (ttg-8ax).
    - Encumbrance and defense follow the book in both screens: worn armor counts 3 less, and defense caps at 4. The two prototypes disagreed on this.
    - The roll drawer: tapping a skill, characteristic or weapon opens it on the sheet, a side panel on desktop and a bottom sheet on a phone. It shares the Dice roller's pool, spending and log, shows damage on a hit, and adds any Setback from encumbrance.
-   - Not ported for Session 0: sheet Crits and History tabs, story points, and spends that change the sheet (Recover 1 strain).
+   - The sheet follows the prototype's layout: on a desktop a Skills panel on the left and the tabs on the right, merged into one set of tabs below 1000px. The Crits tab rolls and heals critical injuries, and they save on the character. The prototype's History tab is dropped.
+   - Not ported for Session 0: story points, and spends that change the sheet (Recover 1 strain).
 5. **Campaigns.** Invites, roles, player sheets visible to the GM, and server-side redaction of GM-only data.
    - Screens built 2026-10-30: campaign list and detail, invite links, `#/join/<code>`, and a read-only sheet for the GM.
 6. **Realtime table.** Shared roll feed, Story Point pool, initiative, and live wound/strain on the GM dashboard.
 7. **Campaign manager.** Acts and sessions, NPCs, factions, betrayal ledger, Session 0 questions, and session log. Built into the app at `#/campaigns/<id>/manager` as a re-frame port of the prototype, GM only. Its written prep is seeded per campaign from `content/manifest-destiny/manager.json` and kept out of the web bundle, and its party comes from the campaign's members. Session 0 has a run sheet and a Debt step.
    - Manifest Destiny gets seeded as the first real campaign.
    - A save that fails stays in the browser and sends on the next visit.
-   - The Chronicle (sessions and wiki pages, all members) is planned after Session 0: `ttg-5jb`.
+   - The Chronicle (sessions and wiki pages, all members) lives at `#/campaigns/<id>/chronicle`. `bb chronicle:publish` writes it from `campaigns/manifest-destiny/chronicle`, showing what will change first; the API only reads it. Pages render through a small Markdown reader that builds elements rather than HTML, so nothing in a page can run.
 8. **Hardening.**
    - PWA/offline sheet viewing.
    - Accessibility: dice results announced, color plus symbol, never color alone.

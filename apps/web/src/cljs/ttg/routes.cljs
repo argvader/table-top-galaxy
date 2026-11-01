@@ -8,13 +8,14 @@
   "\"#/library/weapons/knife\" -> {:page :library :type :weapons :id :knife}. Campaign and character ids stay strings.
    With no hash you land on your campaigns and characters; unknown hashes go to the roller."
   [hash]
-  (let [[page a b] (remove str/blank? (str/split (str/replace (or hash "") #"^#/?" "") #"/"))]
+  (let [[page a b c d] (remove str/blank? (str/split (str/replace (or hash "") #"^#/?" "") #"/"))]
     (case page
       nil {:page :campaigns}
       "library" (cond-> {:page :library}
                   a (assoc :type (keyword a))
                   b (assoc :id (keyword b)))
       "campaigns" (cond (= "manager" b) {:page :manager :id a}
+                        (= "chronicle" b) (cond-> {:page :chronicle :id a} (and c d) (assoc :kind c :slug d))
                         a {:page :campaign :id a}
                         :else {:page :campaigns})
       "join" {:page :join :code a}
@@ -25,12 +26,13 @@
 
 (defn href
   "The hash for a route map: the inverse of parse."
-  [{:keys [page type id code campaign-id character-id]}]
+  [{:keys [page type id code campaign-id character-id kind slug]}]
   (case page
     :library (str "#/library" (when type (str "/" (name type))) (when id (str "/" (name id))))
     :campaigns "#/campaigns"
     :campaign (str "#/campaigns/" id)
     :manager (str "#/campaigns/" id "/manager")
+    :chronicle (str "#/campaigns/" id "/chronicle" (when slug (str "/" kind "/" slug)))
     :join (str "#/join/" code)
     :builder (cond character-id (str "#/edit/" character-id)
                    campaign-id (str "#/build/" campaign-id)
