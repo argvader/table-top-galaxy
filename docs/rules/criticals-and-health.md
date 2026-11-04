@@ -57,7 +57,7 @@ If the same status hits again, the durations add together, but never past the en
 - **Strain recovery:**
   - At the end of an encounter, roll a Simple Discipline or Cool check. Each success recovers 1 strain.
   - A night's rest clears all strain.
-  - **App:** not yet a button. It goes with the end-of-encounter flow on the GM dashboard (`ttg-ej0.4`).
+  - **App:** the sheet's End of encounter button (on Strain) opens a Simple check on whichever of Cool and Discipline rolls more dice; Recover N strain applies the successes. Spending Advantage on Recover 1 strain (or Threat on Suffer 1 strain) from a sheet's check changes the sheet too, and Undo reverses it. A night's rest is still the strain − button.
 
 ## House rule interaction
 - When a Secret or Obligation comes due, it lowers the strain threshold for the session: −2 for that character and −1 for everyone else

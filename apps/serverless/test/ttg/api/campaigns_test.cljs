@@ -7,7 +7,8 @@
             [ttg.api.chronicle :as chronicle]
             [ttg.api.db :as db]
             [ttg.api.images :as images]
-            [ttg.api.pglite :as pglite]))
+            [ttg.api.pglite :as pglite]
+            [ttg.api.story :as story]))
 
 (def gm {:id "gm-1" :name "Gary"})
 (def prance {:id "p-1" :name "Prance"})
@@ -210,4 +211,22 @@
           (is (= 404 (status (<! (chronicle/entry t (:id prance) id "npc" "nobody")))))
           (<! (db/query t "DELETE FROM chronicle_entries WHERE campaign_id = CAST(:id AS uuid) AND slug = 'rook'" {:id id}))
           (is (= 404 (status (<! (chronicle/entry t (:id prance) id "npc" "rook")))) "an unpublished page is gone")
+          (done)))))
+
+(deftest story-points-flip-between-the-table-and-the-gm
+  (async done
+    (go (let [t (<! (pglite/pglite {}))
+              {{cid :id} :campaign} (<! (campaigns/create! t gm {:name "Manifest Destiny"}))
+              {code :code} (<! (campaigns/invite! t (:id gm) cid))]
+          (<! (campaigns/join! t prance code))
+          (is (= {:story nil} (<! (story/pool t (:id prance) cid))) "no pool until the GM starts a session")
+          (is (= 404 (status (<! (story/pool t (:id krum) cid)))) "non-members can't see it")
+          (is (= 403 (status (<! (story/set-pool! t (:id prance) cid {:player 5 :gm 0})))) "only the GM sets it")
+          (is (= {:story {:player 1 :gm 1}} (<! (story/set-pool! t (:id gm) cid {:player 1 :gm 1}))))
+          (is (= {:story {:player 0 :gm 2}} (<! (story/spend! t (:id prance) cid "player"))) "a spent point goes to the GM")
+          (is (= 409 (status (<! (story/spend! t (:id prance) cid "player")))) "none left to spend")
+          (is (= 403 (status (<! (story/spend! t (:id prance) cid "gm")))) "players don't spend GM points")
+          (is (= {:story {:player 1 :gm 1}} (<! (story/spend! t (:id gm) cid "gm"))) "a GM point goes to the players")
+          (<! (campaigns/save! t (:id gm) cid {:name "Renamed"}))
+          (is (= {:story {:player 1 :gm 1}} (<! (story/pool t (:id prance) cid))) "saving the campaign keeps the pool")
           (done)))))

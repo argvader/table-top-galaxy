@@ -2,7 +2,8 @@
   "The roller's slice of app-db: the pools being built and the log of rolls (newest first). :mode says which pool
    the Roll button throws: the campaign's narrative dice, or standard numbered dice. :check is the check open in a
    character sheet's roll drawer, which uses the same pool and log; :before is what the Dice roller page gets back,
-   and :closing? means the drawer is on its way off screen."
+   and :closing? means the drawer is on its way off screen. A check from a sheet can change the sheet (a spend with an
+   :effect, a strain recovery); the roller names the sheet's :ttg.sheet.events/apply-effect by keyword for that."
   (:require [clojure.spec.alpha :as s]
             [ttg.dice :as dice]
             [ttg.dice.model :as dm]))
@@ -37,7 +38,9 @@
 (s/def ::label string?)
 (s/def ::paid-small nat-int?)
 (s/def ::paid-big nat-int?)
-(s/def ::spend (s/keys :req-un [::label ::paid-small ::paid-big]))
+(s/def :ttg.roller.db.effect/strain int?)
+(s/def ::effect (s/keys :opt-un [:ttg.roller.db.effect/strain]))
+(s/def ::spend (s/keys :req-un [::label ::paid-small ::paid-big] :opt-un [::effect]))
 (s/def ::advantage (s/coll-of ::spend :kind vector?))
 (s/def ::threat (s/coll-of ::spend :kind vector?))
 (s/def ::spent (s/keys :opt-un [::advantage ::threat]))
@@ -45,8 +48,14 @@
 (s/def ::weapon map?)
 (s/def ::before (s/keys :req-un [::mode ::pool ::ladder]))
 (s/def ::closing? boolean?)
-(s/def ::check (s/nilable (s/keys :req-un [::label ::detail ::pool ::before] :opt-un [::weapon ::closing?])))
-(s/def ::campaign-roll (s/merge ::dm/roll (s/keys :req-un [::id ::seed ::label ::spent])))
+;; :ladder is a check's own difficulty (a strain recovery check is Simple); :recover? marks that check, whose successes
+;; come back as strain; :story-spent? is set once a story point has upgraded this check (one per check, p.27).
+(s/def ::recover? boolean?)
+(s/def ::story-spent? boolean?)
+(s/def ::check (s/nilable (s/keys :req-un [::label ::detail ::pool ::before]
+                                  :opt-un [::weapon ::closing? ::ladder ::recover? ::story-spent?])))
+(s/def ::recovered? boolean?)
+(s/def ::campaign-roll (s/merge ::dm/roll (s/keys :req-un [::id ::seed ::label ::spent] :opt-un [::recover? ::recovered?])))
 (s/def ::plain-roll (s/merge ::dm/plain-roll (s/keys :req-un [::id ::seed ::label])))
 (s/def ::roll (s/or :campaign ::campaign-roll :plain ::plain-roll))
 (s/def ::rolls (s/coll-of ::roll :kind vector? :max-count log-size))

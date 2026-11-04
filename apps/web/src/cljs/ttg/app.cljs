@@ -25,6 +25,7 @@
             [ttg.routes :as routes]
             [ttg.sheet.events :as sheet-ev]
             [ttg.sheet.views :as sheet]
+            [ttg.story.events :as story-ev]
             [ttg.theme :as theme]
             [ttg.ui.dice :as ui]))
 
@@ -148,6 +149,7 @@
   (rf/dispatch-sync [::sheet-ev/initialize])
   (rf/dispatch-sync [::manager-ev/initialize])
   (rf/dispatch-sync [::chronicle-ev/initialize])
+  (rf/dispatch-sync [::story-ev/initialize])
   (swap! re-frame.db/app-db assoc :session (current-session))
   ;; Back from the hosted sign-in page: complete! puts the page's address back at once (so the route below is the
   ;; one the user left from), then trades the code for tokens and lets the open page load its data.

@@ -59,14 +59,24 @@
 
 ;; ---------- The roll drawer on a sheet ----------
 
+(defn- check-ladder [db] (get-in db [:check :ladder] db/default-ladder))
+
 (defn open-check
-  "A check tapped on a sheet: {:label :detail :pool :weapon}. Its pool goes in at Average. Ignored while the last drawer
-   is still leaving: that check's close is on its way and would take this one with it."
+  "A check tapped on a sheet: {:label :detail :pool :weapon :ladder :recover?}. Its pool goes in at its own difficulty,
+   Average unless it says. Ignored while the last drawer is still leaving: that check's close is on its way and would
+   take this one with it."
   [db [_ check]]
   (if (get-in db [:check :closing?])
     db
     (let [check (-> check (update :pool dice/pool) (assoc :before (select-keys db [:mode :pool :ladder])))]
-      (-> db (assoc :mode :campaign :check check :pool (:pool check)) (apply-ladder db/default-ladder) edited))))
+      (-> db (assoc :mode :campaign :check check :pool (:pool check)) (#(apply-ladder % (check-ladder %))) edited))))
+
+(defn story-upgrade
+  "A story point has been spent (ttg.story) on upgrading this check's ability once."
+  [db _]
+  (if (and (:check db) (not (get-in db [:check :story-spent?])))
+    (-> db (update :pool dice/upgrade :ability 1) (assoc-in [:check :story-spent?] true) edited)
+    db))
 
 (defn dismiss-check
   "Slides the drawer away, and closes the check once it's gone so its contents hold still on the way out."
@@ -90,13 +100,14 @@
 (defn- pool-size [pool] (reduce + (vals pool)))
 
 (defn- reset-difficulty
-  "After a roll the next check starts fresh: Average, with no situational Boost or Setback. A check from a sheet goes back
-   to the pool it came with, which keeps any Setback from being encumbered."
+  "After a roll the next check starts fresh: its own difficulty (Average unless it says), with no situational Boost or
+   Setback and no story point. A check from a sheet goes back to the pool it came with, which keeps any Setback from
+   being encumbered."
   [db]
   (-> (if-let [check (:check db)]
-        (assoc db :pool (:pool check))
+        (-> db (assoc :pool (:pool check)) (update :check dissoc :story-spent?))
         (update db :pool assoc :boost 0 :setback 0))
-      (apply-ladder db/default-ladder)
+      (#(apply-ladder % (check-ladder %)))
       (assoc :reset-note? true)))
 
 (defn- log-roll [db entry]
@@ -119,7 +130,8 @@
 
 (defn- roll-campaign [db seed]
   (let [{:keys [dice] :as rolled} (dice/roll (:pool db) (rng/seeded seed))]
-    (-> (throw-dice db seed (merge rolled {:label (get-in db [:check :label] "Custom pool") :spent {}}) (mapv #(select-keys % [:type :face]) dice))
+    (-> (throw-dice db seed (cond-> (merge rolled {:label (get-in db [:check :label] "Custom pool") :spent {}})
+                            (get-in db [:check :recover?]) (assoc :recover? true)) (mapv #(select-keys % [:type :face]) dice))
         (update :db reset-difficulty))))
 
 ;; Standard dice stay in the pool, so the same roll is one tap away.
@@ -151,8 +163,33 @@
 (defn- update-shown [db f & args]
   (update db :rolls (fn [rolls] (mapv #(if (= (:id %) (:shown db)) (apply f % args) %) rolls))))
 
-(defn spend-option [db [_ side i]] (update-shown db spend/spend side i))
-(defn undo-spend [db [_ side]] (update-shown db spend/undo side))
+(defn- shown-roll [db] (some #(when (= (:id %) (:shown db)) %) (:rolls db)))
+
+(defn- effect-fx
+  "Tells the sheet a check from it changed the character. Named by keyword: ttg.sheet.events requires this namespace."
+  [db effect]
+  (when (and effect (:check db)) [[:dispatch [:ttg.sheet.events/apply-effect effect]]]))
+
+(defn spend-option
+  "Spends option i; one with an :effect changes the sheet the check came from."
+  [{:keys [db]} [_ side i]]
+  (let [after (update-shown db spend/spend side i)]
+    {:db after
+     :fx (when (not= db after) (effect-fx after (:effect (peek (get-in (shown-roll after) [:spent side])))))}))
+
+(defn undo-spend [{:keys [db]} [_ side]]
+  (let [last-spend (peek (get-in (shown-roll db) [:spent side]))]
+    {:db (update-shown db spend/undo side)
+     :fx (effect-fx db (some-> (:effect last-spend) spend/inverse))}))
+
+(defn recover-strain
+  "A strain recovery check's successes come back as strain, once."
+  [{:keys [db]} _]
+  (let [{:keys [recover? recovered? result]} (shown-roll db)
+        n (:net-success result 0)]
+    (when (and recover? (not recovered?) (pos? n))
+      {:db (update-shown db assoc :recovered? true)
+       :fx (effect-fx db {:strain (- n)})})))
 
 (rf/reg-fx ::scroll-into-view
   (fn [id]
@@ -174,5 +211,7 @@
 (rf/reg-event-db ::roll-again [validate-spec] roll-again)
 (rf/reg-event-fx ::roll [(rf/inject-cofx ::seed) validate-spec] roll)
 (rf/reg-event-fx ::landed [validate-spec] landed)
-(rf/reg-event-db ::spend [validate-spec] spend-option)
-(rf/reg-event-db ::undo-spend [validate-spec] undo-spend)
+(rf/reg-event-fx ::spend [validate-spec] spend-option)
+(rf/reg-event-fx ::undo-spend [validate-spec] undo-spend)
+(rf/reg-event-db ::story-upgrade [validate-spec] story-upgrade)
+(rf/reg-event-fx ::recover-strain [validate-spec] recover-strain)

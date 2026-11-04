@@ -8,6 +8,7 @@
             [ttg.http :as http]
             [ttg.sheet.db :as db]
             [ttg.roller.events :as roller-ev]
+            [ttg.story.events :as story-ev]
             [ttg.ui.drawer-state :as drawer]
             [ttg.ui.portrait :as portrait]))
 
@@ -36,7 +37,8 @@
 
 (defn loaded [{:keys [db]} [_ {:keys [character]}]]
   {:db (update db :sheet assoc :status :ready :character (merge (rules/blank-character) character))
-   :dispatch [::content/load (:campaign-id character)]})
+   :fx [[:dispatch [::content/load (:campaign-id character)]]
+        [:dispatch [::story-ev/load (:campaign-id character)]]]})
 
 (defn load-failed [db [_ {:keys [error]}]]
   (update db :sheet assoc :status :error :error (or error "That character didn't load.")))
@@ -102,6 +104,19 @@
       (let [taken (max 0 (- n soak))]
         (change {:db (assoc-in db [:sheet :hit] "")} [::change update :wounds-taken + taken])))))
 
+(defn apply-effect
+  "A spend or recovery from the roll drawer changes the character: {:strain n}, negative for strain recovered.
+   Strain stays at 0 or more. Someone who can only read this sheet changes nothing."
+  [{:keys [db] :as cofx} [_ {:keys [strain]}]]
+  (when (and strain (db/writable? db) (get-in db [:sheet :character]))
+    (change cofx [::change update :strain-taken #(max 0 (+ (or % 0) strain))])))
+
+(defn- discouraging-wound-fx
+  "Discouraging Wound moves a player story point to the GM (CRB p.115), when the table has one."
+  [db crit]
+  (when (and (= "discouraging-wound" (name (:id crit))) (pos? (get-in db [:story :pool :player] 0)))
+    [[:dispatch [::story-ev/spend {:side "player" :note "Discouraging Wound: a player story point moved to the GM."}]]]))
+
 (defn roll-crit
   "raw is the d100. A library with no injury table for the total does nothing."
   [{:keys [db now]} [_ raw]]
@@ -111,8 +126,9 @@
     (when-let [crit (rules/crit-for (get-in db [:content :ix]) total)]
       (let [title (:name crit)
             injury {:id (name (:id crit)) :name title :roll total :at now}]
-        (change {:db (assoc-in db [:sheet :last-crit] {:raw raw :bonus bonus :total total :name title})}
-                [::change update :crits (fnil conj []) injury])))))
+        (-> (change {:db (assoc-in db [:sheet :last-crit] {:raw raw :bonus bonus :total total :name title})}
+                    [::change update :crits (fnil conj []) injury])
+            (assoc :fx (discouraging-wound-fx db crit)))))))
 
 (defn- without [v i] (vec (concat (subvec v 0 i) (subvec v (inc i)))))
 
@@ -169,6 +185,7 @@
 (rf/reg-event-db ::set-ui [validate-spec] set-ui)
 (rf/reg-event-fx ::take-hit [validate-spec] take-hit)
 (rf/reg-event-fx ::roll-crit [(rf/inject-cofx ::now) validate-spec] roll-crit)
+(rf/reg-event-fx ::apply-effect [validate-spec] apply-effect)
 (rf/reg-event-fx ::heal-crit [validate-spec] heal-crit)
 (rf/reg-event-fx ::upload [validate-spec] upload)
 (rf/reg-event-fx ::portrait-ready [validate-spec] portrait-ready)

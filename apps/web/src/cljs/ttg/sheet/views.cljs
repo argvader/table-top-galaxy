@@ -16,6 +16,7 @@
             [ttg.sheet.events :as ev]
             [ttg.sheet.info :as info]
             [ttg.sheet.subscriptions :as subs]
+            [ttg.story.views :as story]
             [ttg.theme :as theme]
             [ttg.ui.portrait :as portrait]
             [ttg.ui.text :as text]))
@@ -104,12 +105,19 @@
         extra])
      (when over? [:div.alert "Incapacitated: " (str/lower-case title) " exceed threshold"])]))
 
+(defn- recovery-button
+  "End of an encounter: a Simple Cool or Discipline check, a strain back per success."
+  [c ix]
+  (when-let [check (and (pos? (:strain-taken c 0)) (r/recovery-check c ix))]
+    [:button.btn {:type "button" :title (:detail check) :on-click #(roll! check)} "End of encounter"]))
+
 (defn- vitals [c ix hit read-only?]
   (let [{:keys [wounds strain soak defense encumbrance encumbrance-max]} (r/derived c ix)
         over? (> encumbrance encumbrance-max)]
     [:section.vitals {:aria-label "Vitals"}
      [track "Wounds" "wound" :wounds-taken (:wounds-taken c 0) wounds read-only? "Heal 1 wound" "Take 1 wound" [hit-input hit]]
-     [track "Strain" "strain" :strain-taken (:strain-taken c 0) strain read-only? "Recover 1 strain" "Suffer 1 strain" nil]
+     [track "Strain" "strain" :strain-taken (:strain-taken c 0) strain read-only? "Recover 1 strain" "Suffer 1 strain"
+      [recovery-button c ix]]
      [:div.card.small [:span.label "Soak"] [:b soak]]
      [:div.card.small [:span.label "Defense"]
       [:div.pair [:div [:b defense] [:small "Melee"]] [:div [:b defense] [:small "Ranged"]]]]
@@ -389,6 +397,7 @@
                 " improves, on the Talents or Gear tab, so it counts."])
              [stats character ix]
              [vitals character ix hit read-only?]
+             [story/sheet-strip read-only?]
              [panels character ix sheet read-only?]
              [info/info-drawer]
              [roller/drawer]])]]))

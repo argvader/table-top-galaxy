@@ -6,6 +6,7 @@
             [ttg.campaign.events :as ev]
             [ttg.campaign.subscriptions :as subs]
             [ttg.routes :as routes]
+            [ttg.story.views :as story]
             [ttg.ui.portrait :as portrait]))
 
 (defn- problem [error]
@@ -95,6 +96,7 @@
         (when gm?
           [:p [:a.btn {:href (routes/href {:page :manager :id (:id campaign)})} "Campaign manager"]])
         [:p [:a.btn {:href (routes/href {:page :chronicle :id (:id campaign)})} "Chronicle"]]
+        [story/campaign-box gm? (count (filter #(= "player" (:role %)) members))]
         [:section.box
          [:h2 "Characters"]
          (if (seq roster)

@@ -46,5 +46,13 @@
 (s/def ::chronicle-kind #{"session" "pc" "npc" "faction" "location"})
 (s/def ::chronicle-slug (s/and string? #(re-matches #"[a-z0-9-]{1,120}" %)))
 
+;; The story point pool (ttg.api.story).
+(s/def :ttg.api.model.story/player (s/int-in 0 21))
+(s/def :ttg.api.model.story/gm (s/int-in 0 21))
+(s/def ::story (s/keys :req-un [:ttg.api.model.story/player :ttg.api.model.story/gm]))
+(s/def ::story-body (s/keys :req-un [::story]))
+(s/def ::side #{"player" "gm"})
+(s/def ::spend-body (s/keys :req-un [::side]))
+
 (s/def ::campaign-id (s/nilable ::uuid))
 (s/def ::link-body (s/keys :req-un [::campaign-id]))

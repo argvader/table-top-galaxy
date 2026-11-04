@@ -18,7 +18,8 @@
             [ttg.api.images :as images]
             [ttg.api.model :as model]
             [ttg.api.router :as router]
-            [ttg.api.service :as library]))
+            [ttg.api.service :as library]
+            [ttg.api.story :as story]))
 
 (defonce ^:private default-stores
   (delay {:table (gateway/dynamo-table) :db (aurora/aurora) :images (images/s3-images)}))
@@ -98,6 +99,9 @@
    ["GET" "/campaigns/:id/manager/content" :campaigns/manager-content]
    ["PUT" "/campaigns/:id/manager/content" :campaigns/save-manager-content]
    ["GET" "/campaigns/:id/party" :campaigns/party]
+   ["GET" "/campaigns/:id/story" :campaigns/story]
+   ["PUT" "/campaigns/:id/story" :campaigns/set-story]
+   ["POST" "/campaigns/:id/story/spend" :campaigns/spend-story]
    ["POST" "/campaigns/:id/invites" :campaigns/invite]
    ["DELETE" "/campaigns/:id/members/:member" :campaigns/remove-member]
    ["GET" "/invites/:code" :invites/get]
@@ -153,6 +157,9 @@
       :campaigns/manager-content (campaigns/manager-content db (:id u) (id))
       :campaigns/save-manager-content (campaigns/save-manager-content! db (:id u) (id) (json-text! req))
       :campaigns/party (campaigns/party db (:id u) (id))
+      :campaigns/story (story/pool db (:id u) (id))
+      :campaigns/set-story (story/set-pool! db (:id u) (id) (:story (body! req ::model/story-body "Expected {:story {:player n :gm n}}, 0 to 20 each")))
+      :campaigns/spend-story (story/spend! db (:id u) (id) (:side (body! req ::model/spend-body "Expected {:side \"player\" or \"gm\"}")))
       :campaigns/remove-member (campaigns/remove-member! db (:id u) (id) (check! ::model/owner (:member params) "Not a valid user"))
       :invites/get (campaigns/invite-info db (check! ::model/code (:code params) "Not a valid invite"))
       :invites/join (campaigns/join! db u (check! ::model/code (:code params) "Not a valid invite")))))

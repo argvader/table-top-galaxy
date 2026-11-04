@@ -1,9 +1,11 @@
 (ns ttg.roller.spend
   "Spending Advantage/Triumph and Threat/Despair from a roll (CRB p.102-104).
-   Options are short paraphrases; once the content library lands (M3) they come from the GM's library instead.")
+   Options are short paraphrases; once the content library lands (M3) they come from the GM's library instead.
+   An option with an :effect changes the character when it's spent from a check on their sheet ({:strain -1} is
+   1 strain recovered); undoing the spend undoes the effect.")
 
 (def options
-  {:advantage [{:cost 1 :label "Recover 1 strain"}
+  {:advantage [{:cost 1 :label "Recover 1 strain" :effect {:strain -1}}
                {:cost 1 :label "Add a Boost die to an ally's next check"}
                {:cost 1 :label "Notice a useful detail in the scene"}
                {:cost 2 :label "Take a free maneuver"}
@@ -12,7 +14,7 @@
                {:cost 3 :label "Ignore cover or difficult terrain until your next turn"}
                {:cost :big :label "Upgrade the difficulty of the target's next check"}
                {:cost :big :label "Do something vital: blow the door, cut the lights, end the chase"}]
-   :threat [{:cost 1 :label "Suffer 1 strain"}
+   :threat [{:cost 1 :label "Suffer 1 strain" :effect {:strain 1}}
             {:cost 1 :label "Lose the benefit of a prior maneuver"}
             {:cost 2 :label "An opponent takes a free maneuver"}
             {:cost 2 :label "Add a Boost die to the target's next check"}
@@ -46,7 +48,12 @@
   (let [opt (get-in options [side i])
         pay (payment opt (remaining (:result roll) (get-in roll [:spent side]) side))]
     (cond-> roll
-      pay (update-in [:spent side] (fnil conj []) (merge {:label (:label opt)} pay)))))
+      pay (update-in [:spent side] (fnil conj []) (merge (select-keys opt [:label :effect]) pay)))))
+
+(defn inverse
+  "What undoes an effect: {:strain -1} -> {:strain 1}."
+  [effect]
+  (update-vals effect -))
 
 (defn undo [roll side]
   (update-in roll [:spent side] #(if (seq %) (pop %) [])))

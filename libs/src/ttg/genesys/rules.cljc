@@ -234,6 +234,23 @@
 (defn skill-check [c ix skill]
   (check c ix (skill-characteristic skill) (:name skill) (skill-detail c ix skill) (skill-pool c ix skill)))
 
+(def recovery-skills
+  "End of an encounter: a Simple Discipline or Cool check, 1 strain back per success (CRB p.117)."
+  #{"Cool" "Discipline"})
+
+(defn recovery-check
+  "The strain recovery check with whichever of Cool and Discipline rolls more dice (then more Proficiency), at
+   Simple difficulty. nil when the library has neither skill."
+  [c ix]
+  (let [pool #(skill-pool c ix %)
+        best (last (sort-by (juxt #(reduce + (vals (pool %))) #(:proficiency (pool %)))
+                            (filter #(recovery-skills (:name %)) (:skills ix))))]
+    (when best
+      (assoc (skill-check c ix best)
+             :label (str "Recover strain: " (:name best))
+             :detail (str "End of encounter · Simple · 1 strain back per success · " (skill-detail c ix best))
+             :ladder 0 :recover? true))))
+
 (defn weapon-damage [c ix w]
   (if (:adds-brawn w) (+ (characteristic-total c ix :brawn) (:damage-bonus w 0)) (:damage w)))
 

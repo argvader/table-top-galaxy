@@ -238,3 +238,12 @@
   (is (= {:boost 2} (r/quality-dice {:qualities [{:name "accurate" :rating 2}]})) "any case")
   (is (= {} (r/quality-dice {:qualities [{:name "Vicious" :rating 2}]})))
   (is (nil? (r/quality-rating {} "Accurate"))))
+
+(deftest strain-recovery-uses-the-better-of-cool-and-discipline
+  (let [lib (r/index (update library :skills conj (skill "Discipline" :willpower)))]
+    (testing "same number of dice: Cool, a career skill with a rank, has the Proficiency"
+      (is (= {:label "Recover strain: Cool" :pool {:proficiency 1 :ability 1 :setback 0} :ladder 0 :recover? true}
+             (dissoc (r/recovery-check fizz lib) :detail))))
+    (testing "more Willpower rolls more dice on Discipline"
+      (is (= "Recover strain: Discipline" (:label (r/recovery-check (assoc fizz :char-buy {:willpower 1}) lib)))))
+    (is (nil? (r/recovery-check fizz (r/index (assoc library :skills [])))) "nothing to roll without either skill")))

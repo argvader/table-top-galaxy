@@ -59,7 +59,7 @@ The face table on p.10 (Table I.1–2) was checked cell by cell against `dice-co
   - Upgrade the difficulty of the other side's check once.
   - Fuel a talent.
   - Add a story fact (GM approval).
-- **App:** the sheet flips points between the pools and supports the upgrade use. Still missing: the one-per-check limit, and the delayed transfer.
+- **App:** the pool lives on the campaign (`ttg.story`): the GM starts a session (one player point per player, 1 GM) and adjusts it on the campaign page; a player spends one from the roll drawer to upgrade their check (once per check) or from the sheet for a story detail. The server moves the point at once, not after the action resolves. There's no live sync yet (ttg-1kf): the count refreshes when a sheet opens, on Refresh, and with every spend. Not yet: GM points upgrading a player's difficulty, or fuelling talents.
 
 ## Characteristics, XP and derived attributes (p.13–15, 30–31)
 - Characteristics run from 1 to 5, and 2 is average. They can't go above 5 (a soft cap for NPCs).

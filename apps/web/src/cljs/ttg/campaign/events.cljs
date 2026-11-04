@@ -5,7 +5,8 @@
             [re-frame.core :as rf]
             [ttg.campaign.db :as db]
             [ttg.http :as http]
-            [ttg.routes :as routes]))
+            [ttg.routes :as routes]
+            [ttg.story.events :as story-ev]))
 
 (defn- check-and-throw [spec db]
   (when-not (s/valid? spec db)
@@ -55,8 +56,9 @@
    :fx [[::http/request {:path (str "/campaigns/" id) :on-ok [::campaign-loaded] :on-fail [::failed]}]
         [::http/request {:path "/characters" :on-ok [::characters-loaded] :on-fail [::failed]}]]})
 
-(defn campaign-loaded [db [_ campaign]]
-  (update db :table assoc :status :ready :current campaign))
+(defn campaign-loaded [{:keys [db]} [_ campaign]]
+  {:db (update db :table assoc :status :ready :current campaign)
+   :fx [[:dispatch [::story-ev/load (get-in campaign [:campaign :id])]]]})
 
 (defn make-invite [{:keys [db]} _]
   {::http/request {:method "POST" :path (str "/campaigns/" (get-in db [:table :current :campaign :id]) "/invites")
@@ -104,7 +106,7 @@
 (rf/reg-event-fx ::create [validate-spec] create)
 (rf/reg-event-fx ::created created)
 (rf/reg-event-fx ::load-campaign [validate-spec] load-campaign)
-(rf/reg-event-db ::campaign-loaded [validate-spec] campaign-loaded)
+(rf/reg-event-fx ::campaign-loaded [validate-spec] campaign-loaded)
 (rf/reg-event-fx ::make-invite make-invite)
 (rf/reg-event-db ::invite-made [validate-spec] invite-made)
 (rf/reg-event-fx ::remove-member remove-member)

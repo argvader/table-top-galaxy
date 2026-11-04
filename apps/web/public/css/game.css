@@ -717,3 +717,18 @@ footer.foot { margin-top: 24px; font-size: 12px; color: var(--muted); display: f
 .drawer .attack-dice { display: inline-flex; gap: 3px; }
 .drawer .attack-dice svg { width: 30px; height: 30px; display: block; }
 .drawer .attack .infoacts { position: static; border-top: 0; padding-top: 0; background: none; }
+
+/* The story point pool (ttg.story.views): on the sheet and the campaign page, so not nested in .page-sheet. */
+.sp-tokens { display: inline-flex; flex-wrap: wrap; gap: 4px; vertical-align: middle; }
+.sp-tokens .tok { display: inline-block; width: 22px; height: 22px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--ink); position: relative; cursor: default; }
+.sp-tokens .tok.player { background: var(--surface); }
+.sp-tokens .tok.player::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--accent); }
+.sp-tokens .tok.gm { background: var(--ink); }
+.sp-tokens .tok.gm::after { content: ""; position: absolute; inset: 5px; transform: rotate(45deg); background: var(--surface); border-radius: 2px; }
+.page-sheet .story-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-block: 10px; }
+.page-sheet .story-strip .meta { font-family: var(--f-mono); font-size: 12px; color: var(--muted); }
+.page-sheet .story-strip .note { flex-basis: 100%; }
+.story-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+.story-controls .side { display: inline-flex; align-items: center; gap: 6px; }
+.story-controls .meta { color: var(--muted); font-size: 13px; }
+.story-controls .btn.step { min-width: 34px; padding: 4px 8px; }

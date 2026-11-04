@@ -107,3 +107,27 @@
     (testing "with nothing open, it still rolls"
       (is (= [[:dispatch [:ttg.roller.events/open-check check]]] (:fx (ev/attack-from-info {:db (state)} [::ev/attack-from-info check]))))
       (is (= (state) (:db (ev/attack-from-info {:db (state)} [::ev/attack-from-info check])))))))
+
+(defn- mine [db] (assoc-in db [:sheet :character :access] "owner"))
+
+(deftest roll-drawer-effects-change-strain
+  (let [db (mine (state))
+        suffer (ev/apply-effect {:db db} [::ev/apply-effect {:strain 2}])]
+    (is (= 2 (get-in suffer [:db :sheet :character :strain-taken])))
+    (is (= [::ev/flush 1] (get-in suffer [:dispatch-later :dispatch])) "it saves")
+    (is (= 0 (get-in (ev/apply-effect {:db (:db suffer)} [::ev/apply-effect {:strain -5}]) [:db :sheet :character :strain-taken]))
+        "never below 0"))
+  (is (nil? (ev/apply-effect {:db (state)} [::ev/apply-effect {:strain 1}])) "a sheet you can only read doesn't change")
+  (is (nil? (ev/apply-effect {:db (mine (state))} [::ev/apply-effect {}]))))
+
+(deftest a-discouraging-wound-moves-a-story-point
+  (let [lib (assoc ix :crits [{:id :discouraging-wound :name "Discouraging Wound" :roll [1 100] :severity 1}])
+        db (-> (state) (assoc-in [:content :ix] lib))
+        spends #(filter (fn [[k [id]]] (and (= :dispatch k) (= :ttg.story.events/spend id))) (:fx %))]
+    (is (= [{:side "player" :note "Discouraging Wound: a player story point moved to the GM."}]
+           (map (comp second second) (spends (ev/roll-crit {:db (assoc db :story {:pool {:player 2 :gm 1}}) :now "t"} [::ev/roll-crit 30])))))
+    (is (empty? (spends (ev/roll-crit {:db (assoc db :story {:pool {:player 0 :gm 3}}) :now "t"} [::ev/roll-crit 30])))
+        "no player points, nothing to move")
+    (is (empty? (spends (ev/roll-crit {:db (-> db (assoc :story {:pool {:player 2 :gm 1}}) (assoc-in [:content :ix] ix)) :now "t"}
+                                      [::ev/roll-crit 30])))
+        "any other injury leaves the pool alone")))

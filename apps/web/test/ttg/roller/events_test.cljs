@@ -10,8 +10,10 @@
   "Applies db events in order, checking the spec after each, as the validate-spec interceptor does in dev."
   [db & events]
   (reduce (fn [db [id & _ :as e]]
-            (let [db' ((case id :mode ev/set-mode :add ev/add-die :remove ev/remove-die :ladder ev/set-ladder :up ev/upgrade
-                             :down ev/downgrade :clear ev/clear-pool :spend ev/spend-option :undo ev/undo-spend) db e)]
+            (let [fx-event (fn [f] (fn [db e] (:db (f {:db db} e))))
+                  db' ((case id :mode ev/set-mode :add ev/add-die :remove ev/remove-die :ladder ev/set-ladder :up ev/upgrade
+                             :down ev/downgrade :clear ev/clear-pool
+                             :spend (fx-event ev/spend-option) :undo (fx-event ev/undo-spend)) db e)]
               (is (s/valid? ::db/app-db db') (s/explain-str ::db/app-db db'))
               db'))
           db events))
@@ -187,3 +189,45 @@
         spent (run rolled [:spend :advantage 0])]
     (is (= ["Recover 1 strain"] (map :label (get-in (first (:rolls spent)) [:spent :advantage]))))
     (is (empty? (get-in (first (:rolls (run spent [:undo :advantage]))) [:spent :advantage])))))
+
+(defn- advantage-seed
+  "A seed whose roll of db's pool leaves net Advantage, so there is something to spend."
+  [db]
+  (first (filter #(pos? (get-in (dice/roll (:pool db) (rng/seeded %)) [:result :net-advantage])) (range))))
+
+(defn- sheet-effects [fx] (keep (fn [[k [id effect]]] (when (and (= :dispatch k) (= :ttg.sheet.events/apply-effect id)) effect)) fx))
+
+(deftest strain-spends-change-the-sheet-the-check-came-from
+  (let [db (-> (open-check db/default-db) (run [:add :boost] [:ladder 0]))
+        rolled (roll-with db (advantage-seed db))
+        {spent :db fx :fx} (ev/spend-option {:db rolled} [::ev/spend :advantage 0])]
+    (is (= [{:strain -1}] (sheet-effects fx)) "Recover 1 strain takes 1 off the sheet")
+    (is (= [{:strain 1}] (sheet-effects (:fx (ev/undo-spend {:db spent} [::ev/undo-spend :advantage])))) "undo puts it back")
+    (is (empty? (sheet-effects (:fx (ev/spend-option {:db rolled} [::ev/spend :advantage 1])))) "other options change nothing"))
+  (testing "a roll on the Dice roller page has no sheet to change"
+    (let [db (run db/default-db [:add :ability] [:add :ability] [:add :boost] [:ladder 0])
+          rolled (roll-with db (advantage-seed db))]
+      (is (empty? (sheet-effects (:fx (ev/spend-option {:db rolled} [::ev/spend :advantage 0]))))))))
+
+(deftest a-story-point-upgrades-a-check-once
+  (let [db (open-check db/default-db)
+        once (ev/story-upgrade db [::ev/story-upgrade])]
+    (is (= 2 (get-in once [:pool :proficiency])) "one more Ability becomes Proficiency")
+    (is (= once (ev/story-upgrade once [::ev/story-upgrade])) "only one per check")
+    (is (not (get-in (roll-with once 1) [:check :story-spent?])) "the next roll is a new check")
+    (let [no-check (assoc db :check nil)]
+      (is (= no-check (ev/story-upgrade no-check [::ev/story-upgrade])) "nothing without a check"))))
+
+(deftest strain-recovery-comes-back-once
+  (let [check {:label "Recover strain: Cool" :detail "End of encounter" :pool {:ability 3} :ladder 0 :recover? true}
+        db (ev/open-check db/default-db [::ev/open-check check])
+        _ (is (zero? (get-in db [:pool :difficulty])) "a Simple check")
+        seed (first (filter #(pos? (get-in (dice/roll (:pool db) (rng/seeded %)) [:result :net-success])) (range)))
+        rolled (roll-with db seed)
+        n (get-in (first (:rolls rolled)) [:result :net-success])
+        {recovered :db fx :fx} (ev/recover-strain {:db rolled} [::ev/recover-strain])]
+    (is (zero? (get-in rolled [:pool :difficulty])) "the next roll stays Simple")
+    (is (= [{:strain (- n)}] (sheet-effects fx)) "one strain back per success")
+    (is (:recovered? (first (:rolls recovered))))
+    (is (nil? (ev/recover-strain {:db recovered} [::ev/recover-strain])) "only once")
+    (is (s/valid? ::db/app-db recovered))))
