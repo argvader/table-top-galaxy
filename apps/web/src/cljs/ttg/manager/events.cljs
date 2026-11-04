@@ -105,11 +105,11 @@
   [{:keys [db]} [_ f & args]]
   (edited db (apply f (get-in db [:manager :doc]) args)))
 
-(defn draw
-  "Random, so the cards come in as the ::ints coeffect."
+(defn roll
+  "Random, so the d20 comes in as the ::ints coeffect."
   [{:keys [db ints]} [_ pc]]
   (let [{:keys [doc content]} (:manager db)]
-    (edited db (doc/draw doc (:questions content) pc ints))))
+    (edited db (doc/roll doc (:questions content) pc ints))))
 
 (defn move-seat [{:keys [db]} [_ pc by]]
   (let [{:keys [doc members content]} (:manager db)]
@@ -142,7 +142,7 @@
 
 (defn open-drawer [db [_ drawer]] (assoc-in db [:manager :ui :drawer] drawer))
 
-(rf/reg-cofx ::ints (fn [cofx _] (assoc cofx :ints (take 2 (rng/secure)))))
+(rf/reg-cofx ::ints (fn [cofx _] (assoc cofx :ints (take 1 (rng/secure)))))
 
 (rf/reg-event-db ::initialize (fn [db _] (assoc db :manager db/default-manager)))
 (rf/reg-event-fx ::open [(rf/inject-cofx ::unsent) validate-spec] open)
@@ -150,7 +150,7 @@
 (rf/reg-event-db ::load-failed [validate-spec] load-failed)
 (rf/reg-event-fx ::change [validate-spec] change)
 (rf/reg-event-fx ::op [validate-spec] apply-op)
-(rf/reg-event-fx ::draw [(rf/inject-cofx ::ints) validate-spec] draw)
+(rf/reg-event-fx ::roll [(rf/inject-cofx ::ints) validate-spec] roll)
 (rf/reg-event-fx ::move-seat [validate-spec] move-seat)
 (rf/reg-event-fx ::flush [validate-spec] flush-edits)
 (rf/reg-event-fx ::flush-now [validate-spec] flush-now)

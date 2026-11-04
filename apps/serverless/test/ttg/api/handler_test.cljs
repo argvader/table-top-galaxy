@@ -1,6 +1,7 @@
 (ns ttg.api.handler-test
   (:require [cljs.core.async :refer [go <!]]
             [cljs.test :refer [deftest is async use-fixtures]]
+            [ttg.api.db :as db]
             [ttg.api.handler :as handler]
             [ttg.api.memory :as memory]
             [ttg.api.pglite :as pglite]))
@@ -49,6 +50,24 @@
             (is (= {:entries {:armor [(assoc armor :id :heavy :name "Heavy")]}}
                    (:body (<! (call (req "GET" (str "/campaigns/" cid "/library") nil "gm")))))))
           (is (= {:user-id "gm" :name "gm"} (:body (<! (call (req "GET" "/me" nil "gm"))))))
+          (done)))))
+
+(deftest chronicle-routes
+  (async done
+    (go (let [t (<! (pglite/pglite {}))
+              st {:table (memory/memory-table) :db t}
+              call #(handler/handle st %)
+              cid (get-in (<! (call (req "POST" "/campaigns" {:campaign {:name "MD"}} "gm"))) [:body :campaign :id])
+              path (str "/campaigns/" cid "/chronicle")]
+          (<! (db/query t "INSERT INTO chronicle_entries (campaign_id, kind, slug, title, body)
+                           VALUES (CAST(:id AS uuid), 'npc', 'rook', 'Rook', '# Rook')" {:id cid}))
+          (is (= {:entries [{:kind "npc" :slug "rook" :title "Rook"}]} (:body (<! (call (req "GET" path nil "gm"))))))
+          (is (= "# Rook" (get-in (<! (call (req "GET" (str path "/npc/rook") nil "gm"))) [:body :entry :body])))
+          (is (= 401 (:status (<! (call (req "GET" path))))) "signed out")
+          (is (= 404 (:status (<! (call (req "GET" path nil "stranger"))))))
+          (is (= 400 (:status (<! (call (req "GET" (str path "/spell/rook") nil "gm"))))) "unknown kind")
+          (is (= 400 (:status (<! (call (req "GET" (str path "/npc/Not%20Valid") nil "gm"))))) "bad slug")
+          (is (= 404 (:status (<! (call (req "GET" (str path "/npc/nobody") nil "gm"))))))
           (done)))))
 
 (deftest dev-owner-header-needs-the-flag

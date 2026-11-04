@@ -77,11 +77,11 @@
 (s/def ::defense nat-int?)
 (s/def ::soak nat-int?)
 (s/def ::weapon (s/and (s/keys :req-un [::id ::name ::setting ::skill ::crit ::range ::qualities ::price ::rarity ::source]
-                               :opt-un [::damage ::damage-bonus ::adds-brawn ::encumbrance ::group ::restricted ::hard-points])
+                               :opt-un [::damage ::damage-bonus ::adds-brawn ::encumbrance ::group ::restricted ::hard-points ::text])
                        #(or (contains? % :damage) (contains? % :damage-bonus))))
-(s/def ::armor (s/keys :req-un [::id ::name ::setting ::defense ::soak ::price ::rarity ::source] :opt-un [::encumbrance ::restricted ::hard-points ::group]))
+(s/def ::armor (s/keys :req-un [::id ::name ::setting ::defense ::soak ::price ::rarity ::source] :opt-un [::encumbrance ::restricted ::hard-points ::group ::text]))
 (s/def ::attachment (s/keys :req-un [::id ::name ::setting ::price ::rarity ::source] :opt-un [::hard-points ::group ::restricted]))
-(s/def ::gear (s/keys :req-un [::id ::name ::setting ::price ::rarity ::source] :opt-un [::encumbrance ::encumbrance-bonus ::damage ::group ::restricted]))
+(s/def ::gear (s/keys :req-un [::id ::name ::setting ::price ::rarity ::source] :opt-un [::encumbrance ::encumbrance-bonus ::damage ::group ::restricted ::text]))
 
 ;; ---------- Item qualities and critical injuries ----------
 (s/def ::item-quality (s/keys :req-un [::id ::name ::activation ::ranked ::text ::source]))

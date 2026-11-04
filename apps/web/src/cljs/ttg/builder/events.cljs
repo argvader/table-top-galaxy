@@ -8,6 +8,7 @@
             [ttg.content :as content]
             [ttg.genesys.rules :as rules]
             [ttg.http :as http]
+            [ttg.roller.db :as roller-db]
             [ttg.routes :as routes]))
 
 (defn- check-and-throw [spec db]
@@ -91,6 +92,24 @@
 
 (defn set-ui [db [_ k v]] (assoc-in db [:builder k] v))
 
+(defn open-info
+  "Opens the info drawer on a gear item or talent: kind is :gear or :talent, id its library id. Ignored while the last
+   one is still leaving, so its close can't take this one with it."
+  [db [_ kind id]]
+  (if (get-in db [:builder :info :closing?])
+    db
+    (assoc-in db [:builder :info] {:kind kind :id id})))
+
+(defn dismiss-info
+  "Slides the info drawer away, then clears it so its contents hold still on the way out."
+  [{:keys [db]} _]
+  (when-let [{:keys [closing?]} (get-in db [:builder :info])]
+    (when-not closing?
+      {:db (assoc-in db [:builder :info :closing?] true)
+       :fx [[:dispatch-later {:ms roller-db/drawer-out-ms :dispatch [::close-info]}]]})))
+
+(defn close-info [db _] (assoc-in db [:builder :info] nil))
+
 (defn restart [{:keys [db]} _]
   (let [campaign-id (get-in db [:builder :campaign-id])]
     {:db (assoc db :builder (assoc (db/default-builder) :campaign-id campaign-id))
@@ -112,11 +131,13 @@
                  :on-ok [::created] :on-fail [::save-failed]})))
 
 (defn save
-  "Creates the character, or updates it when editing. Nothing goes while a block remains."
+  "Creates the character, or updates it when editing. Nothing goes while a block remains, unless the campaign's GM is
+   editing a player's character: they can override the creation rules."
   [{:keys [db]} _]
   (let [{:keys [character saving?] :as builder} (:builder db)
-        ix (get-in db [:content :ix])]
-    (when-not (or saving? (seq (rules/blocks (rules/issues character ix))))
+        ix (get-in db [:content :ix])
+        gm? (= "gm" (:access character))]
+    (when-not (or saving? (and (not gm?) (seq (rules/blocks (rules/issues character ix)))))
       {:db (update db :builder assoc :saving? true :error nil)
        ::http/request (save-request builder)})))
 
@@ -150,6 +171,9 @@
 (rf/reg-event-fx ::roll-motive [(rf/inject-cofx ::d100) validate-spec] roll-motive)
 (rf/reg-event-fx ::go [validate-spec] go)
 (rf/reg-event-db ::set-ui [validate-spec] set-ui)
+(rf/reg-event-db ::open-info [validate-spec] open-info)
+(rf/reg-event-fx ::dismiss-info [validate-spec] dismiss-info)
+(rf/reg-event-db ::close-info [validate-spec] close-info)
 (rf/reg-event-fx ::restart [validate-spec] restart)
 (rf/reg-event-fx ::save [validate-spec] save)
 (rf/reg-event-fx ::created [validate-spec] created)

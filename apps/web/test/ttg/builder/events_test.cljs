@@ -74,3 +74,15 @@
   (is (s/valid? ::db/app-db (state)))
   (is (s/valid? ::db/app-db (ev/save-failed (state :saving? true) [::ev/save-failed {:error "x"}])))
   (is (s/valid? ::db/app-db (ev/load-failed (state) [::ev/load-failed {}]))))
+
+(deftest the-info-drawer-opens-and-slides-away
+  (let [db (ev/open-info (state) [::ev/open-info :gear "rope"])
+        fx (ev/dismiss-info {:db db} [::ev/dismiss-info])]
+    (is (= {:kind :gear :id "rope"} (get-in db [:builder :info])))
+    (is (s/valid? ::db/app-db db))
+    (is (true? (get-in fx [:db :builder :info :closing?])))
+    (is (= [::ev/close-info] (get-in fx [:fx 0 1 :dispatch])))
+    (is (= (:db fx) (ev/open-info (:db fx) [::ev/open-info :talent "grit"])) "nothing opens while the last one leaves")
+    (is (nil? (ev/dismiss-info {:db (:db fx)} [::ev/dismiss-info])) "dismissing twice does nothing")
+    (is (nil? (get-in (ev/close-info (:db fx) [::ev/close-info]) [:builder :info])))
+    (is (nil? (ev/dismiss-info {:db (state)} [::ev/dismiss-info])) "nothing open, nothing to do")))

@@ -33,7 +33,9 @@
   ^{:key id}
   [:div.seat
    [portrait/face {:name name :portrait-key (:portrait-key pc)}]
-   [:div [:b name] (when (not= name player) [:span.sub " " player]) [progress pc]]
+   [:div [:b name] (when (not= name player) [:span.sub " " player]) [progress pc]
+    (when-let [cid (:character-id pc)]
+      [:a.linkbtn {:href (routes/href {:page :sheet :id cid})} "Open sheet"])]
    [:span.moves
     [:button.btn {:type "button" :disabled (zero? i) :aria-label (str "Move " name " earlier")
                   :on-click #(rf/dispatch [::ev/move-seat id -1])} "↑"]
@@ -52,15 +54,16 @@
 (defn- jump [tab label]
   [:button.btn {:type "button" :on-click #(ui/set-ui! :s0-tab tab)} label])
 
-(defn- block-body [tool {:keys [readAloud touchstones looksLike expectations roles buildRules questionsHow shipSteps close]}]
+(defn- block-body [tool {:keys [readAloud touchstones looksLike expectations roles buildRules questionsHow shipSteps close bid]}]
   (case tool
     "record" [:p "Start the recording before anyone sits down, and check the levels on a few words from each player."]
     "pitch" [:<> [:blockquote.readaloud readAloud] [:p [:b "Touchstones. "] touchstones] [:p [:b "A session looks like: "] looksLike]
              [jump :table "Tone dials"]]
     "safety" [:<> (into [:ul] (for [e expectations] ^{:key e} [:li e])) [jump :table "Lines and veils"]]
     "characters" [:<> [:p roles " " buildRules] [party-progress]]
-    "questions" [:<> [:p questionsHow] [jump :questions "Questions and the draw"]]
+    "questions" [:<> [:p questionsHow] [jump :questions "Questions and the d20"]]
     "ship" [:<> (into [:ol] (for [e shipSteps] ^{:key e} [:li e])) [jump :ship "The ship"]]
+    "bid" [:<> [:p (:how bid)] [jump :bid "The bid"]]
     "debt" [jump :debt "Debt"]
     "world" [jump :questions "World questions"]
     "wrap" [:<> [:p close] [jump :wrap "Wrap-up checklist"]]
@@ -120,12 +123,12 @@
     [:section.card.panel [:header [:h2 name " questions" [:small n " answered"]]]
      [:div.pbody [:p.note how] [:div.qset (doall (map question qs))]]]))
 
-(defn- drawn-cards [pc questions]
+(defn- rolled-cards [pc questions]
   (let [{:keys [draws alt]} @(rf/subscribe [::sub/at [:s0]])
         card (fn [qid]
                (let [{:keys [text]} (first (filter #(= qid (:id %)) questions))]
                  ^{:key qid}
-                 [:div.qcard [:p (or (not-empty (get alt (keyword qid))) text)]
+                 [:div.qcard [:span.qn "Rolled " (subs qid 1)] [:p (or (not-empty (get alt (keyword qid))) text)]
                   [:div.chips [:button.btn.primary
                                {:type "button"
                                 :on-click (fn []
@@ -133,31 +136,47 @@
                                             (ui/open! {:kind :question :id qid}))}
                                (party/first-name pc) " answers this"]]]))]
     [:<> [:div.cards (doall (map card (get draws (keyword (:id pc)))))]
-     [:div.chips [:button.linkbtn {:type "button" :on-click #(rf/dispatch [::ev/draw (:id pc)])} "Put them back and draw again"]]]))
+     [:div.chips [:button.linkbtn {:type "button" :on-click #(rf/dispatch [::ev/roll (:id pc)])} "Put it back and roll again"]]]))
 
-(defn- draw-panel [questions]
+(defn- d20
+  "Rolls for the player, or takes the number from a real die. Numbers that are taken can't be picked."
+  [{:keys [id] :as pc} questions]
+  (let [s0 @(rf/subscribe [::sub/at [:s0]])
+        open (set (doc/deck {:s0 s0} questions id))]
+    [:div.d20
+     [:button.btn.primary {:type "button" :on-click #(rf/dispatch [::ev/roll id])} "Roll d20 for " (party/first-name pc)]
+     [:span.note "or tap the number they rolled"]
+     [:div.pips {:role "group" :aria-label "d20 result"}
+      (doall (for [{qid :id} (filter #(= "personal" (:set %)) questions)
+                   :let [n (subs qid 1)]]
+               ^{:key qid}
+               [:button {:type "button" :disabled (not (open qid)) :aria-pressed (= [qid] (get-in s0 [:draws (keyword id)]))
+                         :on-click #(ui/op! doc/take-number questions id n)} n]))]]))
+
+(defn- roll-panel [questions]
   (let [pcs @(rf/subscribe [::sub/party])
         {:keys [draws answers]} @(rf/subscribe [::sub/at [:s0]])
         who (:draw-for @(rf/subscribe [::sub/ui]))
         pc (first (filter #(= who (:id %)) pcs))]
     [:section.draw
-     [:div.gmhd [ui/gm-tag] " " [:b "Run the draw"]
-      [:span.note " Go round the table. Each player draws two personal questions and answers one."]]
+     [:div.gmhd [ui/gm-tag] " " [:b "Roll for questions"]
+      [:span.note " Go round the table. Each player rolls a d20 and answers that personal question."]]
      (if (empty? pcs)
        [no-players]
        [:div.chips
         (doall (for [{:keys [id color] :as p} pcs
-                     :let [done (answered-by answers id) dealt (get draws (keyword id))]]
+                     :let [done (answered-by answers id) rolled (get draws (keyword id))]]
                  ^{:key id}
                  [:button.chip {:type "button" :aria-pressed (= id who) :style {"--pc" color}
-                                :on-click (fn [] (ui/set-ui! :draw-for id) (when-not dealt (rf/dispatch [::ev/draw id])))}
-                  [:span.pcdot] (party/first-name p) (cond done " ✓" dealt " · drawn")]))])
-     (when (and pc (get draws (keyword who))) [drawn-cards pc questions])]))
+                                :on-click #(ui/set-ui! :draw-for id)}
+                  [:span.pcdot] (party/first-name p) (cond done " ✓" rolled " · rolled")]))])
+     (when pc
+       (if (get draws (keyword who)) [rolled-cards pc questions] [d20 pc questions]))]))
 
 (defn- questions-tab []
   (let [{:keys [qsets questions]} @(rf/subscribe [::sub/content])]
-    [:<> [draw-panel questions]
-     (doall (map #(question-set % questions) (remove #(= "ship" (:id %)) qsets)))]))
+    [:<> [roll-panel questions]
+     (doall (map #(question-set % questions) (remove #(#{"ship" "bid"} (:id %)) qsets)))]))
 
 ;; ---------- Tone and safety ----------
 
@@ -220,6 +239,46 @@
      [:section.card.panel [:header [:h2 "The ship's unsettling questions"]]
       [:div.pbody [:div.qset (doall (map question (filter #(= "ship" (:set %)) questions)))]]]]))
 
+;; ---------- The bid ----------
+
+(defn- label-of
+  "The label for id in [id label ...] options."
+  [options id]
+  (some (fn [[i label]] (when (= i id) label)) options))
+
+(defn- choices [options] (cons ["" "Not chosen yet"] (map (juxt first second) options)))
+
+(defn- stake-note
+  "What the contract says about the crew's stake, and its fine print for the GM."
+  [stakes stake]
+  (when-let [[_ _ says catch] (first (filter #(= stake (first %)) stakes))]
+    [:<> [:p.note says] [ui/gm-block [:p [:b "The fine print. "] catch]]]))
+
+(defn- bid-fields [{:keys [backers stakes]}]
+  (let [{:keys [backer stake]} (ui/at [:s0 :bid])
+        expects (some (fn [[id _ e]] (when (= id backer) e)) backers)]
+    [:<>
+     [:div.ship
+      [ui/select-field [:s0 :bid :backer] "Backer" (choices backers)]
+      [ui/text-field [:s0 :bid :name] "Backer's name" "Who, exactly"]
+      [ui/select-field [:s0 :bid :stake] "The crew's stake" (choices stakes)]]
+     (when expects [:p.note [:b "They expect: "] expects])
+     [stake-note stakes stake]
+     [ui/text-area [:s0 :bid :promise] "What the crew promised to win the berth"]]))
+
+(defn- bid-tab []
+  (let [{:keys [questions run corps]} @(rf/subscribe [::sub/content])
+        {:keys [how corpNote stakes] :as bid} (:bid run)]
+    [:<>
+     [:section.card.panel [:header [:h2 "The bid" [:small (label-of stakes (ui/at [:s0 :bid :stake]))]]]
+      [:div.pbody [:p.note how] [bid-fields bid]
+       [ui/gm-block
+        [ui/select-field [:s0 :bid :corp] "Corp hiding behind the backer"
+         (cons ["" "None, or not decided"] (map (juxt :id :short) corps))]
+        [:p.note corpNote]]]]
+     [:section.card.panel [:header [:h2 "Bid questions"]]
+      [:div.pbody [:div.qset (doall (map question (filter #(= "bid" (:set %)) questions)))]]]]))
+
 ;; ---------- Debt ----------
 
 (defn- debt-row [corps {:keys [id name debt owes why creditor debt-type] :as pc}]
@@ -255,11 +314,13 @@
   (let [{:keys [wrapup run]} @(rf/subscribe [::sub/content])
         ticks @(rf/subscribe [::sub/at [:s0 :wrap]])
         {:keys [painted]} @(rf/subscribe [::sub/at [:s0 :ship]])
+        stake (label-of (get-in run [:bid :stakes]) (ui/at [:s0 :bid :stake]))
         pcs @(rf/subscribe [::sub/party])]
     [:section.card.panel [:header [:h2 "After Session 0"] [ui/gm-tag]]
      [:div.pbody
       [:p (:close run)]
-      [:p.note (or (not-empty painted) "The ship has no name yet") ". Crew Debt " (party/crew-debt pcs) "."]
+      [:p.note (or (not-empty painted) "The ship has no name yet") ". Crew Debt " (party/crew-debt pcs) ". "
+       (if stake (str "The crew's stake: " stake ".") "No stake chosen yet.")]
       (doall (map-indexed
               (fn [i text]
                 (let [k (keyword (str i)) done? (get ticks k)]
@@ -272,13 +333,13 @@
 ;; ---------- The tab ----------
 
 (def ^:private tabs
-  [[:run "Run sheet"] [:questions "Questions"] [:table "Tone and safety"] [:ship "The ship"] [:debt "Debt"] [:wrap "Wrap-up"]])
+  [[:run "Run sheet"] [:questions "Questions"] [:table "Tone and safety"] [:ship "The ship"] [:bid "The bid"] [:debt "Debt"] [:wrap "Wrap-up"]])
 
 (defn tab []
   (let [{:keys [s0-tab]} @(rf/subscribe [::sub/ui])
         done? @(rf/subscribe [::sub/at [:s0 :done]])]
     [:<>
-     [ui/intro "Session 0" "A crew, a ship, a debt that binds them, and a frontier they helped invent."
+     [ui/intro "Session 0" "A crew, a ship, a debt that binds them, and a voyage they helped invent."
       [:button.btn {:type "button" :class (when-not done? "primary")
                     :on-click #(ui/edit! [:s0 :done] (not done?))}
        (if done? "Session 0 played ✓" "Mark Session 0 played")]]
@@ -289,6 +350,7 @@
        :questions [questions-tab]
        :table [table-tab]
        :ship [ship-tab]
+       :bid [bid-tab]
        :debt [debt-tab]
        :wrap [wrap-tab]
        [run-sheet])]))

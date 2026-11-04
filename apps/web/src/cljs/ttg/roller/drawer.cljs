@@ -6,7 +6,8 @@
             [ttg.roller.events :as ev]
             [ttg.roller.subscriptions :as sub]
             [ttg.roller.views :as views]
-            [ttg.ui.dice :as ui]))
+            [ttg.ui.dice :as ui]
+            [ttg.ui.drawer :as frame]))
 
 (defn- focus! [el] (when el (.focus el)))
 
@@ -42,14 +43,9 @@
 
 (defn drawer []
   (when-let [{:keys [label detail weapon closing?]} @(rf/subscribe [::sub/check])]
-    (let [close #(rf/dispatch [::ev/dismiss-check])
-          roll @(rf/subscribe [::sub/shown])
-          leaving (when closing? "closing")]
+    (let [roll @(rf/subscribe [::sub/shown])]
       [:<>
-       [:div.scrim {:class leaving :on-click close}]
-       [:aside.drawer {:class leaving :inert (when closing? "") :aria-modal "true" :role "dialog" :aria-labelledby "d-title"}
-        [:div.grab {:aria-hidden true}]
-        [:header [:div [:h2#d-title label] [:div.meta detail]]
-         [:button.x {:type "button" :aria-label "Close roll" :on-click close} "×"]]
-        [:div.body (if roll [result-body weapon roll] [pool-body weapon])]]
+       [frame/panel {:title label :meta detail :closing? closing? :close-label "Close roll"
+                     :on-close #(rf/dispatch [::ev/dismiss-check])}
+        (if roll [result-body weapon roll] [pool-body weapon])]
        [views/live-region]])))

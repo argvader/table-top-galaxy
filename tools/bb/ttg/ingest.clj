@@ -111,6 +111,13 @@
         lib (content/merge-library (load-books))]
     {:profile profile :lib lib :content (content/for-setting lib profile)}))
 
+(defn invalid-entries
+  "[type id] of each merged entry that fails its spec."
+  [content]
+  (for [[type entries] content :let [spec (model/entry-specs type)] :when spec
+        e entries :when (not (s/valid? spec (dissoc e :sources)))]
+    [type (:id e)]))
+
 (defn library! [& [setting]]
   (let [{:keys [profile lib content]} (setting-library (or setting "android"))
         missing (content/unresolved lib profile)]
@@ -118,14 +125,21 @@
     (doseq [[type entries] (sort-by key content)]
       (println (format "  %-18s %4d" (name type) (count entries))))
     (when (seq missing)
-      (throw (ex-info (str "Unresolved references: " missing) missing)))))
+      (throw (ex-info (str "Unresolved references: " missing) missing)))
+    (when-let [bad (seq (invalid-entries content))]
+      (throw (ex-info (str "Merged entries fail their specs (a patch with no book entry?): " (vec bad)) {:bad bad})))))
 
 ;; ---------- Check: every content file validates against its spec ----------
+(defn- valid-patch?
+  "A patch (ttg.content/apply-entry) carries only what it changes. The merged entry is checked by bb library."
+  [{:keys [id source]}]
+  (and (keyword? id) (s/valid? ::model/source source)))
+
 (defn- check-file [path]
   (let [type (keyword (fs/strip-ext (fs/file-name path)))
         spec (model/entry-specs type)
         entries (edn/read-string (slurp (str path)))
-        bad (remove #(s/valid? spec %) entries)]
+        bad (remove #(if (:patch %) (valid-patch? %) (s/valid? spec %)) entries)]
     (println (format "%-36s %4d entries  %s" (str path) (count entries) (if (seq bad) (str (count bad) " INVALID") "ok")))
     (doseq [e (take 5 bad)] (println "   " (:id e) (s/explain-str spec e)))
     (count bad)))

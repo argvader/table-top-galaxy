@@ -15,7 +15,9 @@ Fifteen years ago the consortium sent the *Meridian* through the gate. It sent o
 | Jinteki | Runs medical, life support, and the cryo and clone banks |
 | NBN | Owns comms, sensors, and exclusive broadcast rights to the "greatest rescue in history" |
 
-**The players are the *Concord*'s outriders:** a small contracted crew on a scout or salvage ship docked in its belly. They take the jobs too risky or too deniable for official personnel. Their passage, ship and gear were bought on consortium credit, which keeps the Debt mechanic intact.
+**The players are one of the *Concord*'s two outrider crews:** independent contractors on a scout or salvage ship docked in its belly. The Compact bars the corps from fielding their own scouts, so the berths were sold by open bid, and each crew's ship came from a backer: a corp front, crowdfunding, family money, a colonial co-op, a patron, orgcrime, or the crew's own savings. Outriders take the jobs too risky or too deniable for official personnel, and the contract promises them a stake in whatever the expedition finds. Their berth fee and passage are on consortium credit, which keeps the Debt mechanic intact.
+
+**The rival crew** flies the *Yarrow*, publicly crowdfunded by the *Meridian* families' Bring Them Home campaign and secretly seeded and owned by NBN. Weyland, Haas-Bioroid and Jinteki all lost their fronts in the bid, so the players are the swing crew they all want a hold on.
 
 **Why start on the voyage:** the players get to know the town, the corp reps and the ship before anything goes wrong, so every later betrayal lands on people they actually know.
 
@@ -94,6 +96,7 @@ Every corp has a public role and a secret agenda. Let each one break at a differ
 
 - **The saboteur.** Introduced as the villain of Ki, later revealed as the one person trying to save everyone.
 - **The rescued scientist.** The first *Meridian* survivor the players save is the one who sabotaged their own ship.
+- **The rigged bid.** Both outrider crews are corp proxies: the *Yarrow* is NBN's, and the players' backer may be hiding a corp too. Their stakes (finder's share, homestead, salvage, broadcast points, amnesty) are all hollow in the fine print, and each one breaks against a Ten twist.
 - **The outrider handler.** The consortium liaison who hires the crew works for whichever corp benefits from them failing.
 - **The town council.** The colonists' elected leader cuts a deal with Weyland: land in exchange for handing over the survivors.
 - **The gate itself.** The ruins respond to whoever controls the gate, and each corp is privately racing to be that someone.

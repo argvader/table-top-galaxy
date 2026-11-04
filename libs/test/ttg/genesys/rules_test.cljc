@@ -144,3 +144,92 @@
              (r/crit-entry ix {:id "low" :name "Low" :roll 4}))))
     (testing "an injury the library has lost still shows"
       (is (= {:id "gone" :name "Gone" :roll 4} (r/crit-entry ix {:id "gone" :name "Gone" :roll 4}))))))
+
+;; ---------- Talents and body modifications that change the numbers ----------
+
+(def mod-library
+  (-> library
+      (update :archetypes conj {:id :bioroid :name "Bioroid" :xp 170 :wounds 11 :strain 8
+                                :characteristics {:brawn 3 :agility 1 :intellect 1 :cunning 1 :willpower 1 :presence 1}})
+      (update :skills into [(assoc (skill "Perception" :cunning) :category "General")
+                            (assoc (skill "Athletics" :brawn) :category "General")
+                            (assoc (skill "Science" :intellect) :category "Knowledge")])
+      (update :talents into [{:id :enduring :name "Enduring" :tier 4 :ranked true}
+                             {:id :defensive :name "Defensive" :tier 4 :ranked true}
+                             {:id :dedication :name "Dedication" :tier 5 :ranked true}
+                             {:id :big-guns :name "Big Guns" :tier 2 :ranked false}])
+      (update :gear into (for [n ["Cyberlimb" "Cyberorgan" "Cybereyes" "Sub-Dermal Armor" "Neuro-Regulator" "Spinal Modem" "Nighteyes"]]
+                           {:id (keyword (.toLowerCase (.replace n " " "-"))) :name n :kind :gear :price 0 :group "Cybernetics"}))))
+
+(def mix (r/index mod-library))
+(defn- ms [nm] (first (filter #(= nm (:name %)) (:skills mix))))
+
+(deftest talents-change-the-numbers
+  (let [c (assoc fizz :talents [{:id "enduring" :rank 1} {:id "defensive" :rank 2} {:id "big-guns" :rank 1}
+                                {:id "dedication" :rank 1 :picks ["brawn"]}])
+        d (r/derived c mix)]
+    (is (= 3 (r/characteristic-total c mix :brawn)) "Dedication adds 1")
+    (is (= 2 (r/characteristic c mix :brawn)) "but not to the creation value XP is priced from")
+    (is (= 4 (:soak d)) "Brawn 3 and Enduring 1")
+    (is (= 2 (:defense d)))
+    (is (= 13 (:encumbrance-max d)) "Big Guns: 10 plus Brawn")
+    (is (= 13 (:wounds d)) "the higher Brawn counts")
+    (is (= [:agility :intellect :cunning :willpower :presence] (r/dedication-options (r/add-talent c "dedication") mix 1))
+        "a second rank can't pick Brawn again")))
+
+(deftest cybernetics-change-the-numbers
+  (let [c (assoc fizz :gear [{:id "cyberlimb" :qty 2 :picks ["brawn-arm" "agility-arm"]} {:id "cyberorgan" :qty 2 :picks ["heart" "lungs"]}
+                             {:id "cybereyes" :qty 1} {:id "sub-dermal-armor" :qty 1} {:id "neuro-regulator" :qty 1}])
+        d (r/derived c mix)]
+    (is (= 3 (r/characteristic-total c mix :brawn)) "the arm")
+    (is (= 3 (r/characteristic-total c mix :willpower)) "the neuro-regulator")
+    (is (= 1 (r/rank-total c mix (ms "Perception"))) "cybereyes")
+    (is (= 1 (r/rank-total c mix (ms "Athletics"))) "lungs")
+    (is (= 0 (r/rank-of c mix (ms "Perception"))) "ranks from cybernetics aren't bought ranks")
+    (is (= 15 (:wounds d)) "10 + Brawn 3 + 2 for the heart")
+    (is (= 7 (:strain d)) "10 + Willpower 3, less 6: two arms count once, then each organ, eyes, armor, regulator")
+    (is (= 4 (:soak d)) "Brawn 3 + 1 sub-dermal")
+    (is (= {:proficiency 1 :ability 1} (r/skill-pool c mix (ms "Perception"))) "rolls use the totals")))
+
+(deftest cybernetic-limits-and-exemptions
+  (let [two-arms (assoc fizz :gear [{:id "cyberlimb" :qty 2 :picks ["brawn-arm" "brawn-leg"]}])]
+    (is (= 3 (r/characteristic-total two-arms mix :brawn)) "no more than +1 to a characteristic from cybernetics")
+    (is (= 10 (:strain (r/derived two-arms mix))) "an arm and a leg cost 1 each"))
+  (is (= 1 (r/rank-total (assoc fizz :gear [{:id "spinal-modem" :qty 1}]) mix (ms "Science"))) "the spinal modem raises Knowledge skills")
+  (is (= 9 (:strain (r/derived (assoc fizz :archetype "bioroid" :gear [{:id "cybereyes" :qty 1}]) mix))) "8 + Willpower 1: bioroids lose no strain")
+  (let [cyborg (assoc fizz :archetype "cyborg" :free-item "cybereyes" :gear [{:id "sub-dermal-armor" :qty 1}])]
+    (is (= 9 (:strain (r/derived cyborg mix))) "9 + Willpower 1, less 1: the free cybernetic costs nothing")
+    (is (= 1 (r/rank-total cyborg mix (ms "Perception"))) "but still works"))
+  (is (= 12 (:strain (r/derived (assoc fizz :gear [{:id "nighteyes" :qty 1}]) mix))) "g-mods change no numbers"))
+
+(deftest choices-and-adjustments
+  (let [c (assoc fizz :gear [{:id "cyberlimb" :qty 1}])
+        limb (first (r/carried c mix))]
+    (is (= ["Cyberlimb"] (r/unchosen c mix)))
+    (is (some #(re-find #"Cyberlimb" (:text %)) (r/issues c mix)) "the builder says so")
+    (is (= 3 (r/characteristic-total (r/set-pick c limb 0 "brawn-leg") mix :brawn)))
+    (is (empty? (r/unchosen (r/set-pick c limb 0 "brawn-leg") mix))))
+  (let [cyborg (assoc fizz :archetype "cyborg" :free-item "cyberlimb")
+        limb (first (r/carried cyborg mix))]
+    (is (= ["agility-arm"] (:free-picks (r/set-pick cyborg limb 0 "agility-arm"))) "the free item keeps its own pick"))
+  (is (= ["Dedication"] (r/unchosen (assoc fizz :talents [{:id "dedication" :rank 1}]) mix)))
+  (is (= ["cunning"] (:picks (first (:talents (r/set-dedication (assoc fizz :talents [{:id "dedication" :rank 1}]) 0 :cunning))))))
+  (let [d (r/derived (assoc fizz :adjust {:wounds -1 :strain 2 :soak 1 :defense 1}) mix)]
+    (is (= [11 14 3 1] ((juxt :wounds :strain :soak :defense) d)) "a GM adjustment is added last")
+    (is (= ["GM adjustment" -1] (last (:wounds (r/derived-parts (assoc fizz :adjust {:wounds -1}) mix)))))))
+
+(deftest a-free-item-over-its-cap
+  (let [cyborg (assoc fizz :archetype "cyborg" :arch-picks ["Streetwise" "Medicine"])
+        over (-> library (update :gear conj {:id :limb :name "Limb" :kind :gear :price 2000 :group "Cybernetics"}) r/index)]
+    (is (nil? (r/free-item-over (assoc cyborg :free-item "eye") over)))
+    (is (= 1000 (r/free-item-over (assoc cyborg :free-item "limb") over)))
+    (is (some #(= "Your free cybernetic costs 1000 credits more than the 1000 allowed" (:text %))
+              (r/blocks (r/issues (assoc cyborg :free-item "limb") over))))))
+
+(deftest only-the-gm-may-break-rules
+  (is (r/gm? (assoc fizz :access "gm")))
+  (is (not (r/gm? (assoc fizz :access "owner"))))
+  (is (not (r/gm? fizz))))
+
+(deftest the-index-carries-item-qualities
+  (is (= "Vicious" (get-in (r/index {:item-qualities [{:id :vicious :name "Vicious"}]}) [:qualities "vicious" :name]))))

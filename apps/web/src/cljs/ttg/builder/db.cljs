@@ -1,7 +1,7 @@
 (ns ttg.builder.db
   "The builder's slice of app-db, under :builder. :character is the character being built (ttg.genesys.character);
    the rest is where the player is in the wizard. :campaign-id is where a new character goes; :editing? means this one
-   already exists, so saving updates it. New characters are kept in localStorage until they're saved."
+   already exists, so saving updates it. :info is the gear or talent open in the info drawer. New characters are kept in localStorage until they're saved."
   (:require [clojure.spec.alpha :as s]
             [ttg.genesys.rules :as rules]))
 
@@ -21,13 +21,18 @@
 (s/def ::campaign-id (s/nilable string?))
 (s/def ::error (s/nilable string?))
 (s/def ::load-error (s/nilable string?))
+(s/def :ttg.builder.db.info/kind #{:gear :talent})
+(s/def :ttg.builder.db.info/id string?)
+(s/def :ttg.builder.db.info/closing? boolean?)
+(s/def ::info (s/nilable (s/keys :req-un [:ttg.builder.db.info/kind :ttg.builder.db.info/id]
+                                 :opt-un [:ttg.builder.db.info/closing?])))
 (s/def ::builder (s/keys :req-un [::step ::visited ::character ::xp-tab ::gear-tab ::q ::tq ::gq ::career-only? ::tier
-                                  ::preview? ::saving? ::editing? ::campaign-id ::error ::load-error]))
+                                  ::preview? ::saving? ::editing? ::campaign-id ::error ::load-error ::info]))
 (s/def ::app-db (s/keys :req-un [::builder]))
 
 (defn default-builder []
   {:step 0 :visited #{0} :character (rules/blank-character) :xp-tab :chars :gear-tab :weapon :q "" :tq "" :gq ""
-   :career-only? false :tier 0 :preview? false :saving? false :editing? false :campaign-id nil :error nil :load-error nil})
+   :career-only? false :tier 0 :preview? false :saving? false :editing? false :campaign-id nil :error nil :load-error nil :info nil})
 
 ;; Campaign data (Manifest Destiny), not book content.
 (def corps ["Haas-Bioroid" "Jinteki" "NBN" "Weyland Consortium"])

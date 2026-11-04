@@ -47,6 +47,13 @@ The thread couldn't be fetched from the tooling, so this draft follows the class
 
 The table accepted these rules as drafted. Change them here if play shows they need it.
 
+## Gear descriptions
+- **Replaces or changes:** nothing in the rules. It adds a description to each piece of gear and armor in the Android library.
+- **Source:** the table, in our own words (no book text).
+- **Rule:** each item gets a sentence or two on what it is and when you'd want it. The character builder's info drawer
+  shows it above the item's numbers. The entries are in `content/house/gear.edn` and `content/house/armor.edn` as patches,
+  so a re-ingest of the books keeps them. A GM can also edit any item's description in the Library.
+
 ## Template
 
 ### <Rule name>

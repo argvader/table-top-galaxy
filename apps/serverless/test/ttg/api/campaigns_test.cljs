@@ -59,6 +59,16 @@
             (is (= #{"gm" "player"} (set (map :role (:members gm-view)))) "joining twice is one membership")
             (is (= [{:id (:id c) :name "Prance Galavent" :owner (:id prance)}] (:characters gm-view))))
           (is (= "Prance Galavent" (get-in (<! (characters/fetch t (:id gm) (:id c))) [:character :name])) "the GM reads player sheets")
+          (is (= "gm" (get-in (<! (characters/fetch t (:id gm) (:id c))) [:character :access])))
+          (is (= "owner" (get-in (<! (characters/fetch t (:id prance) (:id c))) [:character :access])))
+          (let [fixed (:character (<! (characters/save! t (:id gm) (:id c) {:name "Prance Galavent" :adjust {:wounds -1}
+                                                                            :version 1 :access "owner"})))]
+            (is (= {:wounds -1} (:adjust fixed)) "the GM can override a player's sheet")
+            (is (= (:id prance) (:owner fixed)) "and it stays the player's")
+            (is (= "gm" (:access fixed)) "access comes from the server, not the body"))
+          (is (= 403 (status (<! (characters/save! t (:id krum) (:id c) {:name "Stolen" :version 2})))) "other players can't")
+          (is (= 403 (status (<! (characters/delete! t (fake-images) (:id gm) (:id c))))) "deleting stays the owner's")
+          (is (= "gm" (get-in (<! (characters/set-portrait! t (fake-images) (:id gm) (:id c) jpeg)) [:character :access])))
           (is (= 403 (status (<! (characters/fetch t (:id krum) (:id c))))))
           (is (= [{:id cid :name "Manifest Destiny" :role "player"}] (:campaigns (<! (campaigns/mine t prance)))))
           (done)))))

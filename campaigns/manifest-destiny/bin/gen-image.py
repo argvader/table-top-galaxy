@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate an image with OpenAI gpt-image-1 and save it to disk.
+"""Generate an image with an OpenAI gpt-image model and save it to disk.
 
 The single seam for all image generation in this project. The session and world
 prompts shell out to it; it takes a text prompt and an output path, calls the
@@ -34,7 +34,11 @@ STYLE_SUFFIX = (
     "cinematic composition, no text, no lettering, no logos"
 )
 
-# gpt-image-1 accepts a fixed set of sizes.
+# The image model. gpt-image-1 stopped generating in November 2026; override with
+# OPENAI_IMAGE_MODEL in .env when this one is retired too.
+DEFAULT_MODEL = "gpt-image-2"
+
+# The gpt-image models accept a fixed set of sizes.
 VALID_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
 
 
@@ -53,7 +57,7 @@ def generate(prompt, out_path, size):
 
     payload = json.dumps(
         {
-            "model": "gpt-image-1",
+            "model": os.environ.get("OPENAI_IMAGE_MODEL") or DEFAULT_MODEL,
             "prompt": prompt + STYLE_SUFFIX,
             "size": size,
             "n": 1,
@@ -96,7 +100,7 @@ def generate(prompt, out_path, size):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate an image with OpenAI gpt-image-1 and save it to disk."
+        description="Generate an image with an OpenAI gpt-image model and save it to disk."
     )
     parser.add_argument("--prompt", required=True, help="Text prompt for the image.")
     parser.add_argument("--out", required=True, help="Output file path (e.g. chronicle/images/x.png).")

@@ -1,0 +1,393 @@
+;; House rule (docs/house-rules.md#gear-descriptions): a plain-language description for each item, patched onto the book entry.
+[{:id :airbelt-pack-android,
+  :patch true,
+  :text
+  "A harness of small thrusters that slows a fall and lets you hop short gaps. For rooftop work and anywhere the drop is a long one.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :bmi-android,
+  :patch true,
+  :text
+  "A brain-machine interface: a neural link that lets you run a rig by thought instead of by hand. Netrunners treat it as the price of entry.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :backpack,
+  :patch true,
+  :text
+  "A sturdy pack that lets you carry more than your hands and pockets can.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :big-rig-android,
+  :patch true,
+  :text
+  "A full desk-sized computer for serious Network work. Too heavy to haul around: it's for a safehouse or a ship's berth.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :bone-lacing-android,
+  :patch true,
+  :text
+  "Hardened alloy laced through your skeleton so it takes a beating without breaking. For people who expect to get hurt.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :burst-transmitter-android,
+  :patch true,
+  :text
+  "Packs a message into a split-second burst that's hard to intercept or trace. For calls nobody should overhear.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :cat-claws-android,
+  :patch true,
+  :text
+  "Retractable claws grown into your fingertips. A weapon you can't be searched for.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :chameleon-skin-android,
+  :patch true,
+  :text
+  "Skin that shifts colour and tone at will. Good for blending into shadows or changing how you look.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :climbing-harness-android,
+  :patch true,
+  :text
+  "Clips, line and grips for scaling walls and lowering yourself down shafts safely.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :cross-body-bag-android,
+  :patch true,
+  :text
+  "A small shoulder bag that keeps a few things to hand, so you can carry a little more.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :cybereyes-android,
+  :patch true,
+  :text
+  "Replacement eyes that see better than the ones you were born with and can overlay data from your PAD.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :cyberlimb-android,
+  :patch true,
+  :text
+  "A replacement arm or leg, stronger or quicker than flesh. You choose which when it's fitted.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :cyberorgan-android,
+  :patch true,
+  :text
+  "A replacement heart, lungs or liver that outperforms the original. You choose which when it's fitted.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :disguise-kit-android,
+  :patch true,
+  :text
+  "Prosthetics, make-up and fabrics for passing as someone else. Pairs well with a cover story.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :emergency-medkit-android,
+  :patch true,
+  :text
+  "A pocket kit for patching wounds in the field: dressings, sealant, a few doses of painkiller.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :emergency-repair-patch-android,
+  :patch true,
+  :text
+  "A quick seal for a hole in a suit, hull or pipe. Buys you time, not a real repair.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :enhanced-healing-android,
+  :patch true,
+  :text
+  "A gene-tweak that makes your body knit itself back together faster than it should.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :enhanced-hearing-android,
+  :patch true,
+  :text
+  "Cybernetic ears that pick up faint sounds and shrug off deafening ones.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :enhanced-muscles-coordination-android,
+  :patch true,
+  :text
+  "Gene-tuned muscle for balance, fine control and a steady aim when it counts.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :enhanced-muscles-strength-android,
+  :patch true,
+  :text
+  "Gene-tuned muscle for raw power: climbing, hitting and lifting when it counts.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :enhanced-olfactory-receptors-android,
+  :patch true,
+  :text
+  "A bloodhound's sense of smell. For tracking, and for noticing what doesn't smell right.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :enhanced-reflexes-android,
+  :patch true,
+  :text
+  "Wiring that speeds up your reactions, so you notice threats and move before others do.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :field-radio-android,
+  :patch true,
+  :text
+  "A rugged long-range radio that works where the Network doesn't reach.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :flashlight-android,
+  :patch true,
+  :text
+  "A light. Cheap, and you'll want it the first time the power goes out.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :follicle-control-android,
+  :patch true,
+  :text
+  "Change your hair on demand: length, colour or none at all. Handy for slipping a description.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :forensic-kit-android,
+  :patch true,
+  :text
+  "Tools for reading a crime scene: samples, prints, residue. For investigators and the people who clean up after them.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :geno-sculpted-physique-android,
+  :patch true,
+  :text
+  "A body designed to be striking. People notice you and want to listen.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :handheld-scanner-android,
+  :patch true,
+  :text
+  "A palm sensor that reads what's around you: life signs, chemicals, energy, hidden devices.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :happy-patch-android,
+  :patch true,
+  :text
+  "A cheap stick-on mood lifter. Takes the edge off a bad day, and some people use one every day.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :infiltrator-goggles-android,
+  :patch true,
+  :text
+  "Low-light and thermal vision in one set of goggles, for seeing what's in the dark.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :las-scanner-android,
+  :patch true,
+  :text
+  "A laser scanner that maps a space or an object into a precise 3D model.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :load-bearing-gear-android,
+  :patch true,
+  :text
+  "Straps, webbing and pouches that spread a load across your body so you can carry more.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :lockbreaker-android,
+  :patch true,
+  :text
+  "An electronic tool that cracks maglocks and keypads, if you know how to use it.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :lockpick-set-android,
+  :patch true,
+  :text
+  "Picks and tension tools for old-fashioned mechanical locks, which are still everywhere.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :low-fi-android,
+  :patch true,
+  :text
+  "A downer that dulls the senses and quiets the noise in your head.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :mal-container-android,
+  :patch true,
+  :text
+  "A secure, armoured case for carrying something very valuable or very dangerous. Priced like it.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :makerbox-android,
+  :patch true,
+  :text
+  "A portable fabricator that prints small parts and simple objects from a design file.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :micro-welder-android,
+  :patch true,
+  :text
+  "A pen-sized welder for delicate electronics and small mechanical fixes.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :modular-backpack-android,
+  :patch true,
+  :text
+  "A large pack with clip-on pouches, built for carrying a lot over a long way.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :monocam-android,
+  :patch true,
+  :text
+  "A tiny camera you can stick anywhere and watch through from your PAD.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :neuro-regulator-android,
+  :patch true,
+  :text
+  "An implant that keeps your mind steady under pressure. Some say it makes you a little colder.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :nighteyes-android,
+  :patch true,
+  :text
+  "A gene-tweak that lets you see in near-darkness. Bright light is harder on your eyes.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :o2-bottle-android,
+  :patch true,
+  :text
+  "A small air supply for smoke, gas or a breach. Lasts minutes, not hours.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :pad-android,
+  :patch true,
+  :text
+  "Your personal data device: phone, wallet, ID and window onto the Network in one.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :pain-editor-android,
+  :patch true,
+  :text
+  "An implant that shuts off pain when you need to keep going. Your body still keeps the score.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :painkiller,
+  :patch true,
+  :text
+  "A dose of medicine that dulls pain and gets you back on your feet after a hit.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :personal-comlink-android,
+  :patch true,
+  :text "A short-range earpiece for keeping in touch with your crew.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :portable-clinic-kit-android,
+  :patch true,
+  :text
+  "A full medical kit for real treatment away from a hospital: surgery tools, drugs, monitors.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :portable-rig-android,
+  :patch true,
+  :text
+  "A netrunning computer small enough to carry. Less power than a big rig, but it goes where you go.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :portable-toolkit-android,
+  :patch true,
+  :text
+  "A compact set of tools for fixing machines, vehicles and electronics on the job.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :reader-android,
+  :patch true,
+  :text
+  "A slim screen for reading and showing files without exposing your PAD.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :respirator-android,
+  :patch true,
+  :text "A mask that filters smoke, dust and gas. Not for vacuum.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :rope,
+  :patch true,
+  :text
+  "A length of strong rope. Never has anyone regretted bringing it.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :rope-android,
+  :patch true,
+  :text
+  "A length of synthetic rope. Light, strong, and endlessly useful.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :skulljack-android,
+  :patch true,
+  :text
+  "A port in your skull that links your brain straight to a computer. For netrunners who want nothing between them and the machine.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :slap-patch-android,
+  :patch true,
+  :text "A stick-on medical patch that stabilizes you after a wound.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :smartspecs-android,
+  :patch true,
+  :text
+  "Glasses with a heads-up display for messages, maps and data from your PAD.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :snap-locks-android,
+  :patch true,
+  :text
+  "Disposable restraints that lock with a snap. For prisoners, or for securing a door fast.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :space-suit-android,
+  :patch true,
+  :text
+  "A pressurized suit for working in vacuum. Essential on the Beanstalk, the Moon or a hull walk.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :spinal-modem-android,
+  :patch true,
+  :text
+  "A computer built into your spine, always connected. You're never offline, which cuts both ways.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :stim-android,
+  :patch true,
+  :text
+  "A quick chemical jolt to stay awake and alert, with a crash later.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :sting-android,
+  :patch true,
+  :text
+  "A recreational drug with a sharp, short high. Cheap on the street.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :sub-dermal-armor-android,
+  :patch true,
+  :text
+  "Armour plating under the skin. It's always on, and nobody can see it.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :tooth-buds-android,
+  :patch true,
+  :text
+  "Sharp, reinforced teeth that bite like a weapon. They do make a first impression.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :toxin-filters-android,
+  :patch true,
+  :text
+  "Modified organs that clear poisons and drugs from your blood faster.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :utility-belt-android,
+  :patch true,
+  :text "A belt of pouches and clips for keeping small tools at hand.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}]

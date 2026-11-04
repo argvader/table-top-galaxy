@@ -1,0 +1,53 @@
+;; House rule (docs/house-rules.md#gear-descriptions): a plain-language description for each item, patched onto the book entry.
+[{:id :concealed-buckyweave-android,
+  :patch true,
+  :text
+  "Everyday clothes with protective fibre woven in. Looks like nothing, stops a little.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :durable-clothing-android,
+  :patch true,
+  :text "Tough workwear that turns scrapes and minor hits.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :environmental-hardsuit-android,
+  :patch true,
+  :text
+  "A sealed suit for hostile environments: heat, cold, toxins, low pressure.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :heavy-jacket,
+  :patch true,
+  :text "A thick coat that softens blows and keeps out the weather.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :light-body-armor-android,
+  :patch true,
+  :text
+  "A protective vest that stops more than clothes can, without slowing you down much.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :optical-camouflage-suit-android,
+  :patch true,
+  :text
+  "A suit that bends light to blur your outline, making you hard to hit and hard to see.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :personal-exosuit-android,
+  :patch true,
+  :text
+  "A powered frame that makes you much harder to hurt. Very expensive and impossible to hide.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :plasteel-carapace-android,
+  :patch true,
+  :text
+  "Moulded hard plates over the torso and limbs. Serious protection that looks it.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}
+ {:id :riot-armor-android,
+  :patch true,
+  :text
+  "Padded, heavy armour built for crowd control. It takes punishment.",
+  :source
+  {:book "house", :doc "docs/house-rules.md#gear-descriptions"}}]

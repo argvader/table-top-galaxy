@@ -2,14 +2,16 @@
   "The character builder: the seven approved steps, with the prototype's markup and classes (css/game.css)."
   (:require [clojure.string :as str]
             [re-frame.core :as rf]
+            [ttg.builder.actions :as act]
             [ttg.builder.db :as db]
             [ttg.builder.events :as ev]
+            [ttg.builder.info :as info]
             [ttg.builder.subscriptions :as subs]
             [ttg.content :as content]
             [ttg.genesys.rules :as r]
             [ttg.ui.text :as text]))
 
-(defn- change! [& args] (rf/dispatch (into [::ev/change] args)))
+(def ^:private change! act/change!)
 (defn- change-lib! [& args] (rf/dispatch (into [::ev/change-with-library] args)))
 (defn- ui! [k v] (rf/dispatch [::ev/set-ui k v]))
 (defn- go! ([step] (go! step nil)) ([step tab] (rf/dispatch [::ev/go step tab])))
@@ -51,8 +53,10 @@
 
 ;; ---------- Career ----------
 
-(defn- pick [{:keys [on? block on-click short]} label]
-  [:button.pick {:type "button" :aria-pressed on? :disabled (boolean (and block (not on?))) :title block :on-click on-click}
+(defn- pick
+  "A skill to tick. A block stops a player ticking it (unticking is always fine); the GM may tick past it."
+  [c {:keys [on? block on-click short]} label]
+  [:button.pick (merge (act/button-attrs c (when-not on? block) nil) {:aria-pressed on? :on-click on-click})
    [:span.box {:aria-hidden true}] [:span.nm label [:i short]]])
 
 (defn- career-card [c {:keys [name source skills useful-talents] :as career}]
@@ -72,7 +76,7 @@
      (into [:div.picks]
            (for [nm (:skills (r/career c ix)) :let [skill (or (by-name nm) {:name nm})]]
              ^{:key nm}
-             [pick {:on? (boolean (some #{nm} (:career-picks c))) :short (when (:characteristic skill) (skill-short skill))
+             [pick c {:on? (boolean (some #{nm} (:career-picks c))) :short (when (:characteristic skill) (skill-short skill))
                     :block (if (>= n 4) "Four picked" (r/free-pick-block c ix skill 1))
                     :on-click #(change! update :career-picks r/toggle nm)} nm]))]))
 
@@ -85,7 +89,7 @@
        (into [:div.picks]
              (for [skill pool :let [nm (:name skill)]]
                ^{:key nm}
-               [pick {:on? (boolean (some #{nm} (:arch-picks c))) :short (skill-short skill)
+               [pick c {:on? (boolean (some #{nm} (:arch-picks c))) :short (skill-short skill)
                       :block (if (>= n choose) (str choose " picked") (r/free-pick-block c ix skill ranks))
                       :on-click #(change! update :arch-picks r/toggle nm)} nm]))
        [:p.note "Choose a career first. These must be skills outside it."])]))
@@ -153,8 +157,8 @@
      [:div.ctl
       [:button.btn.step {:type "button" :disabled (zero? bought) :aria-label (str "Lower " nm)
                          :on-click #(change! update-in [:char-buy k] dec)} "−"]
-      [:button.btn.step {:type "button" :disabled (boolean up) :aria-label (str "Raise " nm ". " line)
-                         :on-click #(change! update-in [:char-buy k] (fnil inc 0))} "+"]]
+      [:button.btn.step (merge (act/button-attrs c up nil)
+                               {:aria-label (str "Raise " nm ". " line) :on-click #(change! update-in [:char-buy k] (fnil inc 0))}) "+"]]
      [:span.cost line]]))
 
 (defn- chars-tab [c ix]
@@ -176,8 +180,8 @@
      [:span.sctl
       [:button.btn.step {:type "button" :disabled (zero? bought) :aria-label (str "Remove a rank of " nm)
                          :on-click #(change! update-in [:skill-buy k] dec)} "−"]
-      [:button.btn.step {:type "button" :disabled (boolean up) :aria-label (str "Buy a rank of " nm)
-                         :on-click #(change! update-in [:skill-buy k] (fnil inc 0))} "+"]]]))
+      [:button.btn.step (merge (act/button-attrs c up nil)
+                               {:aria-label (str "Buy a rank of " nm) :on-click #(change! update-in [:skill-buy k] (fnil inc 0))}) "+"]]]))
 
 (defn- skills-tab [c ix {:keys [q career-only?]}]
   (let [q (str/lower-case (str/trim q))
@@ -204,28 +208,15 @@
      [:p.pyr-msg {:class (if ok? "ok" "no")}
       (if ok? "Valid. " "Broken. ") "Each tier needs more talents than the tier above it."]]))
 
-(defn- talent-actions [c ix {:keys [ranked] :as talent}]
-  (let [id (id-of talent) owned (r/owned-talent c id) buy (r/talent-buy-block c ix talent)
-        tier (r/next-tier talent owned) drop-block (when owned (r/talent-drop-block c ix id)) show-buy? (or (not owned) ranked)]
-    [:<>
-     [:div.acts
-      (when owned
-        [:button.btn {:type "button" :disabled (boolean drop-block) :title drop-block :on-click #(change! r/remove-talent id)}
-         (if (and ranked (> (:rank owned) 1)) "Remove a rank" "Remove")])
-      (when show-buy?
-        [:button.btn {:type "button" :class (when-not owned "primary") :disabled (boolean buy) :on-click #(change! r/add-talent id)}
-         (if owned (str "+ Rank " (inc (:rank owned)) " · " (* 5 tier) " XP") (str "Buy · " (* 5 tier) " XP"))])]
-     (when-let [why (if show-buy? (or buy drop-block) drop-block)] [:div.block why])]))
-
 (defn- talent-card [c ix useful {:keys [name tier activation ranked source] :as talent}]
   (let [owned (r/owned-talent c (id-of talent))]
     [:div.talent {:class (when owned "owned")}
      [:div
-      [:h4 name (when (and owned ranked) [:span.rk " rank " (:rank owned)])
+      [:h4 [info/name-button :talent talent name] (when (and owned ranked) [:span.rk " rank " (:rank owned)])
        " " [:span.tag "Tier " tier] [:span.tag activation] (when ranked [:span.tag "Ranked"])
        (when (useful (id-of talent)) [:span.tag.sugg-tag "Suggested for your career"]) [text/cite source]]
       [:p [text/rich (:text talent)]]]
-     [talent-actions c ix talent]]))
+     [act/talent-actions c ix talent]]))
 
 (defn- talents-tab [c ix {:keys [tq tier]}]
   (let [q (str/lower-case (str/trim tq))
@@ -271,12 +262,12 @@
     (when encumbrance-bonus (str "Carry +" encumbrance-bonus))))
 
 (defn- catalog-item [c ix g]
-  (let [block (r/gear-buy-block c ix g) bought? (= "Bought" block) detail (gear-detail g)]
+  (let [detail (gear-detail g)]
     [:div.gitem
-     [:div [:h4 (:name g) (when (:restricted g) [:span.tag " Restricted"])]
+     [:div [:h4 [info/name-button :gear g (:name g)] (when (:restricted g) [:span.tag " Restricted"])]
       [:div.meta detail (when detail " · ") "Enc " (or (:encumbrance g) 0) " · Rarity " (or (:rarity g) "–") " " [text/cite (:source g)]]]
      [:div.acts [:span.price (.toLocaleString (or (:price g) 0))]
-      [:button.btn {:type "button" :disabled (boolean block) :on-click #(change! r/add-gear (id-of g))} (if bought? "Bought" "Buy")]]]))
+      [act/gear-buy c ix g {:label "Buy"}]]]))
 
 (defn- catalog [c ix {:keys [gear-tab gq]}]
   (let [q (str/lower-case (str/trim gq))
@@ -291,33 +282,42 @@
                (into [:div.glist] (map (fn [g] ^{:key (:id g)} [catalog-item c ix g])) entries)]))
       [:p.note "Nothing matches."])))
 
+(defn- free-item-chip [c ix g]
+  (let [over (act/free-item-over-note c ix g)]
+    [:button.chip {:type "button" :aria-pressed (= (:free-item c) (id-of g)) :title over :class (when over "override")
+                   :on-click #(change! update :free-item (fn [cur] (when (not= cur (id-of g)) (id-of g))))}
+     (:name g) " · " (.toLocaleString (:price g)) (when over [:span.tag.gm "GM"])]))
+
+(defn- free-item-options
+  "The group's items within the cap. The GM sees them all, so they can grant one that costs more."
+  [c ix {:keys [group max-price]}]
+  (filter #(and (= group (:group %)) (or (r/gm? c) (<= (or (:price %) 0) max-price)))
+          (sort-by :name (vals (:gear ix)))))
+
 (defn- free-item-card [c ix]
-  (let [a (r/archetype c ix) {:keys [group max-price]} (:free-item a)]
-    (when group
+  (let [a (r/archetype c ix) {:keys [max-price] :as free} (:free-item a) chosen (get-in ix [:gear (:free-item c)])]
+    (when free
       [:div.card.s0
        [:div [:span.tag (:name a)]]
        [:div.q "Your free " (r/free-item-label a) ", worth up to " (.toLocaleString max-price) " credits"]
-       (into [:div.sugg]
-             (for [g (sort-by :name (vals (:gear ix))) :when (and (= group (:group g)) (<= (or (:price g) 0) max-price))]
-               ^{:key (:id g)}
-               [:button.chip {:type "button" :aria-pressed (= (:free-item c) (id-of g))
-                              :on-click #(change! update :free-item (fn [cur] (when (not= cur (id-of g)) (id-of g))))}
-                (:name g) " · " (.toLocaleString (:price g))]))
+       (into [:div.sugg] (map (fn [g] ^{:key (:id g)} [free-item-chip c ix g])) (free-item-options c ix free))
+       (when chosen
+         [:button.linkbtn {:type "button" :on-click #(info/open! :gear (id-of chosen))} "What does " (:name chosen) " do?"])
+       (when-let [over (some->> chosen (act/free-item-over-note c ix))] [act/override-note c over])
        [:p.note {:style {:margin 0}} "It doesn't come out of your 500 credits."]])))
 
 (defn- owned-item [c ix g]
-  (let [id (id-of g) worn? (= (:id g) (:id (r/best-armor c ix)))]
+  (let [worn? (= (:id g) (:id (r/best-armor c ix)))]
     [:div.gitem
-     [:div [:h4 (:name g) (when (> (:qty g) 1) [:span.mono {:style {:font-weight 400}} " ×" (:qty g)])]
+     [:div [:h4 [info/name-button :gear g (:name g)] (when (> (:qty g) 1) [:span.mono {:style {:font-weight 400}} " ×" (:qty g)])]
       [:div.meta (when (:free g) (str "Free (" (:name (r/archetype c ix)) ") · "))
        (when (= "armor" (kind-of g)) (if worn? "Worn · " "Carried, not worn · "))
        "Enc " (* (or (:encumbrance g) 0) (:qty g))]]
      (when-not (:free g)
        [:div.acts
         (when-not (r/single-item? g)
-          [:button.btn.step {:type "button" :disabled (boolean (r/gear-buy-block c ix g)) :aria-label (str "Add one more " (:name g))
-                             :on-click #(change! r/add-gear id)} "+"])
-        [:button.btn {:type "button" :on-click #(change! r/remove-gear id)} (if (> (:qty g) 1) "−1" "Remove")]])]))
+          [act/gear-buy c ix g {:label "+" :cls ["step"] :aria-label (str "Add one more " (:name g))}])
+        [act/gear-remove g (:qty g)]])]))
 
 (defn- money [c ix]
   (let [left (r/credits-left c ix) {:keys [encumbrance encumbrance-max encumbrance-bonus]} (r/derived c ix)]
@@ -424,28 +424,32 @@
       (into [:ul] (for [t r/motive-types]
                     ^{:key t} [:li [:b t ":"] " " (let [x (get-in c [:motives (r/motive-key t) :name])] (if (str/blank? x) "blank" x))]))]]))
 
-(defn- check-row [{:keys [step level text tab]}]
+(defn- check-row [gm? {:keys [step level text tab]}]
   ^{:key text}
   [:div.check {:class (name level)}
    [:span.i {:aria-hidden true} (if (= :block level) "!" "i")]
-   [:span text [:span.sr (if (= :block level) " (must fix)" " (optional)")]]
+   [:span (when (and gm? (= :block level)) [:span.tag.gm "GM may skip"]) " " text
+    [:span.sr (cond (not= :block level) " (optional)" gm? " (allowed as GM)" :else " (must fix)")]]
    [:button.linkbtn {:type "button" :on-click #(go! step tab)} (:label (r/steps step))]])
 
 (defn- step-review [c ix issues {:keys [editing? saving? error]}]
-  (let [blocked (count (r/blocks issues))]
+  (let [blocked (count (r/blocks issues)) gm? (= "gm" (:access c))]
     [:<>
-     [head "Review" "Fix anything marked red, then " (if editing? "save your changes" "create your character") ". Yellow items are fine to leave for now."]
+     (if gm?
+       [head "Review" "You're editing as the GM, so red items don't stop you saving: each is a rule bent or a step skipped. Check they're what you meant, then save."]
+       [head "Review" "Fix anything marked red, then " (if editing? "save your changes" "create your character") ". Yellow items are fine to leave for now."])
      (if (seq issues)
-       (into [:div.checks] (map check-row) issues)
+       (into [:div.checks] (map (partial check-row gm?)) issues)
        [:div.checks [:div.check.ok [:span.i {:aria-hidden true} "✓"] [:span "Everything checks out."] [:span]]])
      [review-cards c ix]
      (when error [:p.banner {:role "alert"} error])
      [:div.stepnav {:style {:display "flex"}}
       [:button.btn.big {:type "button" :on-click #(go! 5)} "Back"]
       [:span {:style {:display "flex" :gap 10 :align-items "center" :flex-wrap "wrap" :justify-content "flex-end"}}
-       (when (pos? blocked) [:span.note {:style {:margin 0}} blocked " to fix first"])
-       [:button.btn.primary.big {:type "button" :disabled (or saving? (pos? blocked)) :on-click #(rf/dispatch [::ev/save])}
-        (cond saving? "Saving…" editing? "Save changes" :else "Create character")]]]]))
+       (when (pos? blocked)
+         [:span.note {:style {:margin 0}} blocked (if gm? " bent or skipped. As the GM you can save anyway." " to fix first")])
+       [:button.btn.primary.big {:type "button" :disabled (or saving? (and (pos? blocked) (not gm?))) :on-click #(rf/dispatch [::ev/save])}
+        (cond saving? "Saving…" (and gm? (pos? blocked)) "Save anyway (GM)" editing? "Save changes" :else "Create character")]]]]))
 
 ;; ---------- Frame ----------
 
@@ -545,6 +549,7 @@
     [:main.card.stepcard [step-body c ix issues b] [step-nav b]]
     [:aside.side.card {:data-desk-only true :aria-label "Character preview"} [:div.preview [:h2 "Preview"] [preview-body c ix issues]]]]
    [dock c ix issues b]
+   [info/info-drawer]
    (when preview?
      [:<>
       [:div.scrim {:on-click #(ui! :preview? false)}]

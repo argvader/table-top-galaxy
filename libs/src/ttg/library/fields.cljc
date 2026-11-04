@@ -23,6 +23,7 @@
   (merge {:path path :label label :kind kind :blank :omit} opts))
 
 (def ^:private name-field (f [:name] "Name" :text :blank :required))
+(def ^:private description-field (f [:text] "Description" :long))
 
 (def ^:private cost-fields
   [(f [:price] "Price" :int :min 0 :blank :nil)
@@ -58,7 +59,8 @@
           (f [:range] "Range" :choice :options ranges :blank :required)
           (f [:encumbrance] "Encumbrance" :int)
           (f [:hard-points] "Hard points" :int :min 0)
-          (f [:qualities] "Qualities" :qualities)]
+          (f [:qualities] "Qualities" :qualities)
+          description-field]
          (concat cost-fields catalog-fields))
 
    :armor
@@ -66,13 +68,15 @@
           (f [:defense] "Defense" :int :min 0 :blank :required)
           (f [:soak] "Soak" :int :min 0 :blank :required)
           (f [:encumbrance] "Encumbrance" :int)
-          (f [:hard-points] "Hard points" :int :min 0)]
+          (f [:hard-points] "Hard points" :int :min 0)
+          description-field]
          (concat cost-fields catalog-fields))
 
    :gear
    (into [name-field
           (f [:encumbrance] "Encumbrance" :int)
-          (f [:encumbrance-bonus] "Encumbrance bonus" :int :min 1)]
+          (f [:encumbrance-bonus] "Encumbrance bonus" :int :min 1)
+          description-field]
          (concat cost-fields catalog-fields))
 
    :attachments

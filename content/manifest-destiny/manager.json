@@ -219,13 +219,27 @@
    "pub": "Anti-bioroid extremists. Blamed for the sabotage in Ki.",
    "gm": "A red herring: the saboteur was a Concord officer.",
    "src": "activist-and-terrorist-groups"
+  },
+  {
+   "id": "quorum",
+   "name": "The Quorum",
+   "pub": "Four corp delegates who govern the Concord and vote by Standing (Weyland 4, the others 2 each; a majority passes). Authority passes from the Core to the Quorum as the light-lag grows: Tether, Long Line, then Dark past the gate. The council speaker sits at the table with a voice but no vote.",
+   "gm": "Every corp wants the most Standing at the crossing, because that corp sets Shō's agenda. Weyland manufactures emergencies, NBN times the queue home, Haas-Bioroid's bioroids log the room, Jinteki votes by medical proxy. Article 19, which nobody mentions, gives the council Standing if a majority of waking colonists sign a petition.",
+   "ledger": "article19"
+  },
+  {
+   "id": "outriders",
+   "name": "The other outrider crew",
+   "pub": "The Yarrow won the other berth, crowdfunded by the Bring Them Home campaign the Meridian families started after NBN's feature on the lost ship. Its captain is on NBN's feeds every week.",
+   "gm": "NBN seeded the campaign through a subsidiary, matched every donation and owns the crew's image rights. Weyland, Haas-Bioroid and Jinteki all lost their fronts in the bid, which makes the players the swing crew. Alternate names: Meridian's Wake, Lantern, Kept Promise, Second Meridian, Tourniquet.",
+   "ledger": "bid"
   }
  ],
  "qsets": [
   {
    "id": "personal",
    "name": "Personal",
-   "how": "Each player draws two and answers one. Answers become canon and the GM's hooks."
+   "how": "Each player rolls a d20 and answers that question. If the number's taken, roll again. Answers become canon and the GM's hooks."
   },
   {
    "id": "crew",
@@ -233,9 +247,19 @@
    "how": "Each player answers one about the player on their left."
   },
   {
+   "id": "bid",
+   "name": "Bid",
+   "how": "Answer as a crew. Pick a backer: corporate sponsor (through a front), crowdfunding, family money, colonial co-op, patron, orgcrime, or self-funded. Then name them."
+  },
+  {
+   "id": "stake",
+   "name": "Motive",
+   "how": "Each player picks one. The crew shares one stake from the contract (answered in the bid questions); a player's own reason for coming may not match it."
+  },
+  {
    "id": "world",
    "name": "World",
-   "how": "Players define the frontier. The GM keeps what's true."
+   "how": "Players define the Concord's road to the gate. The GM keeps what's true."
   },
   {
    "id": "ship",
@@ -252,8 +276,7 @@
   {
    "id": "p2",
    "set": "personal",
-   "text": "Out past the last gate, you heard something on an empty comms channel. What did it say, and why did it use your name?",
-   "fit": "There's only one gate and nobody aboard has crossed it. Try \"On the voyage out\" or \"The night the Meridian went through\"."
+   "text": "Since the Concord left port, you've heard something on an empty comms channel. What did it say, and why did it use your name?"
   },
   {
    "id": "p3",
@@ -268,7 +291,7 @@
   {
    "id": "p5",
    "set": "personal",
-   "text": "What did the frontier promise you before you came out here, and when did you realize it was a lie?"
+   "text": "What did the consortium promise you when you signed on to the Concord, and when did you realize it was a lie?"
   },
   {
    "id": "p6",
@@ -298,13 +321,52 @@
   {
    "id": "p11",
    "set": "personal",
-   "text": "You've touched gate-builder stone with your bare hand. What has been different about you since?",
-   "fit": "No one has reached the ruins before Shō. Try a fragment the Meridian sent home, or a relic on the black market."
+   "text": "You've held a sliver of the gate itself, smuggled off a Weyland survey. What has been different about you since?"
   },
   {
    "id": "p12",
    "set": "personal",
    "text": "Who is the last person who trusted you completely, and what happened to them?"
+  },
+  {
+   "id": "p13",
+   "set": "personal",
+   "text": "Weyland holds the charter, so everything the expedition claims is legally theirs. What have you kept off the Concord's manifest so they can never own it?"
+  },
+  {
+   "id": "p14",
+   "set": "personal",
+   "text": "You worked a Haas-Bioroid line, beside the bioroids or as one of them. What did you see there that your contract forbids you to describe?"
+  },
+  {
+   "id": "p15",
+   "set": "personal",
+   "text": "Someone you love is asleep in a Jinteki cryo pod aboard the Concord. Who are they, and what do you owe Jinteki to keep them there?"
+  },
+  {
+   "id": "p16",
+   "set": "personal",
+   "text": "NBN interviewed you for the \"greatest rescue in history\" about someone you lost on the Meridian. Who was it, and what did you refuse to say on camera?"
+  },
+  {
+   "id": "p17",
+   "set": "personal",
+   "text": "Weyland security keeps a file on you with one line blacked out. What's under it, and who ordered it struck?"
+  },
+  {
+   "id": "p18",
+   "set": "personal",
+   "text": "The consortium should never have cleared you to fly as an outrider. Who signed off anyway, and what did they want for it?"
+  },
+  {
+   "id": "p19",
+   "set": "personal",
+   "text": "One of the 3,000 colonists recognized you on the first day. Who are they, what do they know, and why haven't they told anyone?"
+  },
+  {
+   "id": "p20",
+   "set": "personal",
+   "text": "Human First reached out to you before the Concord left port. What did they ask of you, and what did you tell them?"
   },
   {
    "id": "c1",
@@ -337,26 +399,104 @@
    "text": "What do they cook, play or sing that makes the ship feel like home for an hour?"
   },
   {
+   "id": "c7",
+   "set": "crew",
+   "text": "On launch day NBN's cameras caught them doing something they asked you to keep off the feed. What was it?"
+  },
+  {
+   "id": "c8",
+   "set": "crew",
+   "text": "They're the reason the crew won the bid, or nearly lost it. What did they do?"
+  },
+  {
+   "id": "c9",
+   "set": "crew",
+   "text": "What do they tell the Yarrow's crew that they've never told you?"
+  },
+  {
+   "id": "c10",
+   "set": "crew",
+   "text": "Which corp delegate or officer aboard the Concord do they go quiet around, and what do you think happened between them?"
+  },
+  {
+   "id": "c11",
+   "set": "crew",
+   "text": "They've promised to get one of the colonists through this voyage alive. Who, and why do they care?"
+  },
+  {
+   "id": "c12",
+   "set": "crew",
+   "text": "What on the ship will they never let anyone else touch?"
+  },
+  {
+   "id": "b1",
+   "set": "bid",
+   "text": "Who backed your bid, and what did they pay for?"
+  },
+  {
+   "id": "b2",
+   "set": "bid",
+   "text": "What did your crew promise in the bid that you aren't sure you can deliver?"
+  },
+  {
+   "id": "b3",
+   "set": "bid",
+   "text": "Which one stake did your crew bid for, and what did you give up to get it? (Finder's share, homestead grant, salvage rights, broadcast points, debt amnesty, or a seat on the first ship home.)"
+  },
+  {
+   "id": "b4",
+   "set": "bid",
+   "text": "What happened the first time your crew met the Yarrow's, and why has NBN never aired the footage?"
+  },
+  {
+   "id": "b5",
+   "set": "bid",
+   "text": "A crew lost the bid by a single vote and isn't aboard. Who were they, and why do they think you cheated?"
+  },
+  {
+   "id": "k1",
+   "set": "stake",
+   "text": "The crew bid for one stake. What are you really here for, and what would you trade the crew's stake to get it?"
+  },
+  {
+   "id": "k2",
+   "set": "stake",
+   "text": "Someone you know backed the bid with their own money. Who, and what happens to them if you fail?"
+  },
+  {
+   "id": "k3",
+   "set": "stake",
+   "text": "You could have signed on as a colonist and gone safely. Why did you choose to fly as an outrider instead?"
+  },
+  {
+   "id": "k4",
+   "set": "stake",
+   "text": "Someone tried to buy your place on the crew before launch. Who, and how much did they offer?"
+  },
+  {
+   "id": "k5",
+   "set": "stake",
+   "text": "The backer asked one of you to report on the others privately. If that was you, what did you say? If it wasn't, who do you suspect?"
+  },
+  {
    "id": "w1",
    "set": "world",
-   "text": "Name a frontier station where everyone goes to disappear. What rule is never broken there?"
+   "text": "Name the lawless outpost near Neptune that's the Concord's last port before the gate. What rule is never broken there?"
   },
   {
    "id": "w2",
    "set": "world",
-   "text": "What does the Drift crime boss who holds the crew's Debt keep in a jar on their desk?",
-   "fit": "The arc has the corps hold the Debts. Reword for whichever corp or fixer holds the crew's."
+   "text": "What does Dana Quill, the consortium liaison who holds the crew's Debt, keep in a jar on the desk?"
   },
   {
    "id": "w3",
    "set": "world",
-   "text": "Describe a gate that doesn't open anymore. What's still waiting on the other side of it?",
-   "fit": "There's only one gate. Swap for a sealed lock or a dead station the Concord passes."
+   "text": "Describe a dead station the Concord passes on the way out. What's still waiting inside?"
   },
   {
    "id": "w4",
    "set": "world",
-   "text": "Name a Free Claims colony the crew has drunk at. What did the corps do to the last colony nearby?"
+   "text": "Name a Free Claims outpost past Saturn where the crew has drunk. What did the corps do to the last one nearby?"
   },
   {
    "id": "w5",
@@ -366,7 +506,22 @@
   {
    "id": "w6",
    "set": "world",
-   "text": "Name a rumor about the gate-builders that every prospector has heard. Which part is true? (Only the GM knows.)"
+   "text": "Name a rumor about the gate-builders that everyone aboard the Concord has heard. Which part is true? (Only the GM knows.)"
+  },
+  {
+   "id": "w7",
+   "set": "world",
+   "text": "You've watched a Quorum session from the gallery. Which delegate was the only one who seemed to be telling the truth?"
+  },
+  {
+   "id": "w8",
+   "set": "world",
+   "text": "What did the colonists nickname the Quorum, and which delegate hates that name most?"
+  },
+  {
+   "id": "w9",
+   "set": "world",
+   "text": "Who is the council speaker, and why did the colonists elect someone the corps can't stand?"
   },
   {
    "id": "h1",
@@ -391,8 +546,7 @@
   {
    "id": "h5",
    "set": "ship",
-   "text": "The ship has been through a gate that isn't on any chart. How do you know?",
-   "fit": "There's only one gate. Try a route or jump that isn't on any chart."
+   "text": "The nav computer holds a route to the gate that nobody aboard entered. Who plotted it, and how do you know?"
   },
   {
    "id": "h6",
@@ -402,7 +556,8 @@
  ],
  "truths": {
   "w6": "Which part is true",
-  "h2": "What's actually in the compartment"
+  "h2": "What's actually in the compartment",
+  "b1": "Is a corp hiding behind them"
  },
  "dials": [
   {
@@ -458,13 +613,16 @@
   "Decide what's in the ship's sealed compartment",
   "Decide which gate-builder rumor is true",
   "Type up lines and veils and share with the group",
+  "Decide whether a corp is hiding behind the crew's backer",
+  "Note the crew's stake (its fine print bites in Ten) and the act that pays off each player's personal reason",
   "Finalize character sheets and ship stats before session 1"
  ],
  "groups": {
   "officers": "Ship's officers",
   "corp": "Corp reps",
   "town": "Townsfolk",
-  "meridian": "Meridian"
+  "meridian": "Meridian",
+  "outriders": "Outriders"
  },
  "npcs": [
   {
@@ -691,6 +849,21 @@
     "ten": "",
     "ketsu": "Holds the ruins."
    }
+  },
+  {
+   "id": "reyes",
+   "name": "Captain Tamsin Reyes",
+   "group": "outriders",
+   "faction": "outriders",
+   "role": "Captain of the Yarrow",
+   "pub": "Warm, camera-ready, the face of Bring Them Home. Lost her sister on the Meridian.",
+   "gm": "Believes the campaign is what it says it is. NBN seeded it, owns her crew's image rights, and writes her better scenes than the players get. NBN also cut part of her sister's story.",
+   "arc": {
+    "ki": "A friendly rival who keeps landing on the broadcast.",
+    "sho": "Takes the credit for the players' finds.",
+    "ten": "Learns what NBN cut from her sister's story, and has to choose.",
+    "ketsu": "An ally, or NBN's last heroes."
+   }
   }
  ],
  "ledger": [
@@ -820,12 +993,48 @@
    "clues": [
     "Reyes met Captain Aldine privately after the election."
    ]
+  },
+  {
+   "id": "bid",
+   "owner": "outriders",
+   "act": "ki",
+   "title": "The rigged bid",
+   "truth": "Every corp tried to buy a berth through a front. Only NBN's won: it seeded the Yarrow's crowdfunding and owns the crew's image rights. Haas-Bioroid or Jinteki may be hiding behind the players' backer or holding their credit note.",
+   "clues": [
+    "The Bring Them Home page was registered the day after the NBN feature aired, by an NBN subsidiary.",
+    "Every donation to the Yarrow was matched within the hour by the same anonymous account.",
+    "The players' backer pays them through an account that also pays a Concord department."
+   ]
+  },
+  {
+   "id": "article19",
+   "owner": "quorum",
+   "act": "ketsu",
+   "title": "Article 19",
+   "truth": "A petition signed by a majority of waking colonists gives the council seat Standing equal to the lowest corp. Every corp's lawyers know it exists, and none will mention it.",
+   "clues": [
+    "The saboteur's copy of the Compact has Article 19 circled.",
+    "A Quorum delegate goes quiet whenever the council speaker mentions a petition.",
+    "The kid who wants to be an outrider finds the clause while studying for a quiz."
+   ]
+  },
+  {
+   "id": "fineprint",
+   "owner": "quorum",
+   "act": "ten",
+   "title": "The fine print",
+   "truth": "The crew's stake is hollow, like every stake in the contract. The finder's share pays only on return to the Core, homestead grants fall with the colonists' charter, Meridian salvage excludes proprietary materials, broadcast points pay on NBN's net (always zero), and debt amnesty waits on a conclusion the Quorum will never declare. It breaks in Ten for the whole crew at once.",
+   "clues": [
+    "A consortium lawyer asks the crew to re-sign their contract with an updated schedule.",
+    "The Yarrow's captain complains her points statement says she owes NBN money.",
+    "Nobody can say when the first ship home leaves."
+   ]
   }
  ],
  "run": {
-  "summary": "By the end of the night the table should have a crew, a ship, a debt that binds them, and a frontier they helped invent. About four hours with a break.",
+  "summary": "By the end of the night the table should have a crew, a ship, a debt that binds them, and a voyage they helped invent. About four hours with a break.",
   "bring": "Genesys Core Rulebook, Shadow of the Beanstalk, Expanded Player's Guide, Shattered Empire, narrative dice, index cards.",
-  "readAloud": "Fifty years ago, a Weyland survey ship found a gate beyond Neptune that nobody built. Fifteen years ago the Meridian went through it and fell silent. Now the megacorps are following like railroad barons. Past the Core, the charters are the law. Past the charters, there is none. You fly the ship nobody wants on their books. You owe someone. Everyone does. And out past the last claim, something in the old ruins has started to notice the noise.",
+  "readAloud": "Fifteen years ago, the Meridian went through the gate beyond Neptune, the only ship that ever has. It sent home one transmission, a burst of static and a voice nobody could make out, and then nothing. The corporations said a rescue was impossible. Then NBN made the families' grief into the most-watched story in human history, and suddenly it was a business opportunity. No single corp could afford a ship big enough, so four of them split the bill. Weyland built the hull and holds the charter. Haas-Bioroid supplied the bioroids who run it. Jinteki keeps the colonists alive. NBN owns every word and every image that goes home. They signed a compact promising to share the cost, the credit and whatever waits on the other side. None of them believes the others will keep it. The Concord is a town in a hull: 3,000 colonists, a council, a chapel, a black market, a school. You don't fly it. The Compact forbids the corps from fielding their own scouts, so it opened two outrider berths in the Concord's belly to outside bids. Hundreds of crews bid, with ships bought on corporate sponsorships, family fortunes, crowdfunding campaigns and money nobody asks about. Two won. One is the Yarrow, the crowdfunded darling of NBN's broadcast. The other is yours. You take the jobs too risky or too deniable for anyone on the official roster, and in return the Compact promises outriders a stake in whatever the expedition finds. You owe someone for the privilege, and so does everyone aboard. Every day of the voyage, home gets a little further away. Messages take minutes, then hours, then longer. Somewhere past Neptune the corps will stop being able to ask the Core what to do, and they will have to decide for themselves, aboard a ship where nobody can walk away. Out there, past the last beacon, something built a door. The Meridian walked through it. You're going to find out why it never came back. Down in the Concord's belly, someone is banging on your hatch.",
   "touchstones": "Firefly, The Expanse, Alien, Deadwood, Outland, the Android: Netrunner card art.",
   "looksLike": "A job, a complication, a choice about who gets hurt, and a payday that is never quite enough. The gate-builder mystery is a slow burn in the background, not the weekly plot.",
   "expectations": [
@@ -836,15 +1045,15 @@
    "Scheduling, snacks, phones, and what happens when someone misses a session."
   ],
   "roles": "Pilot, Mechanic, Face, Gun, Runner, Doc, Prospector. Aim for at least four covered across the crew.",
-  "buildRules": "No corp loyalists unless their loyalty is already cracking, and every character must have a reason they can't just go home to the Core.",
-  "questionsHow": "Go around the table. After each answer, any one player may ask a single follow-up, and the answering player may decline it. Write every name, place and object on an index card.",
+  "buildRules": "No corp loyalists unless their loyalty is already cracking, and every character must have a reason they can't just go home to the Core. For examples of what a corp did for a character before the voyage, and holds over them now, see the corp favors in the Session 0 Briefing.",
+  "questionsHow": "Go around the table. After each answer, any one player may ask a single follow-up, and the answering player may decline it. Write every name, place and object on an index card. Each player also picks one motive question. The bid questions come later, on The bid tab.",
   "shipSteps": [
    "Choose a hull. A light freighter or salvage tug is the default.",
    "Each player picks one attachment that reflects their role.",
    "Pick two quirks: one helpful, one troublesome.",
    "Name it. The hull and the registry should say different things.",
    "Answer the ship's questions, one per player.",
-   "Note who holds the title: the hull is financed or stolen."
+   "Note who holds the title. The berth fee and passage are on consortium credit; the ship itself came from whoever backed your bid."
   ],
   "debt": {
    "how": "Each character owes someone, the crew's values add into one d100 range, and at the start of each session the GM rolls to see whose debt comes calling.",
@@ -925,24 +1134,31 @@
    },
    {
     "id": "questions",
-    "time": "1:30 – 2:10",
+    "time": "1:30 – 1:55",
     "title": "Unsettling questions",
     "output": "Backstory hooks, crew bonds",
     "tool": "questions"
    },
    {
     "id": "break",
-    "time": "2:10 – 2:20",
+    "time": "1:55 – 2:05",
     "title": "Break",
     "output": "",
     "tool": ""
    },
    {
     "id": "ship",
-    "time": "2:20 – 3:00",
+    "time": "2:05 – 2:45",
     "title": "Building the ship",
     "output": "Ship stats, quirks, its history",
     "tool": "ship"
+   },
+   {
+    "id": "bid",
+    "time": "2:45 – 3:00",
+    "title": "The bid: backer and stake",
+    "output": "The crew's backer, its one stake, and what it promised",
+    "tool": "bid"
    },
    {
     "id": "debt",
@@ -965,6 +1181,85 @@
     "output": "First job teased, open questions logged",
     "tool": "wrap"
    }
-  ]
+  ],
+  "bid": {
+   "how": "The crew won one of the Concord's two outrider berths by open bid; the other went to the crowdfunded Yarrow. Choose who backed the crew's ship and the one stake the crew bid for, then answer the bid questions together. The backer counts as a creditor on the crew's Debt.",
+   "backers": [
+    [
+     "corporate",
+     "Corporate sponsor",
+     "Loyalty, information, and a crew that does what it's told when it counts. The Compact bars corps from bidding directly, so it came through a contractor or holding company."
+    ],
+    [
+     "crowdfunding",
+     "Crowdfunding",
+     "Updates, footage, and a story worth their money. They can turn on you in a day."
+    ],
+    [
+     "family",
+     "Family money",
+     "A return, a reputation restored, or a black sheep sent far away."
+    ],
+    [
+     "coop",
+     "Colonial co-op",
+     "That you look after their people and their interests out there."
+    ],
+    [
+     "patron",
+     "Patron",
+     "Something specific, which they haven't fully explained."
+    ],
+    [
+     "orgcrime",
+     "Orgcrime",
+     "A cut of everything, and favors on demand."
+    ],
+    [
+     "self",
+     "Self-funded",
+     "Nobody, which means nobody covers you either."
+    ]
+   ],
+   "stakes": [
+    [
+     "finders",
+     "Finder's share",
+     "A percentage of the assessed value of anything the crew is first to log: resources, technology, ruins.",
+     "Payable on return to the Core. If the Concord was never meant to go home (twist 3), it is worthless."
+    ],
+    [
+     "homestead",
+     "Homestead grant",
+     "First choice of land claims on any habitable world the expedition charters.",
+     "Issued under the colonists' charter, which Weyland plans to nullify on arrival."
+    ],
+    [
+     "salvage",
+     "Salvage rights",
+     "A share of anything recovered from the Meridian or other wrecks the crew reaches first.",
+     "Excludes \"proprietary consortium materials,\" which turns out to mean everything aboard the Meridian worth having."
+    ],
+    [
+     "points",
+     "Broadcast points",
+     "Royalty points on NBN footage and the eventual feature about the rescue.",
+     "Calculated on NBN's net profit, which by NBN's accounting will always be zero."
+    ],
+    [
+     "amnesty",
+     "Debt amnesty",
+     "Consortium debt retired in full when the expedition concludes.",
+     "Takes effect when the expedition is \"concluded,\" as the Quorum defines it. The Quorum never will."
+    ],
+    [
+     "passage",
+     "A seat on the first ship home",
+     "Guaranteed passage back to the Core.",
+     "Nobody has said when the first ship home leaves, or whether one ever will."
+    ]
+   ],
+   "corpNote": "Weyland, Haas-Bioroid and Jinteki all lost their fronts in the bid; Haas-Bioroid and Jinteki are the likeliest to hide here. If the crew is self-funded or family money, the corp holds their consortium credit note instead. Reveal it when a Debt triggers or at the Ki-to-Shō break. The fine print bites in Ten for the whole crew."
+  }
  }
 }

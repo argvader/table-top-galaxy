@@ -22,21 +22,25 @@
     (is (= [{:pc "u1"}] (get-in d [:s0 :answers :p1])))
     (is (= [{:n 1}] (:sessions d)))
     (is (= {} (get-in d [:s0 :run])) "added since that document was written")
+    (is (= "" (get-in d [:s0 :bid :stake])) "the bid, added later still")
     (is (= [] (:seats d))))
   (is (= (doc/seed content) (doc/fill-in {} content)) "nothing saved yet"))
 
-(deftest the-draw
-  (let [d (doc/draw (doc/seed content) questions "u1" [0 0])
-        [a b] (get-in d [:s0 :draws :u1])]
-    (is (and a b (not= a b)))
-    (testing "nobody else can draw what's dealt or answered"
+(deftest the-d20
+  (let [d (doc/roll (doc/seed content) questions "u1" [0])
+        [a :as rolled] (get-in d [:s0 :draws :u1])]
+    (is (= ["p1"] rolled) "one question, the lowest open number for the lowest roll")
+    (testing "nobody else can roll what's rolled or answered"
       (let [held (doc/add-answer d :p6 "u3" nil)]
-        (is (= #{"p3" "p4" "p5"} (disj (set (doc/deck held questions "u2")) a b "p1" "p2")))))
-    (testing "drawing again puts the last two aside"
-      (let [again (get-in (doc/draw d questions "u1" [4294967295 4294967295]) [:s0 :draws :u1])]
-        (is (empty? (filter #{a b} again)))))
-    (testing "too few left leaves the draw as it was"
-      (is (= d (doc/draw d (take 2 questions) "u1" [0 0]))))))
+        (is (= #{"p2" "p3" "p4" "p5"} (set (doc/deck held questions "u2"))))))
+    (testing "rolling again puts the last one aside"
+      (is (not= [a] (get-in (doc/roll d questions "u1" [0]) [:s0 :draws :u1]))))
+    (testing "with nothing left the roll stays as it was"
+      (is (= d (doc/roll d (take 1 questions) "u1" [0]))))
+    (testing "a real die's number is taken as rolled"
+      (is (= ["p4"] (get-in (doc/take-number d questions "u2" "4") [:s0 :draws :u2]))))
+    (testing "a number someone holds doesn't count"
+      (is (= d (doc/take-number d questions "u2" "1"))))))
 
 (deftest answers
   (let [d (-> (doc/seed content) (doc/add-answer :c1 "u1" "u2") (doc/add-answer :c1 "u2" "u1"))]

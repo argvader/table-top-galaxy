@@ -374,24 +374,10 @@ textarea { width: 100%; min-height: 220px; padding: 10px 12px; border-radius: 10
 .hist time { color: var(--muted); font-size: 12px; font-family: var(--f-mono); }
 .critroll { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 10px; background: var(--surface-2); border: 1px solid var(--line); margin-bottom: 12px; }
 .critroll b { font-family: var(--f-mono); font-size: 20px; }
-.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 30; }
-.drawer { position: fixed; z-index: 31; background: var(--surface); box-shadow: var(--shadow); flex-direction: column; overflow: hidden; }
-.drawer:not([hidden]) { display: flex; }
-@media (min-width: 760px) { .drawer { top: 0; right: 0; bottom: 0; width: min(440px, 100%); border-left: 1px solid var(--line);
-  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) 0; } }
-@media (max-width: 759px) { .drawer { left: 0; right: 0; bottom: 0; max-height: 88vh; border-radius: 16px 16px 0 0; border-top: 1px solid var(--line);
-  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); } }
-.drawer .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin: 8px auto 0; }
-@media (min-width: 760px) { .drawer .grab { display: none; } }
-.drawer header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 12px 16px 8px; }
-.drawer h2 { margin: 0; font-family: var(--f-display); font-size: 26px; line-height: 1.05; font-weight: 700; }
-.drawer .meta { font-size: 13px; color: var(--muted); }
-.drawer .body { overflow: auto; padding: 0 16px 16px; display: grid; gap: 12px; }
 .drawer .tray, .drawer .result { margin: 0; }
 .drawer .result { border-top: 0; padding-top: 0; }
 .drawer .ladder, .drawer .upg, .drawer .odds { padding: 0; }
 .drawer .chip small { margin-left: 2px; }
-.x { border: 0; background: var(--surface-2); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: none; }
 .tray { border-radius: 12px; background: var(--surface-2); border: 1px solid var(--line); padding: 12px; min-height: 76px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .tray .vs { font-family: var(--f-display); color: var(--muted); padding: 0 4px; font-size: 13px; letter-spacing: .1em; }
 .die { border: 0; background: none; padding: 0; cursor: pointer; line-height: 0; }
@@ -437,6 +423,21 @@ h4 .left svg { width: 13px; height: 13px; vertical-align: -2px; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); z-index: 60; background: var(--ink); color: var(--surface); padding: 9px 16px; border-radius: 99px; font-size: 14px; box-shadow: var(--shadow); max-width: calc(100% - 32px); }
 @media (prefers-reduced-motion: reduce) { .rolled.tumble svg { animation: none; } #dice3d { transition: none; } }
 }
+/* The side drawer's frame (ttg.ui.drawer), shared by the sheet's roll drawer and the builder's info drawer. */
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 30; }
+.drawer { position: fixed; z-index: 31; background: var(--surface); box-shadow: var(--shadow); flex-direction: column; overflow: hidden; }
+.drawer:not([hidden]) { display: flex; }
+@media (min-width: 760px) { .drawer { top: 0; right: 0; bottom: 0; width: min(440px, 100%); border-left: 1px solid var(--line);
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) 0; } }
+@media (max-width: 759px) { .drawer { left: 0; right: 0; bottom: 0; max-height: 88vh; border-radius: 16px 16px 0 0; border-top: 1px solid var(--line);
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); } }
+.drawer .grab { width: 40px; height: 4px; border-radius: 2px; background: var(--line); margin: 8px auto 0; }
+@media (min-width: 760px) { .drawer .grab { display: none; } }
+.drawer header { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 12px 16px 8px; }
+.drawer h2 { margin: 0; font-family: var(--f-display); font-size: 26px; line-height: 1.05; font-weight: 700; }
+.drawer .meta { font-size: 13px; color: var(--muted); }
+.drawer .body { flex: 1 1 auto; min-height: 0; align-content: start; overflow: auto; padding: 0 16px 16px; display: grid; gap: 12px; }
+.x { border: 0; background: var(--surface-2); width: 34px; height: 34px; border-radius: 50%; cursor: pointer; font-size: 18px; line-height: 1; flex: none; }
 /* Campaigns, joining, and the list of your characters */
 .table-page { max-width: 900px; margin: 16px auto; display: grid; gap: 16px; }
 .table-page h1 { font-family: var(--f-display); font-size: 30px; margin: 0; }
@@ -465,22 +466,22 @@ h4 .left svg { width: 13px; height: 13px; vertical-align: -2px; }
 @media (max-width: 999px) { .page-builder .shell { grid-template-columns: minmax(0, 1fr); } }
 /* Skills sits edge to edge, in its panel and in its tab on a phone. */
 .tabbody.flush { padding: 8px 0; }
-/* The roll drawer slides in from the side, or up from the bottom on a phone. Its exit matches roller.db/drawer-out-ms. */
+/* The roll drawer and the builder's info drawer slide in from the side, or up from the bottom on a phone. Its exit matches roller.db/drawer-out-ms. */
 @keyframes scrim-in { from { opacity: 0; } }
 @keyframes scrim-out { to { opacity: 0; } }
 @keyframes drawer-in-side { from { transform: translateX(100%); } }
 @keyframes drawer-out-side { to { transform: translateX(100%); } }
 @keyframes drawer-in-up { from { transform: translateY(100%); } }
 @keyframes drawer-out-down { to { transform: translateY(100%); } }
-.page-sheet .scrim { animation: scrim-in 280ms ease-out; }
-.page-sheet .scrim.closing { animation: scrim-out 220ms ease-in forwards; }
-.page-sheet .drawer { animation: drawer-in-side 280ms cubic-bezier(.2, .8, .2, 1); }
-.page-sheet .drawer.closing { animation: drawer-out-side 220ms ease-in forwards; }
+:is(.page-sheet, .page-builder) .scrim { animation: scrim-in 280ms ease-out; }
+:is(.page-sheet, .page-builder) .scrim.closing { animation: scrim-out 220ms ease-in forwards; }
+:is(.page-sheet, .page-builder) .drawer { animation: drawer-in-side 280ms cubic-bezier(.2, .8, .2, 1); }
+:is(.page-sheet, .page-builder) .drawer.closing { animation: drawer-out-side 220ms ease-in forwards; }
 @media (max-width: 759px) {
-  .page-sheet .drawer { animation-name: drawer-in-up; }
-  .page-sheet .drawer.closing { animation-name: drawer-out-down; }
+  :is(.page-sheet, .page-builder) .drawer { animation-name: drawer-in-up; }
+  :is(.page-sheet, .page-builder) .drawer.closing { animation-name: drawer-out-down; }
 }
-@media (prefers-reduced-motion: reduce) { .page-sheet .scrim, .page-sheet .drawer { animation: none; } }
+@media (prefers-reduced-motion: reduce) { :is(.page-sheet, .page-builder) .scrim, :is(.page-sheet, .page-builder) .drawer { animation: none; } }
 a.btn { text-decoration: none; }
 /* The Chronicle's pages. */
 .table-page .prose { display: grid; gap: 12px; font-size: 16px; line-height: 1.55; min-width: 0; }
@@ -616,6 +617,11 @@ button.item:hover { border-color: var(--accent); }
 .pips button { flex: 1; height: 30px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); cursor: pointer; font-family: var(--f-mono); font-size: 12px; }
 .pips button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 700; }
 .pips button:disabled { cursor: default; }
+.d20 { display: grid; gap: 8px; justify-items: start; }
+.d20 .pips { display: grid; grid-template-columns: repeat(10, minmax(36px, 1fr)); width: 100%; margin: 0; }
+@media (max-width: 480px) { .d20 .pips { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.d20 .pips button { height: 36px; }
+.d20 .pips button:disabled { opacity: .35; text-decoration: line-through; }
 .lv { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; padding: 6px 0; border-top: 1px solid var(--line); font-size: 14px; }
 .addrow { display: flex; flex-wrap: wrap; gap: 6px; }
 .addrow input { flex: 1 1 200px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-2); }
@@ -677,3 +683,31 @@ footer.foot { margin-top: 24px; font-size: 12px; color: var(--muted); display: f
 .debt-row .head { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
 .debt-total { font-family: var(--f-display); font-size: 22px; font-weight: 700; }
 }
+
+/* Sheet: choices a purchase needs, and the GM's adjustments */
+.page-sheet .picks { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; margin-top: 8px; }
+.page-sheet .adjust { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.page-sheet .adjust .wide { grid-column: 1 / -1; }
+.page-sheet .banner[role="status"] { border-color: var(--warn); color: var(--text, inherit); }
+/* The builder's info drawer: what a piece of gear or a talent is for. */
+.namebtn { border: 0; background: none; padding: 0; font: inherit; color: inherit; cursor: pointer; text-align: left; text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-color: var(--muted); }
+.namebtn:hover { color: var(--accent); text-decoration-color: currentColor; }
+.talent p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.drawer .lede { margin: 0; font-size: 15px; line-height: 1.5; }
+.facts { margin: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.facts > div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.facts dt { font-family: var(--f-display); text-transform: uppercase; letter-spacing: .06em; font-size: 11px; color: var(--muted); padding-top: 2px; }
+.facts dd { margin: 0; display: grid; gap: 2px; font-size: 14px; }
+.facts dd span { color: var(--muted); font-size: 13px; }
+.infobox { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface-2); display: grid; gap: 6px; }
+.infobox p { margin: 0; font-size: 14px; }
+.qualities { display: grid; gap: 8px; margin-top: 6px; }
+.quality { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+.quality p { flex-basis: 100%; margin: 0; font-size: 13px; color: var(--muted); }
+.infoacts { display: grid; gap: 6px; position: sticky; bottom: -16px; background: var(--surface); padding: 10px 0 0; border-top: 1px solid var(--line); }
+.infoacts .acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.infoacts .block { font-size: 12px; color: var(--warn); }
+/* A GM breaking a creation rule: allowed, and marked. */
+.btn.override, .pick.override, .chip.override { border-style: dashed; border-color: var(--gm); }
+.override-note { grid-column: 1 / -1; font-size: 12px; color: var(--gm); }
+.chip .tag.gm { margin-left: 2px; color: var(--gm); border-color: var(--gm); }

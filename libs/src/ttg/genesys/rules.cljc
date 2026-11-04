@@ -4,8 +4,13 @@
    return nil when allowed and otherwise the reason to show. Page references are to the Genesys Core Rulebook.
 
    The character (ttg.genesys.character) names library entries by string id, so it survives JSON. Skills are passed
-   around as library entries: careers list skills by name, and purchases are stored by id."
-  (:require [clojure.string :as str]))
+   around as library entries: careers list skills by name, and purchases are stored by id.
+
+   Two values for each characteristic and skill: the creation value (characteristic, rank-of), which XP prices and
+   limits are figured from, and the total (characteristic-total, rank-total), which adds Dedication and cybernetics
+   and is what the sheet shows and rolls."
+  (:require [clojure.string :as str]
+            [ttg.genesys.mods :as mods]))
 
 (def characteristics [:brawn :agility :intellect :cunning :willpower :presence])
 (def characteristic-names {:brawn "Brawn" :agility "Agility" :intellect "Intellect"
@@ -21,25 +26,23 @@
 (def max-characteristic 5)
 (def start-credits 500) ; p.51
 
-;; Talents whose effect is applied to derived stats.
-(def ^:private talent-mods {"toughened" {:wounds 2} "grit" {:strain 1}})
-
 (defn- by-id [entries] (into {} (map (juxt (comp name :id) identity)) entries))
 
 (defn index
   "The parts of a {type [entry]} library the rules read, keyed by string id."
-  [{:keys [archetypes careers skills talents weapons armor gear motivations obligation-types crits]}]
-  {:archetypes (by-id archetypes) :careers (by-id careers) :talents (by-id talents)
+  [{:keys [archetypes careers skills talents weapons armor gear motivations obligation-types crits item-qualities]}]
+  {:archetypes (by-id archetypes) :careers (by-id careers) :talents (by-id talents) :qualities (by-id item-qualities)
    :gear (by-id (concat weapons armor gear))
    :skills (vec skills) :motivations (vec motivations) :obligations (vec obligation-types)
    :crits (vec (sort-by (comp first :roll) crits))})
 
 (defn blank-character []
   {:name "" :tagline "" :archetype nil :career nil :career-picks [] :arch-picks []
-   :char-buy {} :skill-buy {} :talents [] :gear [] :free-item nil :pocket nil :s0 ""
+   :char-buy {} :skill-buy {} :talents [] :gear [] :free-item nil :free-picks [] :pocket nil :s0 ""
    :motives (into {} (map (fn [t] [(keyword (str/lower-case t)) {:name "" :text ""}])) motive-types)
    :ob {:type nil :magnitude 10 :attachment "" :why ""}
-   :wounds-taken 0 :strain-taken 0 :earned-xp 0 :notes "" :crits []})
+   :wounds-taken 0 :strain-taken 0 :earned-xp 0 :notes "" :crits []
+   :adjust {} :adjust-note ""})
 
 ;; ---------- Critical injuries (Table I.6-10, CRB p.115) ----------
 
@@ -113,17 +116,25 @@
 (defn spent-xp [c ix] (+ (characteristics-xp c ix) (skills-xp c ix) (talents-xp c ix)))
 (defn xp-left [c ix] (- (budget c ix) (spent-xp c ix)))
 
+(defn gm?
+  "The campaign's GM editing a player's character: they may break the creation rules, and each break is flagged."
+  [c]
+  (= "gm" (:access c)))
+
+(defn owned-talent [c id] (first (filter #(= id (:id %)) (:talents c))))
+
 (defn- talent-mod [c k]
-  (reduce + (map #(* (:rank %) (get-in talent-mods [(:id %) k] 0)) (:talents c))))
+  (reduce + (map #(* (:rank %) (get-in mods/talent-effects [(:id %) k] 0)) (:talents c))))
 
 (defn owned-gear [c ix]
-  (keep (fn [{:keys [id qty]}] (some-> (get-in ix [:gear id]) (assoc :qty qty))) (:gear c)))
+  (keep (fn [{:keys [id qty picks]}] (some-> (get-in ix [:gear id]) (assoc :qty qty :picks (vec picks)))) (:gear c)))
 
 (defn carried
   "Bought gear, plus the archetype's free item."
   [c ix]
   (cond-> (vec (owned-gear c ix))
-    (get-in ix [:gear (:free-item c)]) (conj (assoc (get-in ix [:gear (:free-item c)]) :qty 1 :free true))))
+    (get-in ix [:gear (:free-item c)])
+    (conj (assoc (get-in ix [:gear (:free-item c)]) :qty 1 :free true :picks (vec (:free-picks c))))))
 
 (defn- kind [item] (some-> (:kind item) name))
 
@@ -139,24 +150,63 @@
   (* (:qty item) (cond-> (or (:encumbrance item) 0)
                    (= (:id item) (:id worn)) (-> (- 3) (max 0)))))
 
-(defn derived
-  "Thresholds, soak, defense (capped at 4, p.104) and encumbrance. The best armor carried is the one worn."
+;; ---------- Bonuses from talents and body modifications ----------
+
+(defn installs [c ix] (mods/installs (carried c ix)))
+(defn- bioroid? [c ix] (= "Bioroid" (:name (archetype c ix))))
+(defn- knowledge-skills [ix] (map :name (filter #(= "Knowledge" (:category %)) (:skills ix))))
+
+(defn bonuses
+  "Everything Dedication and cybernetics add: {:chars {k n} :skills {name n} :wounds :soak :strain-cost}."
   [c ix]
-  (let [a (archetype c ix) armor (best-armor c ix) items (carried c ix)
-        brawn (characteristic c ix :brawn)
+  (let [ins (installs c ix)]
+    (-> (mods/cyber-bonus ins (knowledge-skills ix))
+        (update :chars #(merge-with + % (mods/dedication-bonus (owned-talent c mods/dedication))))
+        (assoc :strain-cost (mods/strain-cost ins (bioroid? c ix))))))
+
+(defn characteristic-total [c ix k] (+ (characteristic c ix k) (get-in (bonuses c ix) [:chars k] 0)))
+(defn rank-total [c ix skill] (+ (rank-of c ix skill) (get-in (bonuses c ix) [:skills (:name skill)] 0)))
+
+(defn- adjust [c k] (let [n (get-in c [:adjust k])] (if (number? n) n 0)))
+
+(defn- parts
+  "[label n] rows that add up to a derived value; zero rows other than the base are dropped."
+  [base & rows]
+  (into [base] (remove (comp zero? second)) rows))
+
+(defn- total [rows] (reduce + (map second rows)))
+
+(defn derived-parts
+  "How wounds, strain and soak are made up, for the sheet to explain them."
+  [c ix]
+  (let [a (archetype c ix) armor (best-armor c ix) b (bonuses c ix)
+        brawn (characteristic-total c ix :brawn) will (characteristic-total c ix :willpower)]
+    {:wounds (parts ["Archetype" (:wounds a 0)] ["Brawn" brawn] ["Toughened" (talent-mod c :wounds)]
+                    ["Cybernetic heart" (:wounds b)] ["GM adjustment" (adjust c :wounds)])
+     :strain (parts ["Archetype" (:strain a 0)] ["Willpower" will] ["Grit" (talent-mod c :strain)]
+                    ["Cybernetics" (- (:strain-cost b))] ["GM adjustment" (adjust c :strain)])
+     :soak (parts ["Brawn" brawn] ["Armor" (or (:soak armor) 0)] ["Enduring" (talent-mod c :soak)]
+                  ["Sub-dermal armor" (:soak b)] ["GM adjustment" (adjust c :soak)])}))
+
+(defn derived
+  "Thresholds, soak, defense (capped at 4, p.104, before any GM adjustment) and encumbrance. The best armor carried
+   is the one worn."
+  [c ix]
+  (let [a (archetype c ix) armor (best-armor c ix) items (carried c ix) p (derived-parts c ix)
+        brawn (characteristic-total c ix :brawn)
         bonus (reduce + (map #(or (:encumbrance-bonus %) 0) items))]
-    {:wounds (if a (+ (:wounds a) brawn (talent-mod c :wounds)) 0)
-     :strain (if a (+ (:strain a) (characteristic c ix :willpower) (talent-mod c :strain)) 0)
-     :soak (+ brawn (or (:soak armor) 0))
-     :defense (min 4 (or (:defense armor) 0))
+    {:wounds (if a (total (:wounds p)) 0)
+     :strain (if a (total (:strain p)) 0)
+     :soak (total (:soak p))
+     :defense (+ (min 4 (+ (or (:defense armor) 0) (talent-mod c :defense))) (adjust c :defense))
      :encumbrance (reduce + (map #(item-encumbrance armor %) items))
-     :encumbrance-max (+ 5 brawn bonus)
+     :encumbrance-max (+ (if (owned-talent c mods/big-guns) 10 5) brawn bonus)
      :encumbrance-bonus bonus}))
 
 (defn skill-pool
   "The higher of characteristic and rank gives the dice; the lower number of them are upgraded to Proficiency."
   [c ix skill]
-  (let [ch (characteristic c ix (skill-characteristic skill)) rk (rank-of c ix skill)]
+  (let [ch (characteristic-total c ix (skill-characteristic skill)) rk (rank-total c ix skill)]
     {:proficiency (min ch rk) :ability (- (max ch rk) (min ch rk))}))
 
 ;; ---------- Checks: what the sheet hands the roller ----------
@@ -175,17 +225,17 @@
 
 (defn- skill-detail [c ix skill]
   (let [k (skill-characteristic skill)]
-    (str (characteristic-names k) " " (characteristic c ix k) " · Rank " (rank-of c ix skill))))
+    (str (characteristic-names k) " " (characteristic-total c ix k) " · Rank " (rank-total c ix skill))))
 
 (defn characteristic-check [c ix k]
-  (let [n (characteristic c ix k) stat (characteristic-names k)]
+  (let [n (characteristic-total c ix k) stat (characteristic-names k)]
     (check c ix k (str stat " check") (str stat " " n ", no skill") {:ability n})))
 
 (defn skill-check [c ix skill]
   (check c ix (skill-characteristic skill) (:name skill) (skill-detail c ix skill) (skill-pool c ix skill)))
 
 (defn weapon-damage [c ix w]
-  (if (:adds-brawn w) (+ (characteristic c ix :brawn) (:damage-bonus w 0)) (:damage w)))
+  (if (:adds-brawn w) (+ (characteristic-total c ix :brawn) (:damage-bonus w 0)) (:damage w)))
 
 (defn weapon-check
   "nil when the library has no skill by the weapon's name."
@@ -211,7 +261,6 @@
       (str "Rank " max-rank " is the most at creation")
       (short-of c ix (rank-price c ix skill (inc rk))))))
 
-(defn owned-talent [c id] (first (filter #(= id (:id %)) (:talents c))))
 
 (defn next-tier [talent owned] (if owned (min 5 (+ (:tier talent) (:rank owned))) (:tier talent)))
 
@@ -283,6 +332,40 @@
 (defn remove-gear [c id]
   (update c :gear (fn [gs] (filterv #(pos? (:qty %)) (map #(if (= id (:id %)) (update % :qty dec) %) gs)))))
 
+;; ---------- Choices: which limb or organ, and Dedication's characteristics ----------
+
+(defn- put-at [v i x]
+  (let [v (vec v)] (assoc (into v (repeat (max 0 (- (inc i) (count v))) nil)) i x)))
+
+(defn set-pick
+  "Picks what one unit of a body modification is. item is as carried: :free for the archetype's free item."
+  [c item unit pick]
+  (if (:free item)
+    (update c :free-picks put-at unit pick)
+    (let [id (name (:id item))]
+      (update c :gear (fn [gs] (mapv #(if (= id (:id %)) (update % :picks put-at unit pick) %) gs))))))
+
+(defn dedication-options
+  "The characteristics a Dedication rank could raise: not one another rank has, and not one already at 5."
+  [c ix rank-i]
+  (let [picks (vec (:picks (owned-talent c mods/dedication)))
+        others (set (keep-indexed #(when (not= rank-i %1) %2) picks))]
+    (filterv #(or (= (name %) (get picks rank-i))
+                  (and (not (others (name %))) (< (characteristic-total c ix %) max-characteristic)))
+             characteristics)))
+
+(defn set-dedication
+  "k is a characteristic, stored by name so it survives JSON; nil clears the rank's pick."
+  [c rank-i k]
+  (update c :talents (fn [ts] (mapv #(if (= mods/dedication (:id %)) (update % :picks put-at rank-i (some-> k name)) %) ts))))
+
+(defn unchosen
+  "What still needs a choice before its bonus counts."
+  [c ix]
+  (let [{:keys [rank picks]} (owned-talent c mods/dedication)]
+    (cond-> (vec (mods/unchosen (installs c ix)))
+      (and rank (< (count (remove nil? (take rank picks))) rank)) (conj "Dedication"))))
+
 ;; ---------- Validation ----------
 
 (defn- plural [n word] (str n " " word (when (not= 1 n) "s")))
@@ -313,13 +396,24 @@
 
 (defn free-item-label [a] (if (= "G-Mods" (get-in a [:free-item :group])) "g-mod" "cybernetic"))
 
+(defn free-item-over
+  "How many credits the chosen free item costs beyond the archetype's cap, or nil when it fits."
+  [c ix]
+  (let [cap (get-in (archetype c ix) [:free-item :max-price])
+        price (get-in ix [:gear (:free-item c) :price])]
+    (when (and cap price (> price cap)) (- price cap))))
+
 (defn- gear-issues [c ix]
   (let [a (archetype c ix) {:keys [encumbrance encumbrance-max]} (derived c ix) over (- encumbrance encumbrance-max)]
     [(when (neg? (credits-left c ix)) [4 :block (str "Over budget by " (- (credits-left c ix)) " credits")])
      (when (and (:free-item a) (not (:free-item c))) [4 :warn (str "Choose your free " (free-item-label a) " (" (:name a) ")")])
+     (when-let [over (free-item-over c ix)]
+       [4 :block (str "Your free " (free-item-label a) " costs " over " credits more than the " (get-in a [:free-item :max-price]) " allowed")])
      (when (empty? (:gear c)) [4 :warn "No gear bought yet"])
      (when (nil? (:pocket c)) [4 :warn "Pocket money not rolled yet"])
-     (when (pos? over) [4 :warn (str "Encumbered by " over ": Brawn and Agility checks add " over " Setback")])]))
+     (when (pos? over) [4 :warn (str "Encumbered by " over ": Brawn and Agility checks add " over " Setback")])
+     (when-let [names (seq (unchosen c ix))]
+       [4 :warn (str "Choose what your " (str/join " and " names) " improves, on the character sheet")])]))
 
 (defn- story-issues [c]
   (let [blank (count (filter #(str/blank? (:name %)) (vals (:motives c))))]

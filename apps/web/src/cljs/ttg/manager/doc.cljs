@@ -6,7 +6,8 @@
 (defn- seed-s0 [{:keys [dials]}]
   {:done false :answers {} :alt {} :draws {} :truth {} :wrap {} :run {} :collateral {} :lv []
    :dials (into {} (map (juxt (comp keyword :id) :start)) dials)
-   :ship {:painted "" :registry "" :hull "" :quirks ""}})
+   :ship {:painted "" :registry "" :hull "" :quirks ""}
+   :bid {:backer "" :name "" :stake "" :promise "" :corp ""}})
 
 (defn seed
   "A new campaign's document, before Session 0."
@@ -51,17 +52,21 @@
   (let [out (held doc pc)]
     (vec (remove out (map :id (filter #(= "personal" (:set %)) questions))))))
 
-(defn draw
-  "Deals a PC two personal questions, from uint32s. Drawing again puts their last two aside first. With fewer than two
-   left in the deck, nothing changes."
-  [doc questions pc [u v]]
-  (let [drawn (set (get-in doc [:s0 :draws (keyword pc)]))
-        pool (vec (remove drawn (deck doc questions pc)))]
-    (if (< (count pool) 2)
-      doc
-      (let [i (rng/pick u (count pool))
-            rest-pool (into (subvec pool 0 i) (subvec pool (inc i)))]
-        (assoc-in doc [:s0 :draws (keyword pc)] [(pool i) (rest-pool (rng/pick v (count rest-pool)))])))))
+(defn roll
+  "Rolls a PC a personal question from a uint32: a d20 that rolls again past any number that's taken, or that they
+   just put back. With nothing left to roll, nothing changes."
+  [doc questions pc [u]]
+  (let [rolled (set (get-in doc [:s0 :draws (keyword pc)]))
+        pool (vec (remove rolled (deck doc questions pc)))]
+    (cond-> doc
+      (seq pool) (assoc-in [:s0 :draws (keyword pc)] [(pool (rng/pick u (count pool)))]))))
+
+(defn take-number
+  "Gives a PC the personal question a physical d20 landed on, unless that number's taken."
+  [doc questions pc n]
+  (let [id (str "p" n)]
+    (cond-> doc
+      (some #{id} (deck doc questions pc)) (assoc-in [:s0 :draws (keyword pc)] [id]))))
 
 (defn add-line [doc topic kind] (update-in doc [:s0 :lv] conj {:topic topic :kind kind}))
 

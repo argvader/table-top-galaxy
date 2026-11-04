@@ -5,11 +5,16 @@
 (rf/reg-sub ::sheet (fn [db _] (:sheet db)))
 (rf/reg-sub ::character :<- [::sheet] (fn [s _] (:character s)))
 
-;; A GM reads their players' characters; only the owner writes.
-(rf/reg-sub ::read-only?
+;; The server says who's asking: the owner, or the GM of the character's campaign, who can fix or override it.
+;; Without :access (an older API) only the owner writes.
+(rf/reg-sub ::access
   (fn [db _]
-    (let [me (or (get-in db [:session :id]) config/dev-owner)]
-      (not= me (get-in db [:sheet :character :owner])))))
+    (let [me (or (get-in db [:session :id]) config/dev-owner)
+          {:keys [owner access]} (get-in db [:sheet :character])]
+      (or access (when (= me owner) "owner")))))
+
+(rf/reg-sub ::read-only? :<- [::access] (fn [access _] (not (#{"owner" "gm"} access))))
+(rf/reg-sub ::gm? :<- [::access] (fn [access _] (= "gm" access)))
 
 (rf/reg-sub ::save-state
   :<- [::sheet]

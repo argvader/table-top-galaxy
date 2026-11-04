@@ -126,7 +126,7 @@
        (or (= :roller (:page @(rf/subscribe [::route]))) @(rf/subscribe [::roller-sub/drawer-rolls?]))))
 
 (defn- on-key [e]
-  (cond (= "Escape" (.-key e)) (rf/dispatch [::ev/dismiss-check])
+  (cond (= "Escape" (.-key e)) (do (rf/dispatch [::ev/dismiss-check]) (rf/dispatch [::builder-ev/dismiss-info]))
         (roll-key? e) (do (.preventDefault e) (rf/dispatch [::ev/roll]))))
 
 (defonce ^:private keys-bound (delay (.addEventListener js/document "keydown" on-key)))
