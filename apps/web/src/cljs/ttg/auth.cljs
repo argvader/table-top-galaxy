@@ -27,7 +27,9 @@
   (-> (js/crypto.subtle.digest "SHA-256" (.encode (js/TextEncoder.) verifier))
       (.then #(b64url (js/Uint8Array. %)))))
 
-(defn- redirect-uri [] (str js/location.origin js/location.pathname))
+;; Cognito only returns to addresses it lists (infra/api.yml CallbackURLs), so sign-in always comes back to the root
+;; and the page the user left from rides along in the PKCE record.
+(defn- redirect-uri [] (str js/location.origin "/"))
 
 (defn claims
   "The id token's payload: {:sub :email :name ...}."
@@ -37,10 +39,10 @@
       (js->clj (js/JSON.parse (js/decodeURIComponent (js/escape (js/atob part)))) :keywordize-keys true))))
 
 (defn sign-in!
-  "Off to the hosted sign-in page; it comes back to this page with ?code=... and complete! finishes."
+  "Off to the hosted sign-in page; it comes back to / with ?code=... and complete! finishes on the page left from."
   []
   (let [verifier (random-string) state (random-string)]
-    (write-json! js/sessionStorage pkce-key {:verifier verifier :state state :hash js/location.hash})
+    (write-json! js/sessionStorage pkce-key {:verifier verifier :state state :path (str js/location.pathname js/location.hash)})
     (.then (challenge verifier)
            (fn [c]
              (js/location.assign
@@ -71,7 +73,7 @@
     (if-not (and (enabled?) code)
       (js/Promise.resolve false)
       (do (.removeItem js/sessionStorage pkce-key)
-          (js/history.replaceState nil "" (str js/location.pathname (:hash pkce)))
+          (js/history.replaceState nil "" (or (:path pkce) "/"))
           (if (not= (.get params "state") (:state pkce))
             (js/Promise.resolve false)
             (-> (token-request {:grant_type "authorization_code" :code code :redirect_uri (redirect-uri)

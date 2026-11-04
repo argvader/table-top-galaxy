@@ -237,12 +237,36 @@
 (defn weapon-damage [c ix w]
   (if (:adds-brawn w) (+ (characteristic-total c ix :brawn) (:damage-bonus w 0)) (:damage w)))
 
+(defn quality-rating
+  "The weapon's rating in a quality, matched by name in any case: 1 for an unrated one, nil when it hasn't it."
+  [w quality]
+  (some #(when (= (str/lower-case quality) (str/lower-case (:name %))) (or (:rating %) 1)) (:qualities w)))
+
+(defn quality-dice
+  "Dice a weapon's qualities add to every attack with it (CRB p.86-89): Accurate adds Boost, Inaccurate Setback."
+  [w]
+  (cond-> {}
+    (quality-rating w "Accurate") (assoc :boost (quality-rating w "Accurate"))
+    (quality-rating w "Inaccurate") (assoc :setback (quality-rating w "Inaccurate"))))
+
+(def ^:private heavy-qualities [["Cumbersome" :brawn] ["Unwieldy" :agility]])
+
+(defn weapon-difficulty
+  "Qualities that make an attack harder because a characteristic is too low (CRB p.87, p.89): one more Difficulty
+   per point short. [{:quality :rating :characteristic :have :extra}] for each one that applies."
+  [c ix w]
+  (for [[q k] heavy-qualities :let [rating (quality-rating w q) have (characteristic-total c ix k)]
+        :when (and rating (< have rating))]
+    {:quality q :rating rating :characteristic k :have have :extra (- rating have)}))
+
 (defn weapon-check
-  "nil when the library has no skill by the weapon's name."
+  "nil when the library has no skill by the weapon's name. The pool carries the weapon's Accurate and Inaccurate dice;
+   the difficulty is set in the roller, so weapon-difficulty says what a too-heavy weapon adds to it."
   [c ix w]
   (when-let [skill (first (filter #(= (:skill w) (:name %)) (:skills ix)))]
     (-> (check c ix (skill-characteristic skill) (str (:name w) " attack")
                (str (:name skill) " · " (skill-detail c ix skill)) (skill-pool c ix skill))
+        (update :pool #(merge-with + % (quality-dice w)))
         (assoc :weapon {:range (:range w) :crit (:crit w) :damage (weapon-damage c ix w)}))))
 
 ;; ---------- Purchase checks: nil when allowed, otherwise the reason ----------

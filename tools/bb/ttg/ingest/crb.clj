@@ -144,8 +144,10 @@
                     :text (l/join-text b) :source (source h)})))
          vec)))
 
-;; ---------- Critical injuries: the d100 table on p.115 ----------
+;; ---------- Critical injuries (d100, p.115) and vehicle critical hits (d100, p.230) ----------
+;; Both tables are d100 | Severity | Result, with the severity as difficulty dice and "Name: effect" results.
 (def ^:private crit-page 115)
+(def ^:private vehicle-crit-page 230)
 
 (defn- d100-range [s]
   (let [[lo hi] (map parse-long (re-seq #"\d+" s))]
@@ -157,12 +159,16 @@
      :severity (count (re-seq #"\[difficulty\]" (str severity)))
      :text text :source {:book "crb" :page (or (:printed page) (:index page))}}))
 
-(defn crits [pages]
-  (let [page (nth pages crit-page)]
+(defn- d100-table [pages i]
+  (let [page (nth pages i)]
     (->> (:tables page)
          (filter #(= "d100" (ffirst %)))
          first rest
          (mapv #(crit-row page %)))))
+
+(defn crits [pages] (d100-table pages crit-page))
+
+(defn vehicle-crits [pages] (d100-table pages vehicle-crit-page))
 
 ;; ---------- Motivations: Tables I.2-2 to I.2-5 (d100 example Desires, Fears, Strengths, Flaws) ----------
 (def ^:private motivation-pages {47 "Desire" 48 "Fear" 49 "Strength" 50 "Flaw"})

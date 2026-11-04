@@ -14,17 +14,18 @@
 (def apex-domain "tt-galaxy.com")
 (def domain-stack "ttg-web-domain")
 (def site-pages ["character-builder.html" "character-sheet.html" "dice-roller.html" "gm-dashboard.html"])
-;; The real app (apps/web release build) goes under roller/. CloudFront has no directory index there, so links say roller/index.html.
+;; The real app (apps/web release build) is the site root; CloudFront answers its clean URLs with index.html
+;; (infra/web.yml). Dev also carries the prototypes, under prototypes/ and behind the site password.
 (def web-public "apps/web/public")
 (def web-files ["index.html" "css/app.css" "css/game.css" "js/main.js" "js/dice3d.js"])
-;; Prod is for players: the address opens the app, and the hash goes along so a shared #/join/<code> link still lands.
-(def prod-landing
+;; The app used to live at roller/index.html with hash routes, and invite links (#/join/<code>) are out with players:
+;; this sends one to the clean URL it meant.
+(def roller-redirect
   (str "<!doctype html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n"
        "<meta name=\"robots\" content=\"noindex, nofollow\">\n"
        "<title>Table Top Galaxy</title>\n"
-       "<meta http-equiv=\"refresh\" content=\"0; url=roller/index.html\">\n"
-       "<script>location.replace('roller/index.html' + location.hash);</script>\n"
-       "</head>\n<body><a href=\"roller/index.html\">Table Top Galaxy</a></body>\n</html>\n"))
+       "<script>location.replace('/' + location.hash.replace(/^#\\/?/, ''));</script>\n"
+       "</head>\n<body><a href=\"/\">Table Top Galaxy</a></body>\n</html>\n"))
 
 (defn- secrets []
   (when-not (fs/exists? secrets-file)
@@ -107,11 +108,14 @@
 
 (defn site-url [cfg stage] (:SiteUrl (outputs cfg stage)))
 
-(defn- web-defines
-  "The release build's API and sign-in settings, from the ttg-api-<stage> stack when it exists."
+(defn- web-env
+  "The release build's API and sign-in settings (apps/web/resources/config.edn #env), from the ttg-api-<stage> stack
+   when it exists."
   [cfg stage]
   (when-let [{:keys [ApiUrl AuthDomain ClientId]} (stack-outputs cfg (str "ttg-api-" stage))]
-    {'ttg.config/api-url ApiUrl 'ttg.config/auth-domain AuthDomain 'ttg.config/client-id ClientId 'ttg.config/dev-owner ""}))
+    {"TTG_API_URL" ApiUrl "TTG_AUTH_DOMAIN" AuthDomain "TTG_CLIENT_ID" ClientId}))
+
+(defn- web-profile [stage] (if (= "prod" stage) :prod :dev))
 
 (defn- zone-id!
   "The hosted zone's id, without the /hostedzone/ prefix Route 53 lists it with."
@@ -158,16 +162,19 @@
   (not= "prod" stage))
 
 (defn- stage-site!
-  "Copies the landing and error pages and the app into .local/dist/<stage>, plus the built prototypes on dev."
+  "Copies the app, the error page and the old roller/ address into .local/dist/<stage>, plus the built prototypes
+   and their landing page under prototypes/ on dev."
   [stage]
   (let [out (fs/path ".local" "dist" stage)]
     (fs/delete-tree out)
-    (fs/create-dirs out)
+    (fs/create-dirs (fs/path out "roller"))
     (when (prototypes? stage)
-      (doseq [page site-pages] (fs/copy (fs/path "prototypes" page) (fs/path out page))))
-    (doseq [f (fs/list-dir "prototypes/site")] (fs/copy f (fs/path out (fs/file-name f))))
-    (when-not (prototypes? stage) (spit (str (fs/path out "index.html")) prod-landing))
-    (doseq [f web-files :let [to (fs/path out "roller" f)]]
+      (fs/create-dirs (fs/path out "prototypes"))
+      (doseq [page (conj site-pages "site/index.html")]
+        (fs/copy (fs/path "prototypes" page) (fs/path out "prototypes" (fs/file-name page)))))
+    (doseq [f ["404.html" "robots.txt"]] (fs/copy (fs/path "prototypes" "site" f) (fs/path out f)))
+    (spit (str (fs/path out "roller" "index.html")) roller-redirect)
+    (doseq [f web-files :let [to (fs/path out f)]]
       (fs/create-dirs (fs/parent to))
       (fs/copy (fs/path web-public f) to))
     out))
@@ -177,15 +184,15 @@
   [& args]
   (let [[stage cfg] (setup args)
         {:keys [BucketName DistributionId SiteUrl]} (outputs cfg stage)
-        defines (web-defines cfg stage)
-        dir (do (when (prototypes? stage) (proto/build!)) (quality/build-web! defines) (stage-site! stage))]
+        env (web-env cfg stage)
+        dir (do (when (prototypes? stage) (proto/build!)) (quality/build-web! (web-profile stage) env) (stage-site! stage))]
     ;; no-cache: browsers and CloudFront revalidate each load, so a redeploy shows up at once.
     (aws! cfg "s3" "sync" (str dir) (str "s3://" BucketName) "--delete" "--cache-control" "no-cache")
     (aws! cfg "cloudfront" "create-invalidation" "--distribution-id" DistributionId "--paths" "/*"
           "--query" "Invalidation.Id" "--output" "text")
     (println "Deployed" (if (prototypes? stage) (str (count site-pages) " prototypes and the app") "the app") "to" SiteUrl
-             (if defines "(signed-in app, API from ttg-api-" "(no API stack yet: the library page says so)") (when defines (str stage ")")))
-    (println "App:" (str SiteUrl "/roller/index.html"))))
+             (if env "(signed-in app, API from ttg-api-" "(no API stack yet: the library page says so)") (when env (str stage ")")))
+    (when (prototypes? stage) (println "Prototypes:" (str SiteUrl "/prototypes/")))))
 
 (defn url!
   "bb web:url [stage] [--profile p]: print the site address."

@@ -71,9 +71,10 @@ bb web:deploy dev                         # rebuilds the app pointing at the API
 bb api:logs dev                           # follow the Lambda's log
 ```
 
-Sign in from the app's top bar at `<site>/roller/index.html`. The app opens without the site password, and its data
-needs a Cognito sign-in. The password only guards what's outside the app: on dev, the prototype pages, which carry book
-content. Portraits and images are open to anyone with their random address.
+Sign in from the app's top bar at `<site>/`. The app opens without the site password, and its data needs a Cognito
+sign-in. Its pages have clean URLs (`/campaigns/<id>`): the CloudFront function answers any path without a file
+extension with `index.html`, and the old `/roller/index.html#/...` links forward to them. The password only guards
+what's outside the app: on dev, the prototype pages under `/prototypes/`, which carry book content. Portraits and images are open to anyone with their random address.
 
 ## The custom domain (tt-galaxy.com)
 

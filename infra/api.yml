@@ -125,8 +125,8 @@ Resources:
       AllowedOAuthFlows: [code]
       AllowedOAuthScopes: [openid, email, profile]
       SupportedIdentityProviders: [COGNITO]
-      CallbackURLs: [!Sub '${WebOrigin}/roller/index.html', 'http://localhost:8280/']
-      LogoutURLs: [!Sub '${WebOrigin}/roller/index.html', 'http://localhost:8280/']
+      CallbackURLs: [!Sub '${WebOrigin}/', !Sub '${WebOrigin}/roller/index.html', 'http://localhost:8280/']
+      LogoutURLs: [!Sub '${WebOrigin}/', !Sub '${WebOrigin}/roller/index.html', 'http://localhost:8280/']
       ExplicitAuthFlows: [ALLOW_REFRESH_TOKEN_AUTH]
       PreventUserExistenceErrors: ENABLED
       IdTokenValidity: 60

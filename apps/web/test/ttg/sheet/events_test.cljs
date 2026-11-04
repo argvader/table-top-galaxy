@@ -89,3 +89,21 @@
     (is (= "portraits/x1/a.jpg" (get-in db [:sheet :character :portrait-key])))
     (is (= 2 (get-in db [:sheet :character :version])))
     (is (s/valid? ::db/app-db db))))
+
+(deftest the-info-drawer-opens-and-slides-away
+  (let [db (ev/open-info (state) [::ev/open-info :gear "baton"])
+        fx (ev/dismiss-info {:db db} [::ev/dismiss-info])]
+    (is (= {:kind :gear :id "baton"} (get-in db [:sheet :info])))
+    (is (s/valid? ::db/app-db db))
+    (is (true? (get-in fx [:db :sheet :info :closing?])))
+    (is (= (:db fx) (ev/open-info (:db fx) [::ev/open-info :talent "grit"])) "nothing opens while the last one leaves")
+    (is (nil? (get-in (ev/close-info (:db fx) [::ev/close-info]) [:sheet :info])))))
+
+(deftest attacking-from-the-drawer-hands-over-to-the-roller
+  (let [check {:label "Baton attack" :pool {:ability 2}}
+        fx (ev/attack-from-info {:db (ev/open-info (state) [::ev/open-info :gear "baton"])} [::ev/attack-from-info check])]
+    (is (true? (get-in fx [:db :sheet :info :closing?])) "the info drawer slides away")
+    (is (some #(= [:dispatch [:ttg.roller.events/open-check check]] %) (:fx fx)))
+    (testing "with nothing open, it still rolls"
+      (is (= [[:dispatch [:ttg.roller.events/open-check check]]] (:fx (ev/attack-from-info {:db (state)} [::ev/attack-from-info check]))))
+      (is (= (state) (:db (ev/attack-from-info {:db (state)} [::ev/attack-from-info check])))))))

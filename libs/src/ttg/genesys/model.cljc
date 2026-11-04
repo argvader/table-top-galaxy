@@ -127,4 +127,4 @@
 
 (s/def ::tone (s/keys :req-un [::id ::name ::sections ::source]))
 
-(def entry-specs {:tones ::tone :vehicles ::vehicle :adversaries ::adversary :factions ::faction :network ::network-entry :network-results ::network-result :spend-results ::spend-result :skill-list ::skill-ref :talent-list ::talent-ref :motivations ::motivation :item-qualities ::item-quality :crits ::crit-injury :attachments ::attachment :weapons ::weapon :armor ::armor :gear ::gear :skills ::skill-entry :archetypes ::archetype :careers ::career :talents ::talent :obligation-types ::obligation-type})
+(def entry-specs {:tones ::tone :vehicles ::vehicle :adversaries ::adversary :factions ::faction :network ::network-entry :network-results ::network-result :spend-results ::spend-result :skill-list ::skill-ref :talent-list ::talent-ref :motivations ::motivation :item-qualities ::item-quality :crits ::crit-injury :vehicle-crits ::crit-injury :attachments ::attachment :weapons ::weapon :armor ::armor :gear ::gear :skills ::skill-entry :archetypes ::archetype :careers ::career :talents ::talent :obligation-types ::obligation-type})

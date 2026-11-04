@@ -7,6 +7,8 @@
             [ttg.genesys.rules :as rules]
             [ttg.http :as http]
             [ttg.sheet.db :as db]
+            [ttg.roller.events :as roller-ev]
+            [ttg.ui.drawer-state :as drawer]
             [ttg.ui.portrait :as portrait]))
 
 (def ^:private save-delay-ms 800)
@@ -137,6 +139,22 @@
 
 (defn upload-failed [db [_ {:keys [error]}]]
   (update db :sheet assoc :uploading? false :error (or error "That picture didn't upload.")))
+;; ---------- The info drawer ----------
+
+(defn open-info
+  "Opens the info drawer on a carried item or owned talent: kind is :gear or :talent, id its library id."
+  [db [_ kind id]]
+  (drawer/open db [:sheet :info] kind id))
+
+(defn dismiss-info [{:keys [db]} _] (drawer/dismiss db [:sheet :info] ::close-info))
+
+(defn close-info [db _] (drawer/close db [:sheet :info]))
+
+(defn attack-from-info
+  "The drawer's Attack button: the info drawer slides away and the roll drawer opens on the attack."
+  [{:keys [db] :as cofx} [_ check]]
+  (-> (or (dismiss-info cofx nil) {:db db})
+      (update :fx (fnil conj []) [:dispatch [::roller-ev/open-check check]])))
 
 (rf/reg-event-db ::initialize (fn [db _] (assoc db :sheet db/default-sheet)))
 (rf/reg-event-fx ::open [validate-spec] open)
@@ -156,3 +174,7 @@
 (rf/reg-event-fx ::portrait-ready [validate-spec] portrait-ready)
 (rf/reg-event-db ::portrait-saved [validate-spec] portrait-saved)
 (rf/reg-event-db ::upload-failed [validate-spec] upload-failed)
+(rf/reg-event-db ::open-info [validate-spec] open-info)
+(rf/reg-event-fx ::dismiss-info [validate-spec] dismiss-info)
+(rf/reg-event-db ::close-info [validate-spec] close-info)
+(rf/reg-event-fx ::attack-from-info [validate-spec] attack-from-info)

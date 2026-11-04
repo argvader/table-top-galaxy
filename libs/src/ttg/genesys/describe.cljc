@@ -70,17 +70,74 @@
                   (when (= "armor" (kind item)) " Worn armor counts 3 less."))))
      (when encumbrance-bonus (fact "Carry" (str "+" encumbrance-bonus) "Raises your carrying limit."))]))
 
-(defn- buy-facts [c ix {:keys [price rarity restricted]}]
-  [(fact "Price" (if price (str price " credits") "–") (str "You have " (r/credits-left c ix) " left to spend."))
-   (fact "Rarity" (if (some? rarity) rarity "–") "0 is sold everywhere; 10 is nearly impossible to find.")
-   (when restricted (fact "Restricted" "Yes" "Illegal to carry without a licence. Expect questions."))])
-
 (defn gear-facts
-  "Facts for a weapon, armor or piece of gear."
+  "What a weapon, armor or piece of gear does, and what it weighs."
   [c ix item]
   (vec (remove nil? (concat (case (kind item) "weapon" (weapon-facts c ix item) "armor" (armor-facts item) nil)
                             (carry-facts c ix item)
-                            (buy-facts c ix item)))))
+                            [(when (:restricted item) (fact "Restricted" "Yes" "Illegal to carry without a licence. Expect questions."))]))))
+
+(defn buy-facts
+  "What it costs and how easy it is to find, for shopping."
+  [c ix {:keys [price rarity]}]
+  [(fact "Price" (if price (str price " credits") "–") (str "You have " (r/credits-left c ix) " left to spend."))
+   (fact "Rarity" (if (some? rarity) rarity "–") "0 is sold everywhere; 10 is nearly impossible to find.")])
+
+;; ---------- An attack's dice pool, so a player can check it ----------
+
+(def die-names {:proficiency "Proficiency" :ability "Ability" :boost "Boost" :setback "Setback"})
+
+(defn pool-words
+  "{:proficiency 2 :ability 1} -> \"2 Proficiency, 1 Ability\"."
+  [pool]
+  (str/join ", " (for [k [:proficiency :ability :boost :setback] :let [n (get pool k 0)] :when (pos? n)]
+                   (str n " " (die-names k)))))
+
+(defn- skill-of [ix w] (first (filter #(= (:skill w) (:name %)) (:skills ix))))
+
+(defn- rank-fact [c ix skill]
+  (let [rk (r/rank-total c ix skill) cyber (- rk (r/rank-of c ix skill))]
+    (fact (:name skill) (str "Rank " rk)
+          (str (if (r/career-skill? c ix skill) "A career skill." "Not a career skill.")
+               (when (pos? cyber) (str " Includes +" cyber " from cybernetics."))))))
+
+(defn- pool-facts
+  "Where the dice come from: the characteristic, the skill rank, and how the two make the pool."
+  [c ix skill]
+  (let [k (keyword (:characteristic skill)) ch (r/characteristic-total c ix k) rk (r/rank-total c ix skill)]
+    [(fact (r/characteristic-names k) ch (str (:name skill) " uses " (r/characteristic-names k) "."))
+     (rank-fact c ix skill)
+     (fact "Dice" (pool-words (r/skill-pool c ix skill))
+           (str "The higher of " ch " and " rk " is how many dice you roll; the lower, "
+                (min ch rk) ", is how many of them become Proficiency."))]))
+
+(defn- added-dice-facts
+  "Dice the weapon and the load add, which are already in the pool."
+  [c ix w k]
+  (let [enc (r/encumbrance-setback c ix k)]
+    [(when-let [n (r/quality-rating w "Accurate")] (fact "Accurate" (str "+" n " Boost") "Already in the pool."))
+     (when-let [n (r/quality-rating w "Inaccurate")] (fact "Inaccurate" (str "+" n " Setback") "Already in the pool."))
+     (when (pos? enc)
+       (fact "Encumbered" (str "+" enc " Setback") "You're carrying more than your limit: one Setback per point over."))]))
+
+(defn- difficulty-facts
+  "What a too-heavy weapon adds to the difficulty, which is set in the roller."
+  [c ix w]
+  (for [{:keys [quality rating characteristic have extra]} (r/weapon-difficulty c ix w)]
+    (fact quality (str "+" extra " Difficulty")
+          (str quality " " rating " needs " (r/characteristic-names characteristic) " " rating "; you have " have
+               ". Add " extra " to the difficulty in the roller."))))
+
+(defn attack
+  "How this character's attack with weapon w is built: {:check :facts}, or nil when the library has no skill by the
+   weapon's name. :check is what the roll drawer takes."
+  [c ix w]
+  (when-let [check (r/weapon-check c ix w)]
+    (let [skill (skill-of ix w)]
+      {:check check
+       :facts (vec (remove nil? (concat (pool-facts c ix skill)
+                                        (added-dice-facts c ix w (keyword (:characteristic skill)))
+                                        (difficulty-facts c ix w))))})))
 
 (defn- quality-by-name [ix nm]
   (let [k (str/lower-case nm)]

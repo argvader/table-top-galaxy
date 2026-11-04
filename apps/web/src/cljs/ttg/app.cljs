@@ -1,5 +1,5 @@
 (ns ttg.app
-  "Web entry point: the app shell (top bar + page nav) and hash routing between the pages."
+  "Web entry point: the app shell (top bar + page nav) and routing between the pages (ttg.routes)."
   (:require [re-frame.core :as rf]
             [re-frame.db]
             [reagent.dom.client :as rdc]
@@ -57,6 +57,11 @@
           (when library? [:dispatch [::lib-ev/route-changed]])]}))
 
 (rf/reg-event-fx ::route-changed route-changed)
+
+;; pushy reports the address on start and on every move; only a new route reopens the page.
+(rf/reg-event-fx ::navigated
+  (fn [{:keys [db]} [_ route]]
+    (when (not= route (:route db)) {:fx [[:dispatch [::route-changed route]]]})))
 (rf/reg-sub ::route (fn [db _] (:route db)))
 
 ;; :session mirrors ttg.auth for the views: nil when sign-in is off (bb dev) or signed out.
@@ -126,7 +131,8 @@
        (or (= :roller (:page @(rf/subscribe [::route]))) @(rf/subscribe [::roller-sub/drawer-rolls?]))))
 
 (defn- on-key [e]
-  (cond (= "Escape" (.-key e)) (do (rf/dispatch [::ev/dismiss-check]) (rf/dispatch [::builder-ev/dismiss-info]))
+  (cond (= "Escape" (.-key e)) (do (rf/dispatch [::ev/dismiss-check]) (rf/dispatch [::builder-ev/dismiss-info])
+                                     (rf/dispatch [::sheet-ev/dismiss-info]))
         (roll-key? e) (do (.preventDefault e) (rf/dispatch [::ev/roll]))))
 
 (defonce ^:private keys-bound (delay (.addEventListener js/document "keydown" on-key)))
@@ -143,12 +149,14 @@
   (rf/dispatch-sync [::manager-ev/initialize])
   (rf/dispatch-sync [::chronicle-ev/initialize])
   (swap! re-frame.db/app-db assoc :session (current-session))
-  ;; Back from the hosted sign-in page: complete! puts the page's hash back at once (so the route below is the
+  ;; Back from the hosted sign-in page: complete! puts the page's address back at once (so the route below is the
   ;; one the user left from), then trades the code for tokens and lets the open page load its data.
   (-> (auth/complete!)
       (.then #(when % (rf/dispatch [::signed-in])))
       (.catch #(js/console.error "Sign-in didn't complete" %)))
-  (rf/dispatch-sync [::route-changed (routes/parse (.-hash js/location))])
+  ;; Links shared before clean URLs were hashes (#/join/<code>): they open the page they meant.
+  (when-let [path (routes/legacy-path (.-hash js/location))] (js/history.replaceState nil "" path))
+  (rf/dispatch-sync [::route-changed (routes/parse (.-pathname js/location))])
   (rf/dispatch [::campaign-ev/load-roles])
   @keys-bound
   (routes/start!)

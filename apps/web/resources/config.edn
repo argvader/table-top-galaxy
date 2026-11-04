@@ -1,0 +1,10 @@
+;; The web app's settings, read at build time (env.shadow/load-env) for one profile:
+;;   :local  bb dev and the tests: the dev API on :3000, no sign-in, the dev-owner header.
+;;   :dev / :prod  deployed builds: bb web:deploy sets TTG_API_URL, TTG_AUTH_DOMAIN and TTG_CLIENT_ID from the
+;;                 ttg-api-<stage> stack. Unset (no API stack) they're blank and the library page says so.
+{:api-url #profile {:local "http://localhost:3000" :default #or [#env TTG_API_URL ""]}
+ ;; Until Cognito is configured the API takes the user from this header. Deployed builds send none.
+ :dev-owner #profile {:local "local-gm" :default ""}
+ ;; Cognito hosted sign-in, e.g. https://ttg-dev-123.auth.us-east-1.amazoncognito.com, and the web client id.
+ :auth-domain #profile {:local "" :default #or [#env TTG_AUTH_DOMAIN ""]}
+ :client-id #profile {:local "" :default #or [#env TTG_CLIENT_ID ""]}}

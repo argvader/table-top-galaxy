@@ -1,0 +1,76 @@
+[{:id :all-systems-down,
+  :name "All Systems Down",
+  :roll [127 138],
+  :severity 4,
+  :text "All of the vehicle’s components are compromised (see Vehicle Components, on page 221).",
+  :source {:book "crb", :page 230}}
+ {:id :brakes-damaged,
+  :name "Brakes Damaged",
+  :roll [109 126],
+  :severity 3,
+  :text "The vehicle’s brakes are compromised (see Vehicle Components, on page 221).",
+  :source {:book "crb", :page 230}}
+ {:id :breaking-up,
+  :name "Breaking Up",
+  :roll [145 153],
+  :severity 4,
+  :text
+  "The vehicle begins to come apart at its seams, disintegrating around the occupants. At the end of the following round, it is completely destroyed, and the surrounding environment is littered with debris. Anyone aboard the vehicle has one round to dive for the nearest door before they are lost.",
+  :source {:book "crb", :page 230}}
+ {:id :defenses-damaged,
+  :name "Defenses Damaged",
+  :roll [73 81],
+  :severity 2,
+  :text "The vehicle’s defenses are compromised (see Vehicle Components, on page 221).",
+  :source {:book "crb", :page 230}}
+ {:id :fire,
+  :name "Fire!",
+  :roll [139 144],
+  :severity 4,
+  :text
+  "The vehicle catches on fire. While the vehicle is on fire, each occupant suffers damage as discussed on page 111. A fire can be put out with a Hard ([difficulty] [difficulty] [difficulty]) Cool or Athletics check (or multiple checks for big vehicles).",
+  :source {:book "crb", :page 230}}
+ {:id :hull-damaged,
+  :name "Hull Damaged",
+  :roll [37 54],
+  :severity 1,
+  :text "The vehicle’s hull is compromised (see Vehicle Components on page 221).",
+  :source {:book "crb", :page 230}}
+ {:id :navigation-damaged,
+  :name "Navigation Damaged",
+  :roll [55 63],
+  :severity 2,
+  :text "The vehicle’s navigation is compromised (see Vehicle Components, on page 221).",
+  :source {:book "crb", :page 230}}
+ {:id :propulsion-damaged,
+  :name "Propulsion Damaged",
+  :roll [64 72],
+  :severity 2,
+  :text "The vehicle’s propulsion is compromised (see Vehicle Components, on page 221).",
+  :source {:book "crb", :page 230}}
+ {:id :rattled,
+  :name "Rattled",
+  :roll [1 18],
+  :severity 1,
+  :text "The vehicle suffers 3 system strain, and its pilot and each occupant suffer 3 strain.",
+  :source {:book "crb", :page 230}}
+ {:id :shrapnel-spray,
+  :name "Shrapnel Spray",
+  :roll [19 36],
+  :severity 1,
+  :text
+  "Chunks of metal or wood are hurled at the occupants at deadly velocity. The pilot and occupants must each make a Hard ([difficulty] [difficulty] [difficulty]) Resilience or Vigilance check or suffer 1 wound, plus 1 additional wound per [failure] on the check; you may spend [threat] [threat] [threat] or [despair] from this check to inflict a Critical Injury on the character.",
+  :source {:book "crb", :page 230}}
+ {:id :vaporized,
+  :name "Vaporized",
+  :roll [154 nil],
+  :severity 0,
+  :text "The vehicle is completely destroyed, consumed in a large and dramatic fireball. Nothing survives.",
+  :source {:book "crb", :page 230}}
+ {:id :weapons-damaged,
+  :name "Weapons Damaged",
+  :roll [82 108],
+  :severity 3,
+  :text
+  "One of the vehicle’s weapons of the attacker’s choice is compromised (see Vehicle Components, on page 221).",
+  :source {:book "crb", :page 230}}]

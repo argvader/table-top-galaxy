@@ -711,3 +711,9 @@ footer.foot { margin-top: 24px; font-size: 12px; color: var(--muted); display: f
 .btn.override, .pick.override, .chip.override { border-style: dashed; border-color: var(--gm); }
 .override-note { grid-column: 1 / -1; font-size: 12px; color: var(--gm); }
 .chip .tag.gm { margin-left: 2px; color: var(--gm); border-color: var(--gm); }
+/* The sheet's info drawer: a weapon's attack pool, to check at the table. */
+.drawer .attack { display: grid; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--surface-2); }
+.drawer .attack-pool { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.drawer .attack-dice { display: inline-flex; gap: 3px; }
+.drawer .attack-dice svg { width: 30px; height: 30px; display: block; }
+.drawer .attack .infoacts { position: static; border-top: 0; padding-top: 0; background: none; }

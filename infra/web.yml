@@ -92,21 +92,29 @@ Resources:
       Name: !Sub "ttg-web-${Stage}-basic-auth"
       AutoPublish: true
       FunctionConfig:
-        Comment: Password gate for anything outside the app
+        Comment: Clean URLs for the app, and a password gate for anything outside it
         Runtime: cloudfront-js-2.0
       FunctionCode: !Sub
         - |
           function handler(event) {
-            var open = /^\/(index\.html|404\.html|robots\.txt|roller\/.*|portraits\/.*)?$/;
-            var auth = event.request.headers.authorization;
-            if (open.test(event.request.uri) || (auth && auth.value === "Basic ${Token}")) {
-              return event.request;
+            var request = event.request;
+            var uri = request.uri;
+            // The app's clean URLs (/campaigns/x): any path without a file extension outside the prototypes.
+            if (!/\.[^\/]*$/.test(uri) && !/^\/prototypes(\/|$)/.test(uri)) {
+              request.uri = "/index.html";
+              return request;
             }
-            return {
-              statusCode: 401,
-              statusDescription: "Unauthorized",
-              headers: { "www-authenticate": { value: "Basic realm=\"Table Top Galaxy\", charset=\"UTF-8\"" } }
-            };
+            var open = /^\/(index\.html|404\.html|robots\.txt|css\/.*|js\/.*|roller\/.*|portraits\/.*)$/;
+            var auth = request.headers.authorization;
+            if (!open.test(uri) && !(auth && auth.value === "Basic ${Token}")) {
+              return {
+                statusCode: 401,
+                statusDescription: "Unauthorized",
+                headers: { "www-authenticate": { value: "Basic realm=\"Table Top Galaxy\", charset=\"UTF-8\"" } }
+              };
+            }
+            if (/^\/prototypes\/?$/.test(uri)) { request.uri = "/prototypes/index.html"; }
+            return request;
           }
         - Token: !Base64 { "Fn::Sub": "${BasicAuthUser}:${BasicAuthPassword}" }
 

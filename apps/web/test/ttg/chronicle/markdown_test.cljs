@@ -21,10 +21,10 @@
 
 (deftest links-between-pages
   (let [href #(md/link-href ctx %)]
-    (is (= "#/campaigns/c1/chronicle/npc/imre-vasko" (href "../wiki/npcs/imre-vasko.md")))
-    (is (= "#/campaigns/c1/chronicle/location/the-concord" (href "../locations/the-concord.md")))
-    (is (= "#/campaigns/c1/chronicle/session/2026-11-04" (href "../sessions/2026-11-04.md")))
-    (is (= "#/campaigns/c1/chronicle/npc/rook" (href "rook.md")) "same folder keeps the page's kind")
+    (is (= "/campaigns/c1/chronicle/npc/imre-vasko" (href "../wiki/npcs/imre-vasko.md")))
+    (is (= "/campaigns/c1/chronicle/location/the-concord" (href "../locations/the-concord.md")))
+    (is (= "/campaigns/c1/chronicle/session/2026-11-04" (href "../sessions/2026-11-04.md")))
+    (is (= "/campaigns/c1/chronicle/npc/rook" (href "rook.md")) "same folder keeps the page's kind")
     (is (= "https://example.com/a" (href "https://example.com/a")))))
 
 (deftest what-cannot-be-followed-stays-text

@@ -2,7 +2,8 @@
   "The character sheet, with the prototype's markup and classes (css/game.css). Vitals, notes and portrait are
    edited here and save themselves; everything bought goes through the builder, but the choices a purchase needs
    (which limb, which characteristic) are made here. The campaign's GM can edit too, and adds adjustments. On a desktop Skills is its own panel
-   beside the tabs; on a tablet or phone it's the first tab."
+   beside the tabs; on a tablet or phone it's the first tab. Tapping a weapon, item or talent's name opens the info
+   drawer (ttg.sheet.info) on it."
   (:require [clojure.string :as str]
             [re-frame.core :as rf]
             [reagent.core :as reagent]
@@ -13,6 +14,7 @@
             [ttg.roller.events :as roller-ev]
             [ttg.routes :as routes]
             [ttg.sheet.events :as ev]
+            [ttg.sheet.info :as info]
             [ttg.sheet.subscriptions :as subs]
             [ttg.theme :as theme]
             [ttg.ui.portrait :as portrait]
@@ -149,7 +151,7 @@
   (let [attack (r/weapon-check c ix w)]
     [:div.item.weap
      [:div
-      [:div.row1 [:h3 (:name w)] [:span.meta (:skill w)] [text/cite (:source w)]]
+      [:div.row1 [:h3 [info/name-button :gear w (:name w)]] [:span.meta (:skill w)] [text/cite (:source w)]]
       [:div.stats-row
        [:span "Dmg " [:b (r/weapon-damage c ix w)]
         (when (:adds-brawn w) (str " (Br+" (:damage-bonus w 0) ")"))]
@@ -216,10 +218,10 @@
   (let [owned (sort-by (juxt :tier :name) (keep #(some-> (get-in ix [:talents (:id %)]) (assoc :rank (:rank %))) (:talents c)))]
     (if (seq owned)
       (into [:div.list]
-            (for [{:keys [id name rank tier activation ranked source text]} owned]
+            (for [{:keys [id name rank tier activation ranked source text] :as t} owned]
               ^{:key id}
               [:div.item
-               [:div.row1 [:h3 name (when ranked [:span.mono {:style {:font-weight 400}} " " rank])]
+               [:div.row1 [:h3 [info/name-button :talent t name] (when ranked [:span.mono {:style {:font-weight 400}} " " rank])]
                 [:span.tag "Tier " tier] [:span.tag activation] (when ranked [:span.tag "Ranked"]) [text/cite source]]
                [:p [text/rich text]]
                (when (= (keyword mods/dedication) (keyword id)) [dedication-picks c ix read-only?])]))
@@ -249,7 +251,7 @@
      (into [:div.list]
            (for [g items]
              ^{:key (str (:id g) (when (:free g) "-free"))}
-             [:div.item [:div.row1 [:h3 (:name g)] [:span.meta (line g)] [text/cite (:source g)]]
+             [:div.item [:div.row1 [:h3 [info/name-button :gear g (:name g)]] [:span.meta (line g)] [text/cite (:source g)]]
               [mod-detail g read-only?]]))]))
 
 (defn- tab-gear [c ix read-only?]
@@ -388,4 +390,5 @@
              [stats character ix]
              [vitals character ix hit read-only?]
              [panels character ix sheet read-only?]
+             [info/info-drawer]
              [roller/drawer]])]]))

@@ -1,11 +1,14 @@
 ;; bb dev watches :app on http://localhost:8280; bb build makes the release bundle; bb test runs :test under Node.
-;; Release builds get their API and sign-in settings from bb (ttg.quality/build-web!), never the dev defaults.
-;; :dice3d (three + cannon-es) loads on the first roll. asset-path is relative so it also loads under /roller/.
+;; Settings come from resources/config.edn (env.shadow/load-env): :local unless the build says otherwise, and release
+;; builds get their profile and the API stack's outputs from bb (ttg.quality/build-web!), never the dev defaults.
+;; :dice3d (three + cannon-es) loads on the first roll. The app is served at the root, so asset-path is absolute: a
+;; clean URL like /campaigns/x would otherwise look for js/ under it. :dev-http answers unknown paths with index.html.
 {:deps {:aliases [:test]}
  :dev-http {8280 "public"}
  :builds {:app {:target :browser
+                :build-hooks [(env.shadow/load-env)]
                 :output-dir "public/js"
-                :asset-path "js"
+                :asset-path "/js"
                 :module-loader true
                 :modules {:main {:init-fn ttg.app/init}
                           :dice3d {:entries [ttg.ui.dice3d] :depends-on #{:main}}}
@@ -13,6 +16,7 @@
                 :js-options {:entry-keys ["browser" "module" "main"]}
                 :devtools {:after-load ttg.app/mount!}}
           :test {:target :node-test
+                 :build-hooks [(env.shadow/load-env)]
                  :output-to ".shadow-cljs/test/node-tests.js"
                  :ns-regexp "-test$"
                  :autorun true}}}

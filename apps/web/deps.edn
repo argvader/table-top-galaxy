@@ -1,8 +1,10 @@
-{:paths ["src/cljs"]
+{:paths ["src/cljs" "src/clj" "resources"]
  :deps {local/libs {:local/root "../../libs"}
         thheller/shadow-cljs {:mvn/version "2.28.18"}
+        aero/aero {:mvn/version "1.1.6"}
         reagent/reagent {:mvn/version "1.2.0"}
-        re-frame/re-frame {:mvn/version "1.4.3"}}
+        re-frame/re-frame {:mvn/version "1.4.3"}
+        kibu/pushy {:mvn/version "0.3.8"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {org.clojure/test.check {:mvn/version "1.1.1"}}}}}

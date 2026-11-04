@@ -84,9 +84,8 @@
     (.addShutdownHook (Runtime/getRuntime) (Thread. #(run! p/destroy-tree procs)))
     (shadow! web "watch" "app")))
 
-;; A release build with no API stack: no API, no dev owner, no sign-in. The library page says it isn't deployed.
-(def ^:private offline-defines
-  {'ttg.config/api-url "" 'ttg.config/dev-owner "" 'ttg.config/auth-domain "" 'ttg.config/client-id ""})
+;; Settings the web app reads from its config.edn (#env). Unset ones are blank, never the ambient shell's.
+(def ^:private web-env-keys ["TTG_API_URL" "TTG_AUTH_DOMAIN" "TTG_CLIENT_ID"])
 
 (defn gm-strings
   "The secrets in a campaign's written prep. Long enough that one can't turn up in the bundle by chance."
@@ -103,11 +102,15 @@
       (throw (ex-info (str "GM-only text is in the web bundle: " (first leaked)) {:leaked (count leaked)})))))
 
 (defn build-web!
-  "Release build of apps/web. defines ({'ttg.config/api-url \"...\"}) point it at a deployed API and sign-in;
-   anything not given is blank, so a release never carries the localhost dev settings."
-  ([] (build-web! nil))
-  ([defines]
-   (shadow! web "release" "app" "--config-merge" (pr-str {:closure-defines (merge offline-defines defines)}))
+  "Release build of apps/web for a config.edn profile (:dev or :prod; the default :prod with no env is the offline
+   build). env ({\"TTG_API_URL\" \"...\"}) points it at a deployed API and sign-in; anything not given is blank, so
+   a release never carries the localhost dev settings."
+  ([] (build-web! :prod nil))
+  ([profile env]
+   (ensure-npm! web)
+   ;; --force-spawn: a running shadow-cljs server (bb dev) has its own environment and wouldn't see env.
+   (p/shell {:dir web :extra-env (merge (zipmap web-env-keys (repeat "")) env)}
+            "npx" "shadow-cljs" "release" "app" "--force-spawn" "--config-merge" (str "{:ttg/profile " profile "}"))
    (check-bundle!)))
 
 (defn build-api! [] (shadow! api "release" "api"))

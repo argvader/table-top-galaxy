@@ -50,7 +50,7 @@
         [:p.note "No characters yet. Open a campaign to build one for it."])]]))
 
 (defn- invite-url [code]
-  (str js/location.origin js/location.pathname (routes/href {:page :join :code code})))
+  (str js/location.origin (routes/href {:page :join :code code})))
 
 (defn- invites [code copied?]
   [:section.box

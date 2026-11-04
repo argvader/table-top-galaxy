@@ -51,3 +51,34 @@
     (is (re-find #"Always on" (:explain (by-label facts "Activation")))))
   (is (nil? (by-label (d/talent-facts (assoc rt/fizz :talents [{:id "parry" :rank 1}]) ix (get-in ix [:talents "parry"])) "Next costs"))
       "an owned unranked talent can't be bought again"))
+
+(deftest gear-facts-leave-shopping-to-buy-facts
+  (let [plate (get-in ix [:gear "plate"])]
+    (is (nil? (by-label (d/gear-facts rt/fizz ix plate) "Price")))
+    (is (= "300 credits" (:value (by-label (d/buy-facts rt/fizz ix plate) "Price"))))))
+
+(deftest an-attack-explains-its-dice
+  (let [baton {:id :baton :name "Baton" :kind :weapon :skill "Melee" :damage 3 :crit 4 :range "Engaged"}
+        fizz (assoc rt/fizz :skill-buy {:melee 1})
+        {:keys [check facts]} (d/attack fizz ix baton)]
+    (is (= "Baton attack" (:label check)))
+    (is (= "Rank 1" (:value (by-label facts "Melee"))))
+    (is (= "1 Proficiency, 1 Ability" (:value (by-label facts "Dice"))) "Brawn 2, rank 1")
+    (is (re-find #"lower, 1," (:explain (by-label facts "Dice"))))
+    (is (nil? (by-label facts "Encumbered"))))
+  (is (nil? (d/attack rt/fizz ix {:name "Ray" :skill "Gunnery"})) "no such skill in the library"))
+
+(deftest pools-in-words
+  (is (= "2 Proficiency, 1 Ability, 1 Setback" (d/pool-words {:ability 1 :proficiency 2 :setback 1})))
+  (is (= "" (d/pool-words {}))))
+
+(deftest weapon-qualities-change-the-attack
+  (let [rifle {:id :rifle :name "Rifle" :kind :weapon :skill "Melee" :damage 8 :crit 3 :range "Long"
+               :qualities [{:name "Accurate" :rating 1} {:name "Cumbersome" :rating 4} {:name "Inaccurate"}]}
+        {:keys [check facts]} (d/attack rt/fizz ix rifle)]
+    (is (= 1 (get-in check [:pool :boost])) "Accurate 1 is a Boost die in the pool")
+    (is (= 1 (get-in check [:pool :setback])) "an unrated Inaccurate counts as 1")
+    (is (= "+1 Boost" (:value (by-label facts "Accurate"))))
+    (is (= "+2 Difficulty" (:value (by-label facts "Cumbersome"))) "Brawn 2 against Cumbersome 4")
+    (is (re-find #"you have 2" (:explain (by-label facts "Cumbersome")))))
+  (is (empty? (r/weapon-difficulty rt/fizz ix {:qualities [{:name "Cumbersome" :rating 2}]})) "Brawn 2 is enough"))

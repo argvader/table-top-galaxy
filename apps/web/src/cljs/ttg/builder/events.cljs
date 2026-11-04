@@ -8,8 +8,8 @@
             [ttg.content :as content]
             [ttg.genesys.rules :as rules]
             [ttg.http :as http]
-            [ttg.roller.db :as roller-db]
-            [ttg.routes :as routes]))
+            [ttg.routes :as routes]
+            [ttg.ui.drawer-state :as drawer]))
 
 (defn- check-and-throw [spec db]
   (when-not (s/valid? spec db)
@@ -93,22 +93,13 @@
 (defn set-ui [db [_ k v]] (assoc-in db [:builder k] v))
 
 (defn open-info
-  "Opens the info drawer on a gear item or talent: kind is :gear or :talent, id its library id. Ignored while the last
-   one is still leaving, so its close can't take this one with it."
+  "Opens the info drawer on a gear item or talent: kind is :gear or :talent, id its library id."
   [db [_ kind id]]
-  (if (get-in db [:builder :info :closing?])
-    db
-    (assoc-in db [:builder :info] {:kind kind :id id})))
+  (drawer/open db [:builder :info] kind id))
 
-(defn dismiss-info
-  "Slides the info drawer away, then clears it so its contents hold still on the way out."
-  [{:keys [db]} _]
-  (when-let [{:keys [closing?]} (get-in db [:builder :info])]
-    (when-not closing?
-      {:db (assoc-in db [:builder :info :closing?] true)
-       :fx [[:dispatch-later {:ms roller-db/drawer-out-ms :dispatch [::close-info]}]]})))
+(defn dismiss-info [{:keys [db]} _] (drawer/dismiss db [:builder :info] ::close-info))
 
-(defn close-info [db _] (assoc-in db [:builder :info] nil))
+(defn close-info [db _] (drawer/close db [:builder :info]))
 
 (defn restart [{:keys [db]} _]
   (let [campaign-id (get-in db [:builder :campaign-id])]

@@ -77,7 +77,7 @@
    "sotb-guns" {:weapons sotb/gun-locker}
    "sotb" {:weapons sotb/weapons :armor sotb/armor :gear sotb/gear :attachments sotb/attachments
            :archetypes sotb/archetypes :careers sotb/careers :skills sotb/skills :talents sotb/talents :talent-list sotb/talent-list :skill-list sotb/skill-list :network sotb/network :network-results sotb/network-results :factions sotb/factions :vehicles sotb/vehicles}
-   "crb" {:adversaries crb/adversaries :spend-results crb/spend-results :motivations crb/motivations :item-qualities crb/item-qualities :crits crb/crits :weapons crb/weapons :armor crb/armor :gear crb/gear :skills crb/skills :archetypes crb/archetypes :careers crb/careers :talents crb/talents}})
+   "crb" {:adversaries crb/adversaries :spend-results crb/spend-results :motivations crb/motivations :item-qualities crb/item-qualities :crits crb/crits :vehicle-crits crb/vehicle-crits :weapons crb/weapons :armor crb/armor :gear crb/gear :skills crb/skills :archetypes crb/archetypes :careers crb/careers :talents crb/talents}})
 
 (defn- write-edn! [path entries]
   (fs/create-dirs (fs/parent path))

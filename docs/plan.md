@@ -167,7 +167,7 @@ The re-frame app validates app-db with spec after each event when `goog.DEBUG` i
    - Done 2026-10-27. The library lives in DynamoDB (`LIBRARY#owner` / `<TYPE>#id`, entry stored as EDN) behind `apps/serverless` (handler -> service -> gateway). Until Cognito (M4) the dev server alone may name the owner in an `x-ttg-owner` header.
    - Book content reaches a library only through `bb library:export` + Import (or `bb seed`), so no book text ships in the bundle.
    - One field schema (`ttg.library.fields`) drives the editor form, CSV import and CSV export; the browser and the Lambda validate with the same `ttg.library` code.
-   - The web app routes with hashes (`#/library/weapons/knife`) so it runs under `/roller/` on the prototype site without rewrites.
+   - The web app has clean URLs (`/library/weapons/knife`, pushy) and is the site root; CloudFront rewrites extensionless paths to `index.html`. It started on hashes under `/roller/`, and those links still forward.
 4. **Character builder and sheet.** Saved locally first, then synced through the API with Cognito auth.
    - Built 2026-10-30, not yet deployed. `ttg.genesys.rules` holds the rules, shared with the API. The builder keeps a browser draft until the character is created, and the sheet autosaves. Portraits go to their own retained bucket; the 8 palettes in `ttg.theme` have no picker for now, so every sheet uses the default (ttg-8ax).
    - Encumbrance and defense follow the book in both screens: worn armor counts 3 less, and defense caps at 4. The two prototypes disagreed on this.

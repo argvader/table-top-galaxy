@@ -233,3 +233,8 @@
 
 (deftest the-index-carries-item-qualities
   (is (= "Vicious" (get-in (r/index {:item-qualities [{:id :vicious :name "Vicious"}]}) [:qualities "vicious" :name]))))
+
+(deftest weapon-qualities-in-the-pool
+  (is (= {:boost 2} (r/quality-dice {:qualities [{:name "accurate" :rating 2}]})) "any case")
+  (is (= {} (r/quality-dice {:qualities [{:name "Vicious" :rating 2}]})))
+  (is (nil? (r/quality-rating {} "Accurate"))))

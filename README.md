@@ -44,7 +44,7 @@ Then:
 
 ```bash
 bb web:infra          # create/update bucket, distribution, prototype password (first run takes ~5-10 min)
-bb web:deploy         # proto-build + apps/web release build (at /roller/index.html), upload, invalidate the CloudFront cache
+bb web:deploy         # proto-build + apps/web release build (the app at /, prototypes at /prototypes/ on dev), upload, invalidate the CloudFront cache
 bb web:url            # print https://dxxxx.cloudfront.net
 bb web:remove dev     # empty the bucket and delete everything
 ```

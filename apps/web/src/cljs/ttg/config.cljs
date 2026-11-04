@@ -1,12 +1,14 @@
 (ns ttg.config
-  "Build-time settings (shadow-cljs :closure-defines). Dev talks to bb dev's API with no sign-in; bb web:deploy
-   fills these from the ttg-api-<stage> stack. A release build with no API stack has none, and the library says so.")
+  "The app's settings, from resources/config.edn via env.config (aero, read at build time for a profile). bb dev
+   builds :local and talks to the dev API with no sign-in; bb web:deploy builds :dev or :prod with the
+   ttg-api-<stage> stack's outputs. A release with no API stack has none, and the library says so."
+  (:require [env.config :as env]))
 
-(goog-define api-url "http://localhost:3000")
+(def api-url (:api-url env/config ""))
 
 ;; Until Cognito is configured (dev) the API takes the user from this header. Deployed builds send none.
-(goog-define dev-owner "local-gm")
+(def dev-owner (:dev-owner env/config ""))
 
-;; Cognito hosted sign-in, e.g. https://ttg-dev-123.auth.us-east-1.amazoncognito.com, and the web client id.
-(goog-define auth-domain "")
-(goog-define client-id "")
+;; Cognito hosted sign-in and the web client id.
+(def auth-domain (:auth-domain env/config ""))
+(def client-id (:client-id env/config ""))
